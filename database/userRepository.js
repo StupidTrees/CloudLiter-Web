@@ -1,7 +1,11 @@
 const con = require("./connector");
 const Op = con.Op
 const DataTypes = con.DataTypes
+/**
+ * 仓库层：用户数据读写
+ */
 
+//定义数据库用户模型
 const User = con.sequelize.define(
     'user', {
         id: {
@@ -41,10 +45,16 @@ const User = con.sequelize.define(
         tableName:'user'
     }
 );
+
+//将定义好的模型同步到数据表，不强制覆盖
 User.sync({force: false}).then(r=>r)
 
 
-
+/**
+ * 根据用户id获取用户
+ * @param id
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
+ */
 exports.getUserById = async function (id) {
     return await User.findAll({
         where: {

@@ -7,6 +7,10 @@ const textUtils = require('../utils/textUtils')
 const tools = require('../utils/tools')
 
 /**
+ * 服务层：用户操作
+ */
+
+/**
  * 用户注册
  * @param username
  * @param password
@@ -22,12 +26,24 @@ exports.userSignUp = async function (username, password, gender, nickname) {
         return jsonUtils.getResponseBody(codes.format_error_password)
     } else if (textUtils.isEmpty(gender)) {
         return jsonUtils.getResponseBody(codesUtils.getFormatEmptyCode('请指定性别！'))
-    } else if (!(tools.inArray(gender,['MALE', 'FEMALE']))){
+    } else if (!(tools.inArray(gender, ['MALE', 'FEMALE']))) {
         return jsonUtils.getResponseBody(codes.format_error_gender)
     }
+
+
     //数据库操作：新建用户
-    return await repository.createUser(username, password, gender, nickname).then(() => {
-        return jsonUtils.getResponseBody(codes.success)
+    return await repository.createUser(username, password, gender, nickname).then((value) => {
+        console.log('value',value)
+        let token = tokenUtils.signIdToken(value.id,username)
+        return jsonUtils.getResponseBody(codes.success,{
+            token:token,
+            info:{
+                username:username,
+                id:value.id,
+                nickname:nickname,
+                gender:gender
+            }
+        })
     }, (err) => {
         console.log('err', err)
         if (err.original.code === 'ER_DUP_ENTRY') {
@@ -56,12 +72,21 @@ exports.userLogin = async function (username, password) {
                 console.log('login', '密码正确')
                 //密码正确，签发token
                 let token = tokenUtils.signToken(user)
-                return Promise.resolve(jsonUtils.getResponseBody(codes.success, {token: token}))
+                return Promise.resolve(jsonUtils.getResponseBody(codes.success,
+                    {
+                        info:{
+                            id:user.id,
+                            username:user.username,
+                            nickname:user.nickname,
+                            gender:user.gender
+                        },
+                        token: token
+                    }))
             } else {
                 console.log('login', '密码错误')
                 return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_password))
             }
-        }).catch((err) => {
+        }, (err) => {
             console.log('error', err)
             return Promise.reject(jsonUtils.getResponseBody(
                 codes.other_error, err
@@ -83,6 +108,7 @@ exports.fetchBaseProfile = async function (userId) {
         } else {
             let user = value[0].get()
             return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
+                id:user.id,
                 username: user.username,
                 nickname: user.nickname,
                 gender: user.gender
@@ -93,3 +119,6 @@ exports.fetchBaseProfile = async function (userId) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
 }
+
+
+

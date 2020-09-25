@@ -22,6 +22,15 @@ exports.signToken = function (user){
         expiresIn: EXPIRE_IN
     })
 }
+exports.signIdToken = function (id,username){
+    const info = {
+        userId: id,
+        username: username
+    };
+    return jwt.sign(info,PRIVATE_KEY,{
+        expiresIn: EXPIRE_IN
+    })
+}
 
 
 exports.verifyToken = function (token,callback){

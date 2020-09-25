@@ -4,11 +4,16 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const usersRouter = require('./routes/user');
-
 const tokenVerifier = require('./middleware/tokenVerify')
+
+
+/**
+ * express app的启动流程
+ **/
+
 const app = express();
 
-
+//设置一些基本的中间件
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

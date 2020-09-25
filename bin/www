@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const config = require('../config')
 /**
- * Module dependencies.
+ * 程序的入口在这里
  */
 
 var app = require('../app');

@@ -5,7 +5,7 @@
       <paths name="deploy-to-ali">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/webapp/hichat/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/webapp/Hichat/" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

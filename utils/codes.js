@@ -1,3 +1,7 @@
+/**
+ * 定义返回的状态码及message
+ * @type {{format_error_gender: {code: number, message: string}, format_error_empty: {code: number, message: string}, format_error_password: {code: number, message: string}, login_wrong_password: {code: number, message: string}, other_error: {code: number, message: string}, success: {code: number, message: string}, signup_other_error: {code: number, message: string}, login_wrong_username: {code: number, message: string}, signup_duplicated_username: {code: number, message: string}, format_error_username: {code: number, message: string}, invalid_token: {code: number, message: string}, other_login_error: {code: number, message: string}}}
+ */
 exports.codes = {
     success:{
         code:2000,
