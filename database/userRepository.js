@@ -1,54 +1,11 @@
-const con = require("./connector");
-const Op = con.Op
-const DataTypes = con.DataTypes
+const models = require('./models')
+const Op = models.Op
+
 /**
  * 仓库层：用户数据读写
  */
 
-//定义数据库用户模型
-const User = con.sequelize.define(
-    'user', {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique:true
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        gender:{
-            type:DataTypes.ENUM('MALE','FEMALE'),
-            allowNull:false
-        },
-        nickname:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        signature:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        createdAt:{
-            type:DataTypes.DATE
-        },
-        updatedAt:{
-            type:DataTypes.DATE
-        }
-    },
-    {
-        tableName:'user'
-    }
-);
-
-//将定义好的模型同步到数据表，不强制覆盖
-User.sync({force: false}).then(r=>r)
-
+const User = models.User
 
 /**
  * 根据用户id获取用户
@@ -76,10 +33,10 @@ exports.getUserById = async function (id) {
 exports.createUser = function (username, password, gender, nickname) {
     return User.create(
         {
-            username:username,
-            password:password,
-            gender:gender,
-            nickname:nickname,
+            username: username,
+            password: password,
+            gender: gender,
+            nickname: nickname,
         }
     )
 }
@@ -89,12 +46,95 @@ exports.createUser = function (username, password, gender, nickname) {
  * @param username
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getUserByUsername = function(username){
+exports.getUserByUsername = function (username) {
     return User.findAll({
-        where:{
-            username:{
-                [Op.eq]:username
+        where: {
+            username: {
+                [Op.eq]: username
             }
         }
+    })
+}
+
+/**
+ * 根据字段搜索用户
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
+ * @param text
+ */
+exports.searchUser = function (text) {
+    return User.findAll({
+        where: {
+            [Op.or]: [
+                {
+                    username: {
+                        [Op.like]: '%' + text + '%'
+                    }
+                },
+                {
+                    nickname: {
+                        [Op.like]: '%' + text + '%'
+                    }
+                }
+            ]
+        }
+    })
+}
+
+/**
+ * 更新用户头像
+ */
+exports.updateUserAvatar = function (id, avatarPath) {
+    return User.update({
+        avatar: avatarPath
+    }, {
+        where: {
+            id: id
+        }
+    })
+}
+
+/**
+ * 修改某用户的昵称
+ * @param id
+ * @param nickname
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.changeNickname = function(id,nickname){
+    return User.update({
+        nickname:nickname
+    },{
+        where:{
+            id:id
+        }
+    })
+}
+
+/**
+ * 修改某用户的性别
+ * @param id
+ * @param gender
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.changeGender = function(id,gender){
+    return User.update({
+        gender:gender
+    },{
+        where:{
+            id:id
+        }
+    })
+}
+
+/**
+ * 获取某用户的头像文件名
+ * @param id
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes> | null>}
+ */
+exports.getAvatarPathById = function (id){
+    return User.findOne({
+    where:{
+        id:id
+    },
+        attributes:['avatar']
     })
 }

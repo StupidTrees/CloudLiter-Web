@@ -1,5 +1,4 @@
-const ERROR_USER_NOT_EXIST = 3001
-const ERROR_WRONG_PASSWORD = 3002
+
 
 
 /**

@@ -1,7 +1,7 @@
 const tokenUtils = require('../utils/tokenUtils')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
-const excludedUrl = ['/user/login','/user/sign_up']
+const excludedUrl = ['/user/login','/user/sign_up','/user/profile/query_avatar','/user/profile/avatar']
 const tools = require('../utils/tools')
 
 /**
@@ -15,7 +15,8 @@ tokenVerifier = function (req, res, next) {
     let token =  req.headers['token']
 
     //跳过向特定地址的请求
-    if(tools.inArray(req.url,excludedUrl)){
+    console.log('path',req._parsedUrl.pathname)
+    if(tools.inPaths(req._parsedUrl.pathname,excludedUrl)){
         console.log('token验证','放行')
         return next()
     }
@@ -30,7 +31,8 @@ tokenVerifier = function (req, res, next) {
         }else{
             //验证成功，放行
             console.log('token验证',decoded)
-            req.query.id = decoded.userId
+            req.query.authId = decoded.userId
+            req.body.authId = decoded.userId
             if(decoded.userId===undefined){
                 return res.status(403).send(jsonUtils.getResponseBody(codes.invalid_token))
             }

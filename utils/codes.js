@@ -47,6 +47,22 @@ exports.codes = {
         code:3005,
         message:'用户名已存在'
     },
+    already_friends:{
+        code:3007,
+        message:'已经是好友啦！'
+    },
+    make_friends_with_ghost:{
+        code:3008,
+        message:'添加好友失败，其中有无效用户'
+    },
+    make_friends_with_myself:{
+        code:3009,
+        message:'你不能和自己成为好友'
+    },
+    no_avatar_file:{
+        code:3010,
+        message:'没有找到头像文件！'
+    },
     other_error:{
         code:5000,
         message:'其他错误'

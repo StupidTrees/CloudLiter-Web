@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const usersRouter = require('./routes/user');
+const relationRouter = require('./routes/relation');
 const tokenVerifier = require('./middleware/tokenVerify')
 
 
@@ -26,7 +27,7 @@ app.use(tokenVerifier)//.use(tokenUtils.tokenVerifierMiddleware)
 
 //绑定路由
 app.use('/user', usersRouter);
-
+app.use('/relation', relationRouter);
 
 // /*
 // // catch 404 and forward to error handler
