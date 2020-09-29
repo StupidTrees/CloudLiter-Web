@@ -44,7 +44,7 @@ exports.getFriends = async function (id) {
  * @returns {Promise<T>}
  */
 exports.makeFriends = async function(user1,user2){
-    if(user1===user2){
+    if(user1==user2){
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
     }
     return await repository.makeFriends(user1,user2).then((value)=>{
