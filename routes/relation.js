@@ -32,7 +32,7 @@ router.post('/make_friends',function (req, res, next) {
     }
     service.makeFriends(queryId,req.body.friend).then((value)=>{
         res.send(value)
-    },(err)=>{
+    }).catch(err=>{
         res.send(err)
     })
 })
