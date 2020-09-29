@@ -22,23 +22,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="加入注释 接口表">
-      <change afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/userRelationRepository.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/relation.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/relationService.js" afterDir="false" />
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="新增 用户头像上传">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/connector.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/connector.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/userRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/tokenVerify.js" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/tokenVerify.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/codes.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/codes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/jsonUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/jsonUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/relationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/tools.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tools.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -83,7 +70,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/service" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
     <property name="show.migrate.to.gradle.popup" value="false" />
     <property name="ts.external.directory.path" value="E:\softwares\WebStorm 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -122,7 +109,10 @@
       <workItem from="1601128864231" duration="20588000" />
       <workItem from="1601280293444" duration="1540000" />
       <workItem from="1601290775956" duration="5379000" />
-      <workItem from="1601357950322" duration="1154000" />
+      <workItem from="1601357950322" duration="1575000" />
+      <workItem from="1601372334887" duration="1627000" />
+      <workItem from="1601381260492" duration="426000" />
+      <workItem from="1601392520394" duration="2593000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -131,7 +121,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600996889557</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="新增 用户头像上传">
+      <created>1601359146124</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1601359146125</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,7 +148,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="加入注释 接口表" />
-    <option name="LAST_COMMIT_MESSAGE" value="加入注释 接口表" />
+    <MESSAGE value="新增 用户头像上传" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增 用户头像上传" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="95" key="#Deployment" timestamp="1600931910391">
@@ -206,14 +204,14 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="1063" height="223" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1601284399992" />
-    <state x="186" y="81" key="SettingsEditor" timestamp="1601358361431">
+    <state x="186" y="81" key="SettingsEditor" timestamp="1601359512100">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="186" y="81" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601358361431" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1600997174941">
+    <state x="186" y="81" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601359512100" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601359518585">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1600997174941" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601359518585" />
     <state x="386" y="33" width="594" height="804" key="find.popup" timestamp="1600824367833">
       <screen x="0" y="0" width="1368" height="872" />
     </state>

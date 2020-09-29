@@ -6,7 +6,7 @@ module.exports = {
     port: 3000,
     database:{
         name:'hichat',
-        username:'root',
+        username:'cloudliter',
         password:'1234',
         host:'localhost',
         port:3306

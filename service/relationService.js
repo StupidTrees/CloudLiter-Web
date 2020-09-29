@@ -41,9 +41,10 @@ exports.getFriends = async function (id) {
  * 建立好友关系
  * @param user1
  * @param user2
- * @returns {Promise<T>}
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.makeFriends = async function(user1,user2){
+    // noinspection EqualityComparisonWithCoercionJS
     if(user1==user2){
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
     }

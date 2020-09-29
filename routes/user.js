@@ -75,7 +75,7 @@ router.post('/profile/change_nickname',function(req,res){
     }
     service.changeNickname(queryId,req.body.nickname).then((value)=>{
         res.send(value)
-    },(err)=>{
+    }).catch(err=>{
         res.send(err)
     })
 })
@@ -90,7 +90,7 @@ router.post('/profile/change_gender',function(req,res){
     }
     service.changeGender(queryId,req.body.gender).then((value)=>{
         res.send(value)
-    },(err)=>{
+    }).catch(err=>{
         res.send(err)
     })
 })
@@ -136,7 +136,7 @@ router.get('/profile/query_avatar',function (req,res){
         res.writeHead(200, "Ok");
         res.write(r,"binary"); //格式必须为 binary，否则会出错
         res.end();
-    },(err)=>{
+    }).catch((err)=>{
         res.send(err)
     })
 })
@@ -149,7 +149,7 @@ router.get('/profile/avatar',function (req,res){
         res.writeHead(200, "Ok");
         res.write(r,"binary"); //格式必须为 binary，否则会出错
         res.end();
-    },(err)=>{
+    }).catch(err=>{
         res.send(err)
     })
 })
