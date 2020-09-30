@@ -203,6 +203,27 @@ exports.changeNickname = async function (userId, nickname) {
     }
 }
 
+/**
+ * 更换签名
+ * codes.signature_empty暂时先用着，还要改
+ * @param userId 用户ID
+ * @param signature 用户签名
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.changeSignature = async function (userId, signature) {
+    let res
+    try {
+        res = await repository.changeSignature(userId, signature)
+        if (res[0] > 0) {
+            return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+        } else {
+            return Promise.reject(jsonUtils.getResponseBody(codes.signature_empty))
+        }
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+}
+
 
 /**
  * 更改性别

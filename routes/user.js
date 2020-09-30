@@ -81,6 +81,22 @@ router.post('/profile/change_nickname',function(req,res){
 })
 
 /**
+ * 修改签名
+ */
+router.post('/profile/change_signature',function(req,res){
+    let queryId = req.body.authId
+    if(req.body.id!==undefined){
+        queryId = req.body.id
+    }
+    service.changeSignature(queryId,req.body.signature).then((value)=>{
+        res.send(value)
+    },(err)=>{
+        res.send(err)
+    })
+})
+
+
+/**
  * 更改性别
  */
 router.post('/profile/change_gender',function(req,res){

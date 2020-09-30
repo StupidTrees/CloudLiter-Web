@@ -63,6 +63,10 @@ exports.codes = {
         code:3010,
         message:'没有找到头像文件！'
     },
+    signature_empty:{
+        code:3011,
+        message:'修改签名不能输入空串'
+    },
     other_error:{
         code:5000,
         message:'其他错误'
