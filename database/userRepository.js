@@ -110,6 +110,23 @@ exports.changeNickname = function(id,nickname){
 }
 
 /**
+ * 修改用户签名
+ * @param id
+ * @param signature
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.changeSignature = function(id,signature){
+    return User.update({
+        signature:signature
+    },{
+        where:{
+            id:id
+        }
+    })
+}
+
+
+/**
  * 修改某用户的性别
  * @param id
  * @param gender

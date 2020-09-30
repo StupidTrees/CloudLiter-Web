@@ -22,24 +22,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="加入注释 接口表">
-      <change afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/userRelationRepository.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/relation.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/relationService.js" afterDir="false" />
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="解决同一个用户与自己交朋友的问题，抛出错误未被catch">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/connector.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/connector.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/userRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/tokenVerify.js" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/tokenVerify.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/codes.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/codes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/jsonUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/jsonUtils.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/tools.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tools.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +43,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GithubPullRequestsUISettings">
@@ -83,7 +77,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/service" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
     <property name="show.migrate.to.gradle.popup" value="false" />
     <property name="ts.external.directory.path" value="E:\softwares\WebStorm 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -99,6 +93,23 @@
       <recent name="E:\projects\Hichat\database" />
       <recent name="E:\projects\Hichat" />
     </key>
+  </component>
+  <component name="RunManager" selected="Node.js.bin\www">
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.start" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -123,6 +134,8 @@
       <workItem from="1601280293444" duration="1540000" />
       <workItem from="1601290775956" duration="5379000" />
       <workItem from="1601357950322" duration="1154000" />
+      <workItem from="1601388451200" duration="4966000" />
+      <workItem from="1601429158287" duration="2987000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -131,7 +144,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600996889557</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="解决同一个用户与自己交朋友的问题，抛出错误未被catch">
+      <created>1601391885523</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1601391885523</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,7 +171,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="加入注释 接口表" />
-    <option name="LAST_COMMIT_MESSAGE" value="加入注释 接口表" />
+    <MESSAGE value="解决同一个用户与自己交朋友的问题，抛出错误未被catch" />
+    <option name="LAST_COMMIT_MESSAGE" value="解决同一个用户与自己交朋友的问题，抛出错误未被catch" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="95" key="#Deployment" timestamp="1600931910391">
@@ -190,30 +211,84 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="539" y="134" key="Github.UntrackedFilesDialog/0.0.1368.872@0.0.1368.872" timestamp="1600867604575" />
-    <state width="1063" height="223" key="GridCell.Tab.0.bottom" timestamp="1601284399992">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="261" key="GridCell.Tab.0.bottom" timestamp="1601404007166">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1063" height="223" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1601284399992" />
-    <state width="1063" height="223" key="GridCell.Tab.0.center" timestamp="1601284399992">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="261" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601404007166" />
+    <state width="1493" height="261" key="GridCell.Tab.0.center" timestamp="1601404007166">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1063" height="223" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1601284399992" />
-    <state width="1063" height="223" key="GridCell.Tab.0.left" timestamp="1601284399992">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="261" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1601404007166" />
+    <state width="1493" height="261" key="GridCell.Tab.0.left" timestamp="1601404007166">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1063" height="223" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1601284399992" />
-    <state width="1063" height="223" key="GridCell.Tab.0.right" timestamp="1601284399992">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="261" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1601404007166" />
+    <state width="1493" height="261" key="GridCell.Tab.0.right" timestamp="1601404007166">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1063" height="223" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1601284399992" />
-    <state x="186" y="81" key="SettingsEditor" timestamp="1601358361431">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="261" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1601404007166" />
+    <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.1.center" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.1.left" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.1.right" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.2.bottom" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.2.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.2.center" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.2.center/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.2.left" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.2.left/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.2.right" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.2.right/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.3.bottom" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.3.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.3.center" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.3.center/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.3.left" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.3.left/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state width="1493" height="261" key="GridCell.Tab.3.right" timestamp="1601404007167">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.3.right/0.0.1536.824@0.0.1536.824" timestamp="1601404007167" />
+    <state x="209" y="77" key="SettingsEditor" timestamp="1601392376059">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="186" y="81" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601358361431" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1600997174941">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="209" y="77" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1601392376059" />
+    <state x="311" y="160" key="Vcs.Push.Dialog.v2" timestamp="1601392381967">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1600997174941" />
+    <state x="311" y="160" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1601392381967" />
     <state x="386" y="33" width="594" height="804" key="find.popup" timestamp="1600824367833">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
