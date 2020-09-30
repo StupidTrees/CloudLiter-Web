@@ -1,4 +1,4 @@
-const models = require('./models')
+const models = require('../database/models')
 const Op = models.Op
 
 /**
@@ -12,8 +12,8 @@ const User = models.User
  * @param id
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getUserById = async function (id) {
-    return await User.findAll({
+exports.getUserById = function (id) {
+    return User.findAll({
         where: {
             id: {
                 [Op.eq]: id

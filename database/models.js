@@ -108,4 +108,66 @@ this.UserRelation.belongsTo(this.User, {
 this.UserRelation.sync({force: false}).then(r => r)
 
 
+/**
+ * 会话表
+ */
+exports.Conversation = con.sequelize.define(
+    'conversation',{
+        key:{
+            type:DataTypes.STRING,
+            primaryKey: true
+        },
+        user1Id: {
+            type: DataTypes.BIGINT
+        },
+        user2Id: {
+            type: DataTypes.BIGINT
+        },
+        relation1Id:{
+            type:DataTypes.STRING
+        },
+        relation2Id:{
+            type:DataTypes.STRING
+        },
+        historyId:{
+            type: DataTypes.BIGINT
+        },
+        lastMessage:{
+            type:DataTypes.STRING
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    },
+    {
+        tableName:'conversation'
+    }
+);
+
+this.Conversation.belongsTo(this.User,{
+    foreignKey:'user1Id',
+    targetKey:'id',
+    as:'user1'
+})
+this.Conversation.belongsTo(this.UserRelation,{
+    foreignKey:'relation1Id',
+    as:'relation1',
+    targetKey:'key'
+})
+this.Conversation.belongsTo(this.UserRelation,{
+    foreignKey:'relation2Id',
+    targetKey:'key',
+    as:'relation2'
+})
+this.Conversation.belongsTo(this.User,{
+    foreignKey:'user2Id',
+    targetKey:'id',
+    as:'user2'
+})
+this.Conversation.sync({force: false}).then(r => r)
+
+
 

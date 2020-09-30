@@ -1,4 +1,4 @@
-const models = require('./models')
+const models = require('../database/models')
 const Op = models.Op
 /**
  * 仓库层：用户关系数据读写

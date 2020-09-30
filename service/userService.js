@@ -1,4 +1,4 @@
-const repository = require('../database/userRepository');
+const repository = require('../repository/userRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const config = require('../config')
@@ -56,28 +56,6 @@ exports.userSignUp = async function (username, password, gender, nickname) {
             gender: gender
         }
     }))
-
-    // //数据库操作：新建用户
-    // return await repository.createUser(username, password, gender, nickname).then((value) => {
-    //     console.log('value', value)
-    //     let token = tokenUtils.signIdToken(value.id, username)
-    //     return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
-    //         token: token,
-    //         info: {
-    //             username: username,
-    //             id: value.id,
-    //             nickname: nickname,
-    //             gender: gender
-    //         }
-    //     }))
-    // }, (err) => {
-    //     console.log('err', err)
-    //     if (err.original.code === 'ER_DUP_ENTRY') {
-    //         return Promise.reject(jsonUtils.getResponseBody(codes.signup_duplicated_username))
-    //     } else {
-    //         return Promise.reject(jsonUtils.getResponseBody(code.signup_other_error))
-    //     }
-    // })
 }
 
 /***
@@ -118,39 +96,6 @@ exports.userLogin = async function (username, password) {
         console.log('login', '密码错误')
         return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_password))
     }
-
-    // return await repository.getUserByUsername(username).then(
-    //     (value) => {
-    //         if (value.length === 0) { //获取到的用户数量为0：用户不存在
-    //             return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_username, null))
-    //         }
-    //         const user = value[0].get()
-    //         //验证密码
-    //         if (user.password === password) {
-    //             console.log('login', '密码正确')
-    //             //密码正确，签发token
-    //             let token = tokenUtils.signToken(user)
-    //             return Promise.resolve(jsonUtils.getResponseBody(codes.success,
-    //                 {
-    //                     info: {
-    //                         id: user.id,
-    //                         username: user.username,
-    //                         nickname: user.nickname,
-    //                         gender: user.gender,
-    //                         avatar: user.avatar
-    //                     },
-    //                     token: token
-    //                 }))
-    //         } else {
-    //             console.log('login', '密码错误')
-    //             return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_password))
-    //         }
-    //     }, (err) => {
-    //         console.log('error', err)
-    //         return Promise.reject(jsonUtils.getResponseBody(
-    //             codes.other_error, err
-    //         ))
-    //     })
 }
 
 /**

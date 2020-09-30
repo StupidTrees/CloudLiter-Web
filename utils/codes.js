@@ -67,6 +67,11 @@ exports.codes = {
         code:3011,
         message:'修改签名不能输入空串'
     },
+    conversation_exists:{
+        code:3012,
+        message:'会话已经存在'
+    },
+
     other_error:{
         code:5000,
         message:'其他错误'

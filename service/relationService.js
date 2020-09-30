@@ -1,6 +1,7 @@
-const repository = require('../database/userRelationRepository');
+const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
+const convRepository = require('../repository/conversationRepository')
 
 /**
  * 服务层：关系操作
@@ -49,13 +50,14 @@ exports.getFriends = async function (id) {
  */
 exports.makeFriends = async function(user1,user2){
     //不能和自己成为好友
-    if(user1.trim()===user2.trim()){
+    if(user1==user2){
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
     }
+    //在关系表里插入数据
     try{
         await repository.makeFriends(user1,user2)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }catch (err){
+        console.log('关系表插入失败',err)
         if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已经是好友
             return Promise.reject(jsonUtils.getResponseBody(codes.already_friends))
         }else if(err.original.code==='ER_NO_REFERENCED_ROW_2'){ //外键不存在，即有一个用户id是假的
@@ -63,6 +65,17 @@ exports.makeFriends = async function(user1,user2){
         }
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     }
+    //在对话表里直接开启一个对话
+    try {
+        await convRepository.newConversation(user1, user2)
+    } catch (err) {
+        console.log('对话表插入失败',err)
+        if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已有对话
+            return Promise.reject(jsonUtils.getResponseBody(codes.conversation_exists))
+        }
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
 
