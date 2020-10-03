@@ -29,22 +29,13 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="新增 对话实体">
-      <change afterPath="$PROJECT_DIR$/repository/messageRepository.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/message.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/bin/www" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/conversationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/conversationRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/messageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/relationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/textUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/textUtils.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/tools.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tools.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +125,7 @@
       <workItem from="1601392520394" duration="2751000" />
       <workItem from="1601436984972" duration="957000" />
       <workItem from="1601448622585" duration="28277000" />
-      <workItem from="1601654413495" duration="9061000" />
+      <workItem from="1601654413495" duration="20817000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -171,7 +162,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601457764722</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱">
+      <created>1601705283202</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1601705283202</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,7 +205,8 @@
     <MESSAGE value="小修改" />
     <MESSAGE value="Service层的异步函数内部统一改用同步写法" />
     <MESSAGE value="新增 对话实体" />
-    <option name="LAST_COMMIT_MESSAGE" value="新增 对话实体" />
+    <MESSAGE value="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱" />
+    <option name="LAST_COMMIT_MESSAGE" value="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="95" key="#Deployment" timestamp="1600931910391">
@@ -318,10 +317,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601533814424" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601457777130">
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601705289947">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601457777130" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601705289947" />
     <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601444352854">
       <screen x="0" y="0" width="1368" height="872" />
     </state>

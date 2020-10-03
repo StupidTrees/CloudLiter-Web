@@ -22,10 +22,46 @@ const convService = require('../service/conversationService')
 const messageService = require('../service/messageService')
 const io = require('socket.io').listen(server);
 const tools = require('../utils/tools')
+const textUtils = require('../utils/textUtils')
 //在线用户
 const onlineUser = {}
+//记录用户id和socketId转换表
 const id2SocketId = {}
+
+//记录用户和其正在进行对话
+const user2Conversation = {}
+//记录用户正在被期待的对话
+const userExpectedConversation= {}
+
 let onlineCount = 0
+
+
+function removeUserFromConversation(userId,convId){
+    if(user2Conversation[userId]===convId){
+        delete user2Conversation[userId]
+    }
+
+    //从朋友的被期待列表中移除自己
+    let friendId = getTheOtherId(userId,convId)
+    if(userExpectedConversation.hasOwnProperty(friendId)){
+        let users = userExpectedConversation[friendId]
+        userExpectedConversation[friendId].splice(users.indexOf(userId),1)
+    }
+}
+
+function getTheOtherId(userId,conversationId){
+    let arr = conversationId.split('-')
+    if(arr.length===2){
+        let str1 = arr[0]
+        let str2 = arr[1]
+        if(textUtils.equals(userId,str1)){
+            return str2
+        }else{
+            return str1
+        }
+    }
+    return ''
+}
 io.on('connection', socket => {
     console.log('新用户登录');
     //监听新用户加入
@@ -33,18 +69,27 @@ io.on('connection', socket => {
         let obj = JSON.parse(objStr)
         console.log("login", obj)
         socket.name = obj.id
-        //检查用户在线列表
         if (!onlineUser.hasOwnProperty(obj.id)) {
             onlineUser[obj.id] = obj
             id2SocketId[obj.id] = socket.id
             //在线人数+1
             onlineCount++
+            console.log(obj.nickname + "上线了");
+            console.log("当前在线列表",id2SocketId);
+            //获取未读消息列表
+            messageService.getUnreadMessage(obj.id).then((value) => {
+                socket.emit('unread_message', JSON.stringify(value))
+            })
+
+            if(userExpectedConversation.hasOwnProperty(obj.id)){
+                //通知正在和他进行对话的好友，他上线了
+                userExpectedConversation[obj.id].forEach(item=>{
+                    console.log('通知上线',obj.id+"->"+id2SocketId[item])
+                    io.to(id2SocketId[item]).emit('query_online_result',obj.id,true)
+                })
+            }
+
         }
-        console.log(obj.nickname + "上线了");
-        //获取未读消息列表
-        messageService.getUnreadMessage(obj.id).then((value)=>{
-            socket.emit('unread_message',JSON.stringify(value))
-        })
 
     })
     //监听用户退出
@@ -52,6 +97,20 @@ io.on('connection', socket => {
         //将退出用户在在线列表删除
         let key = socket.name
         console.log("disconnect", key)
+        if(user2Conversation.hasOwnProperty(key)){
+            removeUserFromConversation(key,user2Conversation[key])
+            console.log("用户断连，退出对话窗口",userExpectedConversation)
+        }
+
+        console.log("用户"+key+"下线",userExpectedConversation)
+        if(userExpectedConversation.hasOwnProperty(key)){
+            //通知正在和他进行对话的好友，他下了
+            userExpectedConversation[key].forEach(item=>{
+                console.log('通知下线',key+"->"+id2SocketId[item])
+                io.to(id2SocketId[item]).emit('query_online_result',key,false)
+            })
+        }
+
         if (onlineUser.hasOwnProperty(key)) {
             //退出用户信息
             let obj = onlineUser[key];
@@ -60,19 +119,43 @@ io.on('connection', socket => {
             delete id2SocketId[key]
             //在线人数-1
             onlineCount--;
-            console.log(obj.nickname + "退出了聊天室");
+            console.log(obj.nickname + "退出了");
         }
+
+
+    })
+
+    //某用户进入某对话
+    socket.on('into_conversation', function (userId, friendId,conversationId) {
+        if(user2Conversation.hasOwnProperty(userId)){
+            //断开用户和原有对话的联系
+            removeUserFromConversation(userId,user2Conversation[userId])
+            console.log("断开用户和原有对话的联系")
+        }
+        user2Conversation[userId] = conversationId
+        //将自己加入到朋友的被期待表中
+        if(!userExpectedConversation.hasOwnProperty(friendId)){
+            userExpectedConversation[friendId] = []
+        }
+        userExpectedConversation[friendId].push(userId)
+        console.log("用户进入对话窗口",userExpectedConversation)
+    })
+
+    //某用户退出某对话
+    socket.on('left_conversation', function (userId, conversationId) {
+        removeUserFromConversation(userId,conversationId)
+        console.log("用户退出对话窗口",userExpectedConversation)
     })
 
     //标记某对话下的消息全部已读
-    socket.on('mark_all_read',function (userId,convId) {
-        console.log('标记全部已读',userId+","+convId)
-        messageService.markAllRead(userId,convId).then()
+    socket.on('mark_all_read', function (userId, convId) {
+        console.log('标记全部已读', userId + "," + convId)
+        messageService.markAllRead(userId, convId).then()
     })
 
     //标记某消息已读
-    socket.on('mark_read',function (messageId) {
-        console.log('标记已读',messageId)
+    socket.on('mark_read', function (messageId) {
+        console.log('标记已读', messageId)
         messageService.markRead(messageId).then()
     })
 
@@ -86,11 +169,11 @@ io.on('connection', socket => {
         //更新对话信息
         convService.updateConversation(obj.fromId, obj.toId, obj).then()
         //保存消息，保存成功才能传递给对方
-        messageService.saveMessage(obj).then((value)=>{
+        messageService.saveMessage(obj).then((value) => {
             io.to(id2SocketId[obj.toId]).emit('message', value.data);
             console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
-        },(err)=>{
-            console.log("消息发送失败",err)
+        }, (err) => {
+            console.log("消息发送失败", err)
         })
         //补充成完整的message形式，发送给接收者
         // obj.conversationId = tools.getP2PIdOrdered(obj.fromId, obj.toId)
@@ -98,6 +181,11 @@ io.on('connection', socket => {
         // io.to(id2SocketId[obj.toId]).emit('message', obj);
         // console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
     });
+
+    //获取某好友是否在线
+    socket.on('query_online',function (friendId){
+        socket.emit('query_online_result',friendId,onlineUser.hasOwnProperty(friendId))
+    })
 })
 
 

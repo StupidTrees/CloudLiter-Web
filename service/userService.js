@@ -45,7 +45,7 @@ exports.userSignUp = async function (username, password, gender, nickname) {
         }
     }
     //若数据库插入成功，value将会是创建的新用户
-    console.log('value', value)
+    //console.log('value', value)
     let token = tokenUtils.signIdToken(value.id, username) //为之签发token
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
         token: token,
@@ -155,7 +155,7 @@ exports.searchUser = async function (text) {
             gender: item.gender
         })
     })
-    console.log("result", res)
+    //console.log("result", res)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
@@ -171,7 +171,7 @@ exports.uploadAvatar = async function (userId, files) {
     let newPath = path.dirname(files.upload.path) + '/avatar_' + userId + path.extname(files.upload.name)
     // 将文件重命名为avatar_用户id的形式
     await fs.renameSync(files.upload.path, newPath)
-    console.log("update_avatar", userId)
+    //console.log("update_avatar", userId)
     // 通知用户数据库，变更该用户的头像文件名
     let value
     try {
@@ -277,7 +277,7 @@ exports.queryAvatar = async function (userId) {
     if (path === null) {
         return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_username))
     }
-    console.log("path", path)
+    //console.log("path", path)
     //查询到头像文件名后，调用直接读取函数
     return this.getAvatar(path)
 }
@@ -311,7 +311,7 @@ exports.getAvatar = async function (fileName) {
 
     } catch
         (e) {
-        console.log("error", e)
+        //console.log("error", e)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
 }

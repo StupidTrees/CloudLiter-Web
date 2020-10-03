@@ -46,7 +46,7 @@ exports.getConversations = async function (userId){
             updatedAt:rawData.updatedAt
         }
         res.push(data)
-        console.log('item',data)
+       // console.log('item',data)
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
 }

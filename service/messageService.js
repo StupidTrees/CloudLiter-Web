@@ -18,7 +18,7 @@ exports.saveMessage = async function(message){
     if(value===null){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
-    console.log("value",value.get())
+    //console.log("value",value.get())
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,value.get()))
 }
 

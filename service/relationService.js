@@ -38,7 +38,7 @@ exports.getFriends = async function (id) {
             }
         })
     })
-    console.log("result", res)
+    //console.log("result", res)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,res));
 }
 
