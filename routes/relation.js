@@ -51,5 +51,21 @@ router.get('/is_friend',function (req, res) {
         res.send(err)
     })
 })
+/**
+ * 添加好友备注
+ */
+router.post('/friend_remark',function (req,res){
+    let queryId = req.body.authId
+    if(req.body.id1!==undefined){
+        queryId = req.body.id1
+    }
+    service.friendRemark(queryId,req.body.id2,req.body.remark).then((value)=>{
+        res.send(value)
+    },(err)=>{
+        res.send(err)
+    })
+})
+
+
 
 module.exports = router;

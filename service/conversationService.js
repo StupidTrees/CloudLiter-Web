@@ -11,7 +11,8 @@ const codes = require('../utils/codes').codes
 exports.getConversations = async function (userId){
     let value = null
     try {
-        value = await repository.getConversationsOfOneUser(userId)
+        value = await repository.getConver
+        sationsOfOneUser(userId)
     } catch (e) {
         console.log('err',e)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))

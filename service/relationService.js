@@ -17,7 +17,7 @@ exports.getFriends = async function (id) {
     try{
         value = await repository.getFriendsWithId(id)
     }catch (e){
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
     }
     if(value==null){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
@@ -80,7 +80,7 @@ exports.makeFriends = async function(user1,user2){
 
 
 /**
- * 判断两用户是否是好友
+ *
  * @param user1
  * @param user2
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
@@ -91,4 +91,22 @@ exports.isFriend = async function(user1,user2){
     }).catch((err)=>{
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     })
+}
+
+/**
+ *
+ * @param id1
+ * @param id2
+ * @param remark
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.friendRemark = async function(id1,id2,remark){
+    try{
+        await repository.friendRemark(id1,id2,remark)
+    }catch (e){
+        console.log(e)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success
+    ))
 }
