@@ -79,3 +79,17 @@ exports.isFriend = function (id1, id2) {
     })
 
 }
+/**
+ * 添加朋友备注
+ * @param id1
+ * @param id2
+ * @param remark
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.friendRemark = function (id1, id2, remark) {
+    return UserRelation.update({
+        remark: remark
+    }, {
+        where: {[Op.and]: [{userId: id1}, {friend: id2}]}
+    })
+}

@@ -76,6 +76,10 @@ exports.UserRelation = con.sequelize.define(
             // references:'user', //关联表名
             // referencesKey:'id' //关联表的列名
         },
+        remark:{
+            type: DataTypes.STRING
+            //备注
+        },
         group: {
             type: DataTypes.BIGINT
         },
