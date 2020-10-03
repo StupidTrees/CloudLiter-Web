@@ -25,3 +25,13 @@ exports.isUsernameLegal = function (username) {
 exports.isPasswordLegal = function (password) {
     return !this.isEmpty(password) && password.length>=8
 }
+
+/**
+ * 判断两元素是否在字符串意义上相等
+ * @param t1
+ * @param t2
+ * @returns {boolean}
+ */
+exports.equals = function (t1,t2){
+    return t1.toString()===t2.toString()
+}

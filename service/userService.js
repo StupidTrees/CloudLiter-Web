@@ -51,7 +51,7 @@ exports.userSignUp = async function (username, password, gender, nickname) {
         token: token,
         info: { //将用户信息也顺便返回
             username: username,
-            id: value.id,
+            id: value.id.toString(),
             nickname: nickname,
             gender: gender
         }
@@ -84,7 +84,7 @@ exports.userLogin = async function (username, password) {
         return Promise.resolve(jsonUtils.getResponseBody(codes.success,
             {
                 info: {
-                    id: user.id,
+                    id: user.id.toString(),
                     username: user.username,
                     nickname: user.nickname,
                     gender: user.gender,

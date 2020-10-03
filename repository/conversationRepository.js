@@ -1,5 +1,6 @@
 const models = require('../database/models')
 const Op = models.Op
+const tools = require('../utils/tools')
 /**
  * 仓库层：对话表数据读写
  */
@@ -63,6 +64,24 @@ exports.getConversationsOfOneUser = function (userId) {
             as:'user2',
             model:User
         }]
+    })
+}
+
+/**
+ * 更新会话的最新消息
+ * @param fromId
+ * @param toId
+ * @param message
+ */
+exports.updateConversation = function (fromId,toId,message){
+    return Conversation.update({
+        lastMessage:message.content
+    },{
+        where:{
+            key:{
+                [Op.eq]:tools.getP2PIdOrdered(fromId,toId)
+            }
+        }
     })
 }
 

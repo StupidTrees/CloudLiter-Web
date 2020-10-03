@@ -2,6 +2,7 @@ const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const convRepository = require('../repository/conversationRepository')
+const textUtils = require('../utils/textUtils')
 
 /**
  * 服务层：关系操作
@@ -50,7 +51,7 @@ exports.getFriends = async function (id) {
  */
 exports.makeFriends = async function(user1,user2){
     //不能和自己成为好友
-    if(user1==user2){
+    if(textUtils.equals(user1,user2)){
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
     }
     //在关系表里插入数据

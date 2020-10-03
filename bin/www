@@ -3,23 +3,103 @@ const config = require('../config')
 /**
  * 程序的入口在这里
  */
-
-var app = require('../app');
-var debug = require('debug')('hichat:server');
-var http = require('http');
+const app = require('../app');
+const debug = require('debug')('hichat:server');
+const http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
-
-var port = normalizePort(process.env.PORT || config.port);
+const port = normalizePort(process.env.PORT || config.port);
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
+const server = http.createServer(app);
 
-var server = http.createServer(app);
+const convService = require('../service/conversationService')
+const messageService = require('../service/messageService')
+const io = require('socket.io').listen(server);
+const tools = require('../utils/tools')
+//在线用户
+const onlineUser = {}
+const id2SocketId = {}
+let onlineCount = 0
+io.on('connection', socket => {
+    console.log('新用户登录');
+    //监听新用户加入
+    socket.on('login', function (objStr) {
+        let obj = JSON.parse(objStr)
+        console.log("login", obj)
+        socket.name = obj.id
+        //检查用户在线列表
+        if (!onlineUser.hasOwnProperty(obj.id)) {
+            onlineUser[obj.id] = obj
+            id2SocketId[obj.id] = socket.id
+            //在线人数+1
+            onlineCount++
+        }
+        console.log(obj.nickname + "上线了");
+        //获取未读消息列表
+        messageService.getUnreadMessage(obj.id).then((value)=>{
+            socket.emit('unread_message',JSON.stringify(value))
+        })
+
+    })
+    //监听用户退出
+    socket.on('disconnect', function () {
+        //将退出用户在在线列表删除
+        let key = socket.name
+        console.log("disconnect", key)
+        if (onlineUser.hasOwnProperty(key)) {
+            //退出用户信息
+            let obj = onlineUser[key];
+            //删除
+            delete onlineUser[key];
+            delete id2SocketId[key]
+            //在线人数-1
+            onlineCount--;
+            console.log(obj.nickname + "退出了聊天室");
+        }
+    })
+
+    //标记某对话下的消息全部已读
+    socket.on('mark_all_read',function (userId,convId) {
+        console.log('标记全部已读',userId+","+convId)
+        messageService.markAllRead(userId,convId).then()
+    })
+
+    //标记某消息已读
+    socket.on('mark_read',function (messageId) {
+        console.log('标记已读',messageId)
+        messageService.markRead(messageId).then()
+    })
+
+    //监听用户发布聊天内容
+    socket.on('message', function (objStr) {
+        let obj = JSON.parse(objStr)
+        console.log('发送消息', obj)
+        // console.log('io.connected', io.sockets.connected)
+        // console.log('id2SocketId', id2SocketId)
+        console.log('对方的socketId为', id2SocketId[obj.toId])
+        //更新对话信息
+        convService.updateConversation(obj.fromId, obj.toId, obj).then()
+        //保存消息，保存成功才能传递给对方
+        messageService.saveMessage(obj).then((value)=>{
+            io.to(id2SocketId[obj.toId]).emit('message', value.data);
+            console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
+        },(err)=>{
+            console.log("消息发送失败",err)
+        })
+        //补充成完整的message形式，发送给接收者
+        // obj.conversationId = tools.getP2PIdOrdered(obj.fromId, obj.toId)
+        // obj.relationId = tools.getP2PId(obj.fromId, obj.toId)
+        // io.to(id2SocketId[obj.toId]).emit('message', obj);
+        // console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
+    });
+})
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -29,24 +109,25 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+    var port = parseInt(val, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-  return false;
+    return false;
 }
 
 /**
@@ -54,27 +135,27 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
@@ -82,9 +163,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
 }
