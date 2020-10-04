@@ -6,52 +6,88 @@ const textUtils = require('../utils/textUtils')
 /**
  * 获取某一用户的所有对话
  * @param userId
- * @returns {Promise<never>}
  */
-exports.getConversations = async function (userId){
+exports.getConversations = async function (userId) {
     let value = null
     try {
-        value = await repository.getConver
-        sationsOfOneUser(userId)
+        value = await repository.getConversationsOfOneUser(userId)
     } catch (e) {
-        console.log('err',e)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+        console.log('err', e)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
 
-    if(value==null){
+    if (value == null) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
 
     let res = []
-    value.forEach(function (item){
+    value.forEach(function (item) {
         let relData
         let friendData
-        if(textUtils.equals(item.get().user1Id,userId)){
+        if (textUtils.equals(item.get().user1Id, userId)) {
             relData = item.get()['relation1'].get()
             friendData = item.get()['user2'].get()
-        }else{
+        } else {
             relData = item.get()['relation2'].get()
             friendData = item.get()['user1'].get()
         }
         let rawData = item.get()
         let data = {
-            id:rawData.key,
+            id: rawData.key,
             historyId: rawData.historyId,
             lastMessage: rawData.lastMessage,
-            friendId:relData.friend,
-            friendAvatar:friendData.avatar,
-            friendNickname:friendData.nickname,
-            group:relData.group,
-            relationId:relData.key,
-            createdAt:rawData.createdAt,
-            updatedAt:rawData.updatedAt
+            friendId: relData.friend,
+            friendAvatar: friendData.avatar,
+            friendNickname: friendData.nickname,
+            group: relData.group,
+            relationId: relData.key,
+            createdAt: rawData.createdAt,
+            updatedAt: rawData.updatedAt
         }
         res.push(data)
-       // console.log('item',data)
+        // console.log('item',data)
     })
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
+/**
+ * 根据id获取某一对话
+ * @param userId
+ * @param friendId
+ */
+exports.getConversationById = async function (userId, friendId) {
+    let value = null
+    try {
+        value = await repository.getConversationById(userId, friendId)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    if (value == null) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+    }
+    if (value.length === 0) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
+    }
+    let rawData = value[0].get()
+    //console.log("rawData",rawData)
+    let relationData = rawData.hasOwnProperty('relation1') ? rawData['relation1'] : rawData['relation2']
+    let userData = rawData.hasOwnProperty('user1') ? rawData['user1'] : rawData['user2']
+    let data = {
+        id: rawData.key,
+        historyId: rawData.historyId,
+        lastMessage: rawData.lastMessage,
+        groupId: relationData.groupId,
+        relationId: relationData.key,
+        friendId: relationData.friend,
+        friendAvatar: userData.avatar,
+        friendNickname : userData.nickname,
+        friendRemark : relationData.remark,
+        createdAt: rawData.createdAt,
+        updatedAt: rawData.updatedAt
+    }
+    //console.log('data', data)
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+}
 
 /**
  * 更新会话信息
@@ -59,11 +95,11 @@ exports.getConversations = async function (userId){
  * @param toId
  * @param message
  */
-exports.updateConversation = async function(fromId,toId,message){
+exports.updateConversation = async function (fromId, toId, message) {
     try {
         await repository.updateConversation(fromId, toId, message)
     } catch (e) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }

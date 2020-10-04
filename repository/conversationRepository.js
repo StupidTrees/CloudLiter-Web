@@ -46,7 +46,7 @@ exports.getConversationsOfOneUser = function (userId) {
                     }
                 }
             ]
-        }, include: [{ //把relation1Id字段的用户对象也查出来
+        }, include: [{ //把relation1Id字段的关系对象也查出来
             //attributes:[],
             foreignKey:'relation1Id',
             as: 'relation1',
@@ -67,6 +67,41 @@ exports.getConversationsOfOneUser = function (userId) {
     })
 }
 
+/**
+ * 根据id获取某一对话
+ * @param userId
+ * @param friendId
+ */
+exports.getConversationById = function (userId,friendId){
+    let id = tools.getP2PIdOrdered(userId,friendId)
+    let relationForeignKey,relationAs,userForeignKey,userAs
+    if(parseInt(userId)<parseInt(friendId)){
+        relationForeignKey = 'relation1Id'
+        relationAs = 'relation1'
+        userForeignKey = 'user2Id'
+        userAs = 'user2'
+    }else{
+        relationForeignKey = 'relation2Id'
+        relationAs = 'relation2'
+        userForeignKey = 'user1Id'
+        userAs = 'user1'
+    }
+    return Conversation.findAll({
+        where:{
+            key:id
+        },
+        include: [{ //把relation1Id字段的用户对象也查出来
+            //attributes:[],
+            foreignKey:relationForeignKey,
+            as: relationAs,
+            model: Relation
+        },{
+            foreignKey:userForeignKey,
+            as:userAs,
+            model:User
+        }]
+    })
+}
 /**
  * 更新会话的最新消息
  * @param fromId

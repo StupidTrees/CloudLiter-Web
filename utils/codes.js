@@ -71,7 +71,10 @@ exports.codes = {
         code:3012,
         message:'会话已经存在'
     },
-
+    conversation_not_exist:{
+        code:3013,
+        message:'会话不存在'
+    },
     other_error:{
         code:5000,
         message:'其他错误'
