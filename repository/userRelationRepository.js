@@ -1,10 +1,13 @@
 const models = require('../database/models')
+const jsonUtils = require('../utils/jsonUtils')
+const codes = require('../utils/codes').codes
 const Op = models.Op
 /**
  * 仓库层：用户关系数据读写
  */
 
 const UserRelation = models.UserRelation
+const UserConversation = models.Conversation
 const User = models.User
 
 /**
@@ -91,5 +94,19 @@ exports.friendRemark = function (id1, id2, remark) {
         remark: remark
     }, {
         where: {[Op.and]: [{userId: id1}, {friend: id2}]}
+    })
+}
+
+/**
+ *
+ * @param id1
+ * @param id2
+ * @returns {Promise<number>}
+ */
+exports.deleteFriend = function (id1,id2){
+    return UserConversation.destroy({where: {[Op.or]: [{key: id1 + '-' + id2}, {key: id2 + '-' + id1}]}}).then((value)=>{
+        return UserRelation.destroy({where:{[Op.and]:[{userId: id1},{friend:id2}]}})
+    }).catch((err)=>{
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     })
 }

@@ -110,3 +110,23 @@ exports.friendRemark = async function(id1,id2,remark){
     return Promise.resolve(jsonUtils.getResponseBody(codes.success
     ))
 }
+
+/**
+ *
+ * @param id1
+ * @param id2
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.deleteFriend= async  function(id1,id2){
+    let value
+    try{
+        value = await repository.deleteFriend(id1,id2)
+    }catch (e){
+        console.log(e)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+    }
+    if(value===0){
+        return Promise.reject(jsonUtils.getResponseBody(codes.relation_not_exists))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}

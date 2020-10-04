@@ -71,6 +71,10 @@ exports.codes = {
         code:3012,
         message:'会话已经存在'
     },
+    relation_not_exists:{
+        code:3013,
+        message:'关系不存在'
+    },
 
     other_error:{
         code:5000,
