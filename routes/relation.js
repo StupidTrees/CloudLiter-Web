@@ -81,4 +81,18 @@ router.get('/delete_friend',function (req,res){
     })
 })
 
+/**
+ * 查询关系对象
+ */
+router.get('/query',function(req,res){
+    let queryId = req.query.authId
+    if(req.query.userId!==undefined){
+        queryId = req.query.userId
+    }
+    service.queryRelation(queryId,req.query.friendId).then((value )=>{
+        res.send(value)
+    },(err)=>{
+        res.send(err)
+    })
+})
 module.exports = router;

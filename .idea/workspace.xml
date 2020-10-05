@@ -30,10 +30,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="可查询在线状态">
+      <change afterPath="$PROJECT_DIR$/开发任务书/阶段2/刘飞龙.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/开发任务书/阶段2/董云升.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/conversationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/conversationRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/conversation.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/conversation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/bin/www" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/userRelationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRelationRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/relation.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/relation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/relationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/codes.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/codes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/接口表.md" beforeDir="false" afterPath="$PROJECT_DIR$/接口表.md" afterDir="false" />
     </list>
@@ -76,7 +80,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="12.18.4" />
     <property name="javascript.nodejs.core.library.typings.version" value="12.12.62" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/routes" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/开发任务书/阶段2" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
@@ -85,16 +89,18 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\projects\Hichat\repository" />
-      <recent name="E:\projects\Hichat\utils" />
-      <recent name="E:\projects\Hichat\mysql" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\projects\Hichat\开发任务书\阶段2" />
       <recent name="E:\projects\Hichat\routes" />
       <recent name="E:\projects\Hichat\service" />
       <recent name="E:\projects\Hichat\database" />
       <recent name="E:\projects\Hichat" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\projects\Hichat\开发任务书\阶段2" />
+      <recent name="E:\projects\Hichat\repository" />
+      <recent name="E:\projects\Hichat\utils" />
+      <recent name="E:\projects\Hichat\mysql" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -234,10 +240,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="216" y="92" key="DBNavigator.ProjectSettingsDialog/0.0.1368.872@0.0.1368.872" timestamp="1601449136960" />
-    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog" timestamp="1601740910096">
+    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog" timestamp="1601819540816">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog/0.0.1368.872@0.0.1368.872" timestamp="1601740910096" />
+    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog/0.0.1368.872@0.0.1368.872" timestamp="1601819540816" />
     <state x="93" y="93" width="1181" height="685" key="DirDiffDialog" timestamp="1601008840131">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -318,18 +324,26 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="1326" height="281" key="GridCell.Tab.3.right/0.0.1368.872@0.0.1368.872" timestamp="1601795684955" />
-    <state x="320" y="197" key="MultipleFileMergeDialog" timestamp="1601740744632">
+    <state x="131" y="71" key="MergeDialog" timestamp="1601819440902">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1601740744632" />
+    <state x="131" y="71" key="MergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1601819440902" />
+    <state x="320" y="197" key="MultipleFileMergeDialog" timestamp="1601819442138">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1601819442138" />
     <state x="127" y="43" key="SettingsEditor" timestamp="1601533814424">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601533814424" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601740901915">
+    <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601819373910">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601740901915" />
+    <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key/0.0.1368.872@0.0.1368.872" timestamp="1601819373910" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601824127420">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601824127420" />
     <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601444352854">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -342,9 +356,9 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="346" y="203" key="run.anything.popup/0.0.1368.872@0.0.1368.872" timestamp="1601480740459" />
-    <state x="353" y="190" width="672" height="678" key="search.everywhere.popup" timestamp="1601358935987">
+    <state x="355" y="192" width="672" height="678" key="search.everywhere.popup" timestamp="1601831337761">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="353" y="190" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1601358935987" />
+    <state x="355" y="192" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1601831337761" />
   </component>
 </project>

@@ -76,7 +76,7 @@ exports.codes = {
         message:'会话不存在'
     },
     relation_not_exists:{
-        code:3013,
+        code:3014,
         message:'关系不存在'
     },
 

@@ -1,6 +1,7 @@
 const models = require('../database/models')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
+const tools = require('../utils/tools')
 const Op = models.Op
 /**
  * 仓库层：用户关系数据读写
@@ -32,6 +33,24 @@ exports.getFriendsWithId = function (id) {
     })
 }
 
+/**
+ * 查询我与某好友的关系对象
+ * @param myId 我的id
+ * @param friendId 朋友的id
+ */
+exports.queryRelationWithId = function (myId,friendId) {
+    let id = tools.getP2PId(myId,friendId)
+    return UserRelation.findAll({
+        where: {
+            key: id
+        }
+        , include: [{ //把friend字段的用户对象也查出来
+            //attributes:[],
+            as: 'user',
+            model: User
+        }]
+    })
+}
 
 /**
  *建立好友关系

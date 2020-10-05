@@ -88,7 +88,8 @@ exports.userLogin = async function (username, password) {
                     username: user.username,
                     nickname: user.nickname,
                     gender: user.gender,
-                    avatar: user.avatar
+                    avatar: user.avatar,
+                    signature:user.signature
                 },
                 token: token
             }))
