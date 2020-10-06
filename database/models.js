@@ -175,9 +175,10 @@ this.Conversation.sync({force: false}).then(r => r)
 
 exports.RelationEvent = con.sequelize.define(
     'relationEvent',{
-        key:{
-            type:DataTypes.STRING,
-            primaryKey: true
+        id:{
+            type:DataTypes.BIGINT,
+            autoIncrement: true,
+            primaryKey:true
             //userId-friendId
         },
         userId: {
@@ -189,6 +190,10 @@ exports.RelationEvent = con.sequelize.define(
         state:{
             type:DataTypes.ENUM('REQUESTING','ACCEPTED','REJECTED','DELETE'),
             allowNull:false
+        },
+        read:{
+            type:DataTypes.BOOLEAN,
+            allowNull:false,
         },
         createdAt:{
             type: DataTypes.DATE
