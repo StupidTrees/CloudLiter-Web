@@ -102,6 +102,11 @@ exports.resFriendApply = async function resFriendApply(eventId,action){
     return  Promise.reject(jsonUtils.getResponseBody(codes.format_error_empty))
 }
 
+/**
+ * 获取好友请求信息
+ * @param userId
+ * @returns {Promise<never>}
+ */
 exports.getUnread = async function(userId){
     let message
     try{
@@ -120,5 +125,22 @@ exports.getUnread = async function(userId){
             updatedAt:item.updatedAt
         })
     })
-    return Promise.reject(jsonUtils.getResponseBody(codes.success,result))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
+}
+
+/**
+ * 获取好友请求数
+ * @param userId
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.countUnread = async function (userId){
+    let message
+    try{
+        message = await eventRepository.getUnread(userId)
+    }catch (err){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    let count = message.length
+    console.log(count)
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
 }
