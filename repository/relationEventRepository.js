@@ -52,6 +52,8 @@ exports.applyFriend = async function (userId,friendId){
                     return 'ACCEPT'
             }//目标已经向用户申请好友
             return RelationEvent.update({
+                userId:userId,
+                friendId:friendId,
                 state: 'REQUESTING'
             }, {
                 where: {
@@ -124,5 +126,16 @@ exports.getUnread = function (userId){
 exports.getMine = function (userId){
     return RelationEvent.findAll({where:
             {[Op.or]:[{friendId: userId},{userId:userId}]}
+    })
+}
+
+/**
+ * 获取自己被拒绝的申请
+ * @param userId
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
+ */
+exports.getRejected = function (userId){
+    return RelationEvent.findAll({where:
+            {[Op.and]:[{userId:userId},{state:'REJECTED'}]}
     })
 }
