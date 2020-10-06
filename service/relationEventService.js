@@ -141,7 +141,6 @@ exports.countUnread = async function (userId){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     }
     let count = message.length
-    console.log(count)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
 }
 
@@ -169,4 +168,20 @@ exports.getMine = async function(userId){
         })
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
+}
+
+/**
+ * 获取自己被拒绝的申请
+ * @param userId
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.countRejected = async function(userId){
+    let message
+    try{
+        message = await eventRepository.getRejected(userId)
+    }catch (err){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    let count = message.length
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
 }

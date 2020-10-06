@@ -74,4 +74,19 @@ router.get('/event/query_mine',function (req,res){
     })
 })
 
+/**
+ * 计数被拒绝的请求数
+ */
+router.get('/event/query_rejected',function (req,res){
+    let queryId = req.query.authId
+    if(req.query.userId !== undefined){
+        queryId = req.query.userId
+    }
+    service.countRejected(queryId).then(value => {
+        res.send(value)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
 module.exports = router
