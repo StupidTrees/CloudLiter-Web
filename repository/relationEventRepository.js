@@ -11,6 +11,12 @@ const UserConversation = models.Conversation
 const RelationEvent = models.RelationEvent
 const User = models.User
 
+/**
+ * 好友申请
+ * @param userId
+ * @param friendId
+ * @returns {Promise<string|[number, Model<TModelAttributes, TCreationAttributes>[]]|Model<TModelAttributes, TCreationAttributes>|*>}
+ */
 exports.applyFriend = async function (userId,friendId){
     let count1
     try {
@@ -73,6 +79,11 @@ exports.applyFriend = async function (userId,friendId){
     })
 }
 
+/**
+ * 接受好友申请
+ * @param eventId
+ * @returns {Promise<{user1: ({type: *}|{}), user2: {type: *}}>}
+ */
 exports.acceptFriendApply = async function (eventId){
     let result
     result = await RelationEvent.findByPk(eventId)
@@ -82,9 +93,18 @@ exports.acceptFriendApply = async function (eventId){
     return {user1:result.userId,user2:result.friendId}
 }
 
+/**
+ * 拒绝好友申请
+ * @param eventId
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
 exports.rejectFriendApply = function (eventId){
     return RelationEvent.update(
         {state:'REJECTED'},
         {where:{key:eventId}}
     )
+}
+
+exports.getUnread = function (userId){
+    return RelationEvent.findAll({where:{friendId:userId}})
 }

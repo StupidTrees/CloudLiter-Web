@@ -8,7 +8,7 @@ const service = require('../service/relationEventService')
  */
 router.post('/event/request',function (req,res){
     let queryId = req.body.authId
-    if(req.body.id !== undefined){
+    if(req.body.userId !== undefined){
         queryId = req.body.userId
     }
     service.applyFriend(queryId,req.body.friendId).then((value)=>{
@@ -29,5 +29,19 @@ router.post('/event/response',function (req,res){
     })
 })
 
+/**
+ * 查询好友请求
+ */
+router.get('/event/query_unread',function (req,res){
+    let queryId = req.query.authId
+    if(req.query.userId !== undefined){
+        queryId = req.query.userId
+    }
+    service.getUnread(queryId).then(value => {
+        res.send(value)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
 
 module.exports = router
