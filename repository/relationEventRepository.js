@@ -106,12 +106,23 @@ exports.rejectFriendApply = function (eventId){
 }
 
 /**
- * 获取好友申请信息
+ * 获取好友申请信息（对方正在申请）
  * @param userId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
 exports.getUnread = function (userId){
     return RelationEvent.findAll({where:
             {[Op.and]:[{friendId:userId},{state:'REQUESTING'}]}
+    })
+}
+
+/**
+ * 获取好友申请信息（所有和自己相关）
+ * @param userId
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
+ */
+exports.getMine = function (userId){
+    return RelationEvent.findAll({where:
+            {[Op.or]:[{friendId: userId},{userId:userId}]}
     })
 }

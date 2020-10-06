@@ -144,3 +144,29 @@ exports.countUnread = async function (userId){
     console.log(count)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
 }
+
+/**
+ * 获取所有和自己相关的好友申请
+ * @param userId
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.getMine = async function(userId){
+    let message
+    try{
+        message = await eventRepository.getMine(userId)
+    }catch (err){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    let result = []
+    message.forEach(function (item){
+        result.push({
+            key:item.key,
+            userId:item.userId,
+            friendId:item.friendId,
+            state:item.state,
+            createdAt:item.createdAt,
+            updatedAt:item.updatedAt
+        })
+    })
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
+}
