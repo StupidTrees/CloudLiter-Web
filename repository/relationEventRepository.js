@@ -105,6 +105,13 @@ exports.rejectFriendApply = function (eventId){
     )
 }
 
+/**
+ * 获取好友申请信息
+ * @param userId
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
+ */
 exports.getUnread = function (userId){
-    return RelationEvent.findAll({where:{friendId:userId}})
+    return RelationEvent.findAll({where:
+            {[Op.and]:[{friendId:userId},{state:'REQUESTING'}]}
+    })
 }

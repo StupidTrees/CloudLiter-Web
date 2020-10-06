@@ -44,4 +44,19 @@ router.get('/event/query_unread',function (req,res){
     })
 })
 
+/**
+ * 请求计数
+ */
+router.get('/event/count_unread',function (req,res){
+    let queryId = req.query.authId
+    if(req.query.userId !== undefined){
+        queryId = req.query.userId
+    }
+    service.countUnread(queryId).then(value => {
+        res.send(value)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
 module.exports = router
