@@ -20,9 +20,9 @@ exports.applyFriend = async  function(userId,friendId){
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
     }
     //在relationEvent中增加申请事件
-    let judge
+    let judge//judge用于判断 1：已经申请 2：已经是好友
     try{
-        judge = await  eventRepository.applyFriend(userId,friendId)//judge用于判断
+        judge = await  eventRepository.applyFriend(userId,friendId)
     }catch (err){
         console.log('好友申请失败',err)
         if(err.original.code==='ER_NO_REFERENCED_ROW_2'){
