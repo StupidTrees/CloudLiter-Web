@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const usersRouter = require('./routes/user');
 const relationRouter = require('./routes/relation');
+const relationEventRouter = require('./routes/relationEvent')
 const conversationRouter = require('./routes/conversation');
 const tokenVerifier = require('./middleware/tokenVerify')
 
@@ -29,6 +30,7 @@ app.use(tokenVerifier)//.use(tokenUtils.tokenVerifierMiddleware)
 //绑定路由
 app.use('/user', usersRouter);
 app.use('/relation', relationRouter);
+app.use('/relation', relationEventRouter)
 app.use('/conversation', conversationRouter);
 
 

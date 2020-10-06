@@ -25,3 +25,7 @@ exports.isUsernameLegal = function (username) {
 exports.isPasswordLegal = function (password) {
     return !this.isEmpty(password) && password.length>=8
 }
+
+exports.equals = function (a1,a2){
+    return a1.toString()===a2.toString()
+}
