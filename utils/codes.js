@@ -47,6 +47,10 @@ exports.codes = {
         code:3005,
         message:'用户名已存在'
     },
+    already_apply:{
+        code:3006,
+        message:'已发送申请'
+    },
     already_friends:{
         code:3007,
         message:'已经是好友啦！'
@@ -78,6 +82,10 @@ exports.codes = {
     relation_not_exists:{
         code:3014,
         message:'关系不存在'
+    },
+    apply_not_exists:{
+        code:3014,
+        message:'没有这种好友申请'
     },
 
     other_error:{
