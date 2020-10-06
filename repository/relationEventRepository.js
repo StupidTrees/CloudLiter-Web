@@ -18,66 +18,19 @@ const User = models.User
  * @returns {Promise<string|[number, Model<TModelAttributes, TCreationAttributes>[]]|Model<TModelAttributes, TCreationAttributes>|*>}
  */
 exports.applyFriend = async function (userId,friendId){
-    let count1
-    try {
-            count1 = await RelationEvent.count({
-            where: {
-                [Op.or]: [{[Op.and]: [{userId: userId}, {friendId: friendId}]}, {[Op.and]: [{userId: friendId}, {friendId: userId}]}]
-            }
-        })
-    }catch (err){
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    let message = await RelationEvent.findAll({where:{[Op.and]:[{userId:userId},{friendId:friendId},{state:'REQUESTING'}]}})
+    if(message.length!==0){
+        return 1
     }
-
-        //曾经有关系
-    if (count1 > 0) {
-        let eventMessage
-        try {
-            eventMessage = await RelationEvent.findOne({
-                where: {
-                    [Op.or]:
-                        [{[Op.and]: [{userId: userId}, {friendId: friendId}]}, {[Op.and]: [{userId: friendId}, {friendId: userId}]}]
-                }
-            })
-        }catch (err){
-            return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-        }
-
-        if (eventMessage.state === 'ACCEPTED') {//已经是好友
-            return eventMessage.state
-        }
-        else {
-            let count2 = await RelationEvent.count({where: {[Op.and]: [{userId: friendId}, {friendId: userId}, {state: 'REQUESTING'}]}})
-            if (count2 > 0) {
-                    return 'ACCEPT'
-            }//目标已经向用户申请好友
-            return RelationEvent.update({
-                userId:userId,
-                friendId:friendId,
-                state: 'REQUESTING'
-            }, {
-                where: {
-                    [Op.or]:
-                        [{[Op.and]: [{userId: userId}, {friendId: friendId}]}, {[Op.and]: [{userId: friendId}, {friendId: userId}]}]
-                }
-            })
-        }
+    message = await UserRelation.findAll({where:{[Op.and]:[{userId:userId},{friend:friendId}]}})
+    if(message.length!==0){
+        return 2
     }
-    //曾经没有关系
-    /*let friend
-    try{
-        friend = await User.findByPk(friendId)
-    }catch (err){
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-    }
-    if(friend==null){
-        return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_ghost))
-    }*/
-    return RelationEvent.create({
-        key: userId + '-' + friendId,
+    return await RelationEvent.create({
         userId: userId,
         friendId: friendId,
-        state: 'REQUESTING'
+        state: 'REQUESTING',
+        read:false
     })
 }
 
@@ -86,12 +39,17 @@ exports.applyFriend = async function (userId,friendId){
  * @param eventId
  * @returns {Promise<{user1: ({type: *}|{}), user2: {type: *}}>}
  */
-exports.acceptFriendApply = async function (eventId){
+exports.acceptFriendApply = async function (id){
     let result
-    result = await RelationEvent.findByPk(eventId)
+    result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
         {state:'ACCEPTED'},
-        {where:{key:eventId}})
+        {where:{
+            [Op.or]:[
+                {[Op.and]:[{id:id},{state:'REQUESTING'}]},
+                {[Op.and]:[{userId:result.friendId},{friendId:result.userId},{state:'REQUESTING'}]}
+                ]}
+        })
     return {user1:result.userId,user2:result.friendId}
 }
 
@@ -100,21 +58,28 @@ exports.acceptFriendApply = async function (eventId){
  * @param eventId
  * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.rejectFriendApply = function (eventId){
-    return RelationEvent.update(
+exports.rejectFriendApply = async function (id){
+    let result
+    result = await RelationEvent.findByPk(id)
+    await RelationEvent.update(
         {state:'REJECTED'},
-        {where:{key:eventId}}
+        {where:{
+            [Op.or]:[
+                {[Op.and]:[{id:id},{state:'REQUESTING'}]},
+                {[Op.and]:[{userId:result.friendId},{friendId:result.userId},{state:'REQUESTING'}]}]
+        }}
     )
+    return result
 }
 
 /**
- * 获取好友申请信息（对方正在申请）
+ * 获取好友申请信息（对方正在申请且未读）
  * @param userId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
 exports.getUnread = function (userId){
     return RelationEvent.findAll({where:
-            {[Op.and]:[{friendId:userId},{state:'REQUESTING'}]}
+            {[Op.and]:[{friendId:userId},{state:'REQUESTING'},{read:false}]}
     })
 }
 
@@ -138,4 +103,61 @@ exports.getRejected = function (userId){
     return RelationEvent.findAll({where:
             {[Op.and]:[{userId:userId},{state:'REJECTED'}]}
     })
+}
+
+/**
+ * 获取自己被删的事件
+ * @param userId
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
+ */
+exports.getDeleted = function (userId){
+    return RelationEvent.findAll({where:
+            {[Op.and]:[{friendId:userId},{state:'DELETE'}]}
+    })
+}
+
+/**
+ * 删除好友与会话
+ * @param userId
+ * @param friendId
+ * @returns {Promise<number>}
+ */
+exports.delFriend = function (userId,friendId){
+    return UserConversation.destroy({where: {[Op.or]: [{key: userId + '-' + friendId}, {key: friendId + '-' + userId}]}}).then((value)=>{
+        return UserRelation.destroy({where:{
+            [Op.or]: [
+                {[Op.and]:[{userId: userId},{friend:friendId}]},
+                {[Op.and]:[{userId:friendId},{friend:userId}]}
+                ]
+        }})
+    }).catch((err)=>{
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    })
+}
+
+/**
+ * 创建删除事件
+ * @param userId
+ * @param friendId
+ * @returns {Promise<Model<TModelAttributes, TCreationAttributes>>}
+ */
+exports.deleteEvent = function (userId,friendId){
+    return RelationEvent.create({
+        userId: userId,
+        friendId: friendId,
+        state: 'DELETE',
+        read:false
+    })
+}
+
+/**
+ * 将用户的所有未读标记为已读
+ * @param userId
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.markRead = function (userId){
+    return RelationEvent.update(
+        {read:true},
+        {where:{friendId:userId}}
+    )
 }
