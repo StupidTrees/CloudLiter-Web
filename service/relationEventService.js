@@ -8,7 +8,12 @@ const equals = require('../utils/textUtils').equals
  * 服务层：关系操作
  */
 
-
+/**
+ * 好友申请
+ * @param userId
+ * @param friendId
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
 exports.applyFriend = async  function(userId,friendId){
     //不能和自己成为好友
     if(equals(userId,friendId)){
@@ -39,6 +44,12 @@ exports.applyFriend = async  function(userId,friendId){
 
 }
 
+/**
+ * 处理好友申请
+ * @param eventId
+ * @param action
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
 exports.resFriendApply = async function resFriendApply(eventId,action){
     if(action === 'ACCEPT'){
         let message
@@ -89,4 +100,25 @@ exports.resFriendApply = async function resFriendApply(eventId,action){
         return Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }
     return  Promise.reject(jsonUtils.getResponseBody(codes.format_error_empty))
+}
+
+exports.getUnread = async function(userId){
+    let message
+    try{
+        message = await eventRepository.getUnread(userId)
+    }catch (err){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    let result = []
+    message.forEach(function (item){
+        result.push({
+            key:item.key,
+            userId:item.userId,
+            friendId:item.friendId,
+            state:item.state,
+            createdAt:item.createdAt,
+            updatedAt:item.updatedAt
+        })
+    })
+    return Promise.reject(jsonUtils.getResponseBody(codes.success,result))
 }
