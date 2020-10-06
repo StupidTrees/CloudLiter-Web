@@ -79,7 +79,10 @@ exports.codes = {
         code:3014,
         message:'关系不存在'
     },
-
+    format_error_color:{
+        code:3015,
+        message:'颜色格式不正确！'
+    },
     other_error:{
         code:5000,
         message:'其他错误'

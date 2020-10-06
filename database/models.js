@@ -29,6 +29,11 @@ exports.User = con.sequelize.define(
             type: DataTypes.ENUM('MALE', 'FEMALE'),
             allowNull: false
         },
+        color: {
+            type: DataTypes.ENUM('RED', 'ORANGE','YELLOW','GREEN','CYAN','BLUE','PURPLE'),
+            allowNull: false,
+            default:'BLUE'
+        },
         nickname: {
             type: DataTypes.STRING,
             allowNull: true

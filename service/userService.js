@@ -126,7 +126,8 @@ exports.fetchBaseProfile = async function (userId) {
             nickname: user.nickname,
             gender: user.gender,
             avatar: user.avatar,
-            signature: user.signature
+            signature: user.signature,
+            color:user.color
         }))
     }
 }
@@ -153,7 +154,8 @@ exports.searchUser = async function (text) {
             nickname: item.nickname,
             avatar: item.avatar,
             id: item.id,
-            gender: item.gender
+            gender: item.gender,
+            color: item.color
         })
     })
     //console.log("result", res)
@@ -249,6 +251,31 @@ exports.changeGender = async function (userId, gender) {
     let res
     try {
         res = await repository.changeGender(userId, gender)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    //判断是否成功变更了某一行
+    if (res[0] > 0) {
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    } else {
+        return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_username))
+    }
+}
+
+
+/**
+ * 更改颜色
+ * @param userId
+ * @param color 颜色：RED/ORANGE/YELLOW/GREEN/CYAN/BLUE/PURPLE
+ */
+exports.changeColor = async function (userId, color) {
+    //输入格式检查
+    if (!(tools.inArray(color, ['RED','ORANGE','YELLOW','GREEN','CYAN','BLUE','PURPLE']))) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.format_error_color))
+    }
+    let res
+    try {
+        res = await repository.changeColor(userId, color)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }

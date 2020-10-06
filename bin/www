@@ -176,6 +176,7 @@ io.on('connection', socket => {
         //保存消息，保存成功才能传递给对方
         messageService.saveMessage(obj).then((value) => {
             io.to(id2SocketId[obj.toId]).emit('message', value.data);
+            console.log('value',value)
             console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
         }, (err) => {
             console.log("消息发送失败", err)

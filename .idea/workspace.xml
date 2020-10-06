@@ -29,14 +29,16 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="可查询在线状态">
-      <change afterPath="$PROJECT_DIR$/开发任务书/阶段2/刘飞龙.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/开发任务书/阶段2/董云升.md" afterDir="false" />
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="更新第二阶段开发任务">
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/bin/www" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repository/userRelationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRelationRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/relation.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/relation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/relationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/messageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/codes.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/codes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/接口表.md" beforeDir="false" afterPath="$PROJECT_DIR$/接口表.md" afterDir="false" />
@@ -80,10 +82,10 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="12.18.4" />
     <property name="javascript.nodejs.core.library.typings.version" value="12.12.62" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/开发任务书/阶段2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/node_modules" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
     <property name="show.migrate.to.gradle.popup" value="false" />
     <property name="ts.external.directory.path" value="E:\softwares\WebStorm 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -133,6 +135,8 @@
       <workItem from="1601448622585" duration="28277000" />
       <workItem from="1601654413495" duration="20817000" />
       <workItem from="1601795009159" duration="4273000" />
+      <workItem from="1601963432743" duration="1838000" />
+      <workItem from="1601965516355" duration="389000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -176,7 +180,21 @@
       <option name="project" value="LOCAL" />
       <updated>1601705283202</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="设置第二阶段开发任务">
+      <created>1601879654809</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1601879654810</updated>
+    </task>
+    <task id="LOCAL-00008" summary="更新第二阶段开发任务">
+      <created>1601880618005</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1601880618005</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -213,13 +231,15 @@
     <MESSAGE value="Service层的异步函数内部统一改用同步写法" />
     <MESSAGE value="新增 对话实体" />
     <MESSAGE value="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱" />
-    <option name="LAST_COMMIT_MESSAGE" value="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱" />
+    <MESSAGE value="设置第二阶段开发任务" />
+    <MESSAGE value="更新第二阶段开发任务" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新第二阶段开发任务" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="277" y="95" key="#Deployment" timestamp="1600931910391">
+    <state x="277" y="95" key="#Deployment" timestamp="1601964975688">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1600931910391" />
+    <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1601964975688" />
     <state x="262" y="83" key="#SSH_Configurations" timestamp="1600854326440">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -248,10 +268,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="93" y="93" width="1181" height="685" key="DirDiffDialog/0.0.1368.872@0.0.1368.872" timestamp="1601008840131" />
-    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1600996430525">
+    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1601964974089">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1600996430525" />
+    <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1601964974089" />
     <state x="558" y="334" key="Github.ShareDialog" timestamp="1600867111588">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -332,18 +352,18 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1601819442138" />
-    <state x="127" y="43" key="SettingsEditor" timestamp="1601533814424">
+    <state x="127" y="43" key="SettingsEditor" timestamp="1601879935668">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601533814424" />
+    <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601879935668" />
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601819373910">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key/0.0.1368.872@0.0.1368.872" timestamp="1601819373910" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601824127420">
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601880624141">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601824127420" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601880624141" />
     <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601444352854">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -352,6 +372,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="386" y="33" width="594" height="804" key="find.popup/0.0.1368.872@0.0.1368.872" timestamp="1600824367833" />
+    <state x="451" y="336" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1601880238110">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="451" y="336" key="git4idea.remote.GitConfigureRemotesDialog/0.0.1368.872@0.0.1368.872" timestamp="1601880238110" />
     <state x="346" y="203" key="run.anything.popup" timestamp="1601480740459">
       <screen x="0" y="0" width="1368" height="872" />
     </state>

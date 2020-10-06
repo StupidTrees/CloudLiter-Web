@@ -110,10 +110,24 @@ exports.changeNickname = function(id,nickname){
 }
 
 /**
+ * 修改某用户的颜色
+ * @param id
+ * @param color 颜色
+ */
+exports.changeColor = function(id,color){
+    return User.update({
+        color:color
+    },{
+        where:{
+            id:id
+        }
+    })
+}
+
+/**
  * 修改用户签名
  * @param id
  * @param signature
- * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
 exports.changeSignature = function(id,signature){
     return User.update({

@@ -14,7 +14,7 @@ const service = require('../service/userService')
 /**
  * 用户注册
  */
-router.post('/sign_up', function (req, res, next) {
+router.post('/sign_up', function (req, res) {
     const body = req.body;
     service.userSignUp(body.username, body.password, body.gender, body.nickname).then(function (r) {
         res.send(r)
@@ -26,7 +26,7 @@ router.post('/sign_up', function (req, res, next) {
 /**
  * 用户登录
  */
-router.post('/login', function (req, res, next) {
+router.post('/login', function (req, res) {
     const body = req.body
     service.userLogin(body.username, body.password).then(
         (value) => {
@@ -40,7 +40,7 @@ router.post('/login', function (req, res, next) {
 /**
  * 用户基本信息获取
  */
-router.get('/profile/get', (req, res, next) => {
+router.get('/profile/get', (req, res) => {
     let queryId = req.query.authId
     if(req.query.id!==undefined){
         queryId = req.query.id
@@ -110,6 +110,23 @@ router.post('/profile/change_gender',function(req,res){
         res.send(err)
     })
 })
+
+
+/**
+ * 更改颜色
+ */
+router.post('/profile/change_color',function(req,res){
+    let queryId = req.body.authId
+    if(req.body.id!==undefined){
+        queryId = req.body.id
+    }
+    service.changeColor(queryId,req.body.color).then((value)=>{
+        res.send(value)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
 
 
 /**

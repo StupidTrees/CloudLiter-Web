@@ -2,7 +2,7 @@ const repository = require('../repository/messageRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const textUtils = require('../utils/textUtils')
-
+const relationRepository = require('../repository/userRelationRepository')
 
 /**
  * 更新会话信息
@@ -18,8 +18,17 @@ exports.saveMessage = async function(message){
     if(value===null){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
+    let data = value.get()
     //console.log("value",value.get())
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,value.get()))
+    //获取备注信息
+    try {
+        let remark = await relationRepository.queryRemarkWithId(message.toId, message.fromId)
+        data.friendRemark = remark[0].get().remark
+    } catch (e) {
+        console.log('err',e)
+    }
+
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,data))
 }
 
 /**

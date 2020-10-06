@@ -39,6 +39,7 @@ exports.getConversations = async function (userId) {
             friendId: relData.friend,
             friendAvatar: friendData.avatar,
             friendNickname: friendData.nickname,
+            friendRemark: relData.remark,
             group: relData.group,
             relationId: relData.key,
             createdAt: rawData.createdAt,

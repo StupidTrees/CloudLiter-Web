@@ -53,6 +53,23 @@ exports.queryRelationWithId = function (myId,friendId) {
 }
 
 /**
+ * 查询我给某好友的备注
+ * @param myId 我的id
+ * @param friendId 朋友的id
+ */
+exports.queryRemarkWithId = function (myId,friendId) {
+
+    let id = tools.getP2PId(myId,friendId)
+    return UserRelation.findAll({
+        attributes:['remark'],
+        where: {
+            key: id
+        }
+    })
+}
+
+
+/**
  *建立好友关系
  * @param id1 用户1
  * @param id2 用户2
