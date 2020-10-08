@@ -28,14 +28,19 @@ exports.saveMessage = function (message) {
 /**
  * 获取某一对话的消息记录
  * @param conversationId 对话id
+ * @param pageSize 分页大小
+ * @param pageNum 分页标号，从0开始
  */
-exports.getMessagesOfOneConversation = function (conversationId) {
+exports.getMessagesOfOneConversation = function (conversationId,pageSize,pageNum) {
     return Message.findAll({
         where: {
             conversationId: {
                 [Op.eq]: conversationId
             }
-        }
+        },
+        offset:pageSize*pageNum,
+        limit:1*pageSize,
+        order:[['id','DESC']]
     })
 }
 

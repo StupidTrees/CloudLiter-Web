@@ -29,8 +29,14 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="收到消息时返回备注">
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="更新飞龙任务书">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/bin/www" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/messageRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/messageRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/userRelationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRelationRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/message.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/message.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/messageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/textUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/textUtils.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/开发任务书/阶段2/刘飞龙.md" beforeDir="false" afterPath="$PROJECT_DIR$/开发任务书/阶段2/刘飞龙.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -97,7 +103,7 @@
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
-    <configuration />
+    <configuration>C:\Users\23211\AppData\Roaming\Subversion</configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -127,7 +133,8 @@
       <workItem from="1601795009159" duration="4273000" />
       <workItem from="1601963432743" duration="1838000" />
       <workItem from="1601965516355" duration="389000" />
-      <workItem from="1601969915340" duration="3735000" />
+      <workItem from="1601969915340" duration="4572000" />
+      <workItem from="1601979971073" duration="16289000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -192,7 +199,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601970061047</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="更新飞龙任务书">
+      <created>1601979098978</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1601979098978</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -232,7 +246,8 @@
     <MESSAGE value="设置第二阶段开发任务" />
     <MESSAGE value="更新第二阶段开发任务" />
     <MESSAGE value="收到消息时返回备注" />
-    <option name="LAST_COMMIT_MESSAGE" value="收到消息时返回备注" />
+    <MESSAGE value="更新飞龙任务书" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新飞龙任务书" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="95" key="#Deployment" timestamp="1601964975688">
@@ -351,18 +366,18 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1601819442138" />
-    <state x="127" y="43" key="SettingsEditor" timestamp="1601970416536">
+    <state x="127" y="43" key="SettingsEditor" timestamp="1601983000298">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601970416536" />
+    <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601983000298" />
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601819373910">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key/0.0.1368.872@0.0.1368.872" timestamp="1601819373910" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601970531652">
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1601979979021">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601970531652" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1601979979021" />
     <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601444352854">
       <screen x="0" y="0" width="1368" height="872" />
     </state>

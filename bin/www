@@ -75,7 +75,7 @@ function removeUser(key){
         //通知正在和他进行对话的好友，他下了
         userExpectedConversation[key].forEach(item=>{
             console.log('通知下线',key+"->"+id2SocketId[item])
-            io.to(id2SocketId[item]).emit('query_online_result',key,false)
+            io.to(id2SocketId[item]).emit('query_online_result',key,'OFFLINE')
         })
     }
     if (onlineUser.hasOwnProperty(key)) {
@@ -112,7 +112,7 @@ io.on('connection', socket => {
                 //通知正在和他进行对话的好友，他上线了
                 userExpectedConversation[obj.id].forEach(item=>{
                     console.log('通知上线',obj.id+"->"+id2SocketId[item])
-                    io.to(id2SocketId[item]).emit('query_online_result',obj.id,true)
+                    io.to(id2SocketId[item]).emit('query_online_result',obj.id,'ONLINE')
                 })
             }
 
@@ -144,12 +144,29 @@ io.on('connection', socket => {
         }
         userExpectedConversation[friendId].push(userId)
         console.log("用户进入对话窗口",userExpectedConversation)
+
+        //通知正在和他进行对话的好友，他进入了某对话
+        if(userExpectedConversation.hasOwnProperty(userId)){
+            userExpectedConversation[userId].forEach(item=>{
+                console.log('通知进入对话',userId+"->"+id2SocketId[item])
+                let mark = textUtils.equals(friendId,item)?'YOU':'OTHER'
+                io.to(id2SocketId[item]).emit('query_online_result',userId,mark)
+            })
+        }
     })
 
     //某用户退出某对话
     socket.on('left_conversation', function (userId, conversationId) {
         removeUserFromConversation(userId,conversationId)
         console.log("用户退出对话窗口",userExpectedConversation)
+
+        //通知正在和他进行对话的好友，他退出某对话
+        if(userExpectedConversation.hasOwnProperty(userId)){
+            userExpectedConversation[userId].forEach(item=>{
+                console.log('通知退出对话',userId+"->"+id2SocketId[item])
+                io.to(id2SocketId[item]).emit('query_online_result',userId,'ONLINE')
+            })
+        }
     })
 
     //标记某对话下的消息全部已读
@@ -189,8 +206,17 @@ io.on('connection', socket => {
     });
 
     //获取某好友是否在线
-    socket.on('query_online',function (friendId){
-        socket.emit('query_online_result',friendId,onlineUser.hasOwnProperty(friendId))
+    socket.on('query_online',function (userId,friendId){
+        let mark = onlineUser.hasOwnProperty(friendId)?'ONLINE':'OFFLINE'
+        if(user2Conversation.hasOwnProperty(friendId)){
+            let other = getTheOtherId(friendId,user2Conversation[friendId])
+            if(textUtils.equals(other,userId)){
+                mark = 'YOU'
+            }else{
+                mark = 'OTHER'
+            }
+        }
+        socket.emit('query_online_result',friendId,mark)
     })
 })
 

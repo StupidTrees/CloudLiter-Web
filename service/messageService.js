@@ -22,8 +22,14 @@ exports.saveMessage = async function(message){
     //console.log("value",value.get())
     //获取备注信息
     try {
-        let remark = await relationRepository.queryRemarkWithId(message.toId, message.fromId)
-        data.friendRemark = remark[0].get().remark
+        let res = await relationRepository.queryRemarkWithId(message.toId, message.fromId)
+        data.friendRemark = res[0].get().remark
+        let userData = res[0].get().user
+        if(textUtils.isEmpty(res[0].get().remark)){
+            data.friendRemark = userData.get().nickname
+        }
+        data.friendAvatar = userData.get().avatar
+        console.log('data',data)
     } catch (e) {
         console.log('err',e)
     }
@@ -33,12 +39,15 @@ exports.saveMessage = async function(message){
 
 /**
  * 获取某对话的所有消息
- * @param conversationId
+ * @param conversationId 对话id
+ * @param pageSize 分页大小
+ * @param pageNum 页码
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.getMessages = async function(conversationId){
+exports.getMessages = async function(conversationId,pageSize,pageNum){
     let value = null
     try {
-        value = await repository.getMessagesOfOneConversation(conversationId)
+        value = await repository.getMessagesOfOneConversation(conversationId,pageSize,pageNum)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
     }

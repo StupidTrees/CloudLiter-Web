@@ -64,7 +64,11 @@ exports.queryRemarkWithId = function (myId,friendId) {
         attributes:['remark'],
         where: {
             key: id
-        }
+        }, include: [{ //把friend字段的用户对象也查出来
+        attributes:['nickname','avatar'],
+        as: 'user',
+        model: User
+    }]
     })
 }
 
