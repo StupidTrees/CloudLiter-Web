@@ -9,6 +9,7 @@ const Op = models.Op
 
 const UserRelation = models.UserRelation
 const UserConversation = models.Conversation
+const RelationEvent = models.RelationEvent
 const User = models.User
 
 /**
@@ -95,6 +96,7 @@ exports.makeFriends = function (id1, id2) {
         })
     })
 }
+
 
 /**
  * 判断两个用户是否是好友

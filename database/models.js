@@ -58,7 +58,7 @@ exports.User = con.sequelize.define(
     }
 );
 
-//将定义好的模型同步到数据表，不强制覆盖
+//将定义好的模型同步到吧 数据表，不强制覆盖
 this.User.sync({force: false}).then(r => r)
 
 
@@ -177,6 +177,52 @@ this.Conversation.belongsTo(this.User,{
     as:'user2'
 })
 this.Conversation.sync({force: false}).then(r => r)
+
+exports.RelationEvent = con.sequelize.define(
+    'relationEvent',{
+        id:{
+            type:DataTypes.BIGINT,
+            autoIncrement: true,
+            primaryKey:true
+            //userId-friendId
+        },
+        userId: {
+            type: DataTypes.BIGINT
+        },
+        friendId: {
+            type: DataTypes.BIGINT
+        },
+        state:{
+            type:DataTypes.ENUM('REQUESTING','ACCEPTED','REJECTED','DELETE'),
+            allowNull:false
+        },
+        read:{
+            type:DataTypes.BOOLEAN,
+            allowNull:false,
+        },
+        createdAt:{
+            type: DataTypes.DATE
+        },
+        updatedAt:{
+            type:DataTypes.DATE
+        }
+    },
+    {
+        tableName:'relationEvent'
+    }
+)
+
+this.RelationEvent.belongsTo(this.User,{
+    foreignKey:'userId',
+    targetKey:'id',
+    as:'user1'
+})
+this.RelationEvent.belongsTo(this.User,{
+    foreignKey:'friendId',
+    targetKey:'id',
+    as:'user2'
+})
+this.RelationEvent.sync({force: false}).then(r => r)
 
 
 /**

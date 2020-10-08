@@ -47,6 +47,10 @@ exports.codes = {
         code:3005,
         message:'用户名已存在'
     },
+    already_apply:{
+        code:3006,
+        message:'已发送申请'
+    },
     already_friends:{
         code:3007,
         message:'已经是好友啦！'
@@ -79,8 +83,13 @@ exports.codes = {
         code:3014,
         message:'关系不存在'
     },
-    format_error_color:{
+    apply_not_exists:{
         code:3015,
+        message:'没有这种好友申请'
+    },
+
+    format_error_color:{
+        code:3016,
         message:'颜色格式不正确！'
     },
     other_error:{
