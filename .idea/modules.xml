@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Hichat.iml" filepath="$PROJECT_DIR$/.idea/Hichat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/CloudLiter-Web.iml" filepath="$PROJECT_DIR$/.idea/CloudLiter-Web.iml" />
     </modules>
   </component>
 </project>
