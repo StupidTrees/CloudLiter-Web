@@ -178,6 +178,9 @@ this.Conversation.belongsTo(this.User,{
 })
 this.Conversation.sync({force: false}).then(r => r)
 
+/**
+ * 好友事件表
+ */
 exports.RelationEvent = con.sequelize.define(
     'relationEvent',{
         id:{

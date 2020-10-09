@@ -156,10 +156,15 @@ exports.getMine = async function(userId){
     }
     let result = []
     message.forEach(function (item){
+        let user1Data = item.get().user1.get()
+        let user2Data = item.get().user2.get()
+        let targetUser = equals(userId,user1Data.id)?user2Data:user1Data
         result.push({
             key:item.key,
             userId:item.userId,
             friendId:item.friendId,
+            otherAvatar:targetUser.avatar,
+            otherNickname:targetUser.nickname,
             state:item.state,
             createdAt:item.createdAt,
             updatedAt:item.updatedAt

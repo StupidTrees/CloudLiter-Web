@@ -17,20 +17,20 @@ const User = models.User
  * @param friendId
  * @returns {Promise<string|[number, Model<TModelAttributes, TCreationAttributes>[]]|Model<TModelAttributes, TCreationAttributes>|*>}
  */
-exports.applyFriend = async function (userId,friendId){
-    let message = await RelationEvent.findAll({where:{[Op.and]:[{userId:userId},{friendId:friendId},{state:'REQUESTING'}]}})
-    if(message.length!==0){
+exports.applyFriend = async function (userId, friendId) {
+    let message = await RelationEvent.findAll({where: {[Op.and]: [{userId: userId}, {friendId: friendId}, {state: 'REQUESTING'}]}})
+    if (message.length !== 0) {
         return 1
     }
-    message = await UserRelation.findAll({where:{[Op.and]:[{userId:userId},{friend:friendId}]}})
-    if(message.length!==0){
+    message = await UserRelation.findAll({where: {[Op.and]: [{userId: userId}, {friend: friendId}]}})
+    if (message.length !== 0) {
         return 2
     }
     return await RelationEvent.create({
         userId: userId,
         friendId: friendId,
         state: 'REQUESTING',
-        read:false
+        read: false
     })
 }
 
@@ -39,18 +39,20 @@ exports.applyFriend = async function (userId,friendId){
  * @param eventId
  * @returns {Promise<{user1: ({type: *}|{}), user2: {type: *}}>}
  */
-exports.acceptFriendApply = async function (id){
+exports.acceptFriendApply = async function (id) {
     let result
     result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
-        {state:'ACCEPTED'},
-        {where:{
-            [Op.or]:[
-                {[Op.and]:[{id:id},{state:'REQUESTING'}]},
-                {[Op.and]:[{userId:result.friendId},{friendId:result.userId},{state:'REQUESTING'}]}
-                ]}
+        {state: 'ACCEPTED'},
+        {
+            where: {
+                [Op.or]: [
+                    {[Op.and]: [{id: id}, {state: 'REQUESTING'}]},
+                    {[Op.and]: [{userId: result.friendId}, {friendId: result.userId}, {state: 'REQUESTING'}]}
+                ]
+            }
         })
-    return {user1:result.userId,user2:result.friendId}
+    return {user1: result.userId, user2: result.friendId}
 }
 
 /**
@@ -58,16 +60,18 @@ exports.acceptFriendApply = async function (id){
  * @param eventId
  * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.rejectFriendApply = async function (id){
+exports.rejectFriendApply = async function (id) {
     let result
     result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
-        {state:'REJECTED'},
-        {where:{
-            [Op.or]:[
-                {[Op.and]:[{id:id},{state:'REQUESTING'}]},
-                {[Op.and]:[{userId:result.friendId},{friendId:result.userId},{state:'REQUESTING'}]}]
-        }}
+        {state: 'REJECTED'},
+        {
+            where: {
+                [Op.or]: [
+                    {[Op.and]: [{id: id}, {state: 'REQUESTING'}]},
+                    {[Op.and]: [{userId: result.friendId}, {friendId: result.userId}, {state: 'REQUESTING'}]}]
+            }
+        }
     )
     return result
 }
@@ -77,9 +81,10 @@ exports.rejectFriendApply = async function (id){
  * @param userId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getUnread = function (userId){
-    return RelationEvent.findAll({where:
-            {[Op.and]:[{friendId:userId},{state:'REQUESTING'},{read:false}]}
+exports.getUnread = function (userId) {
+    return RelationEvent.findAll({
+        where:
+            {[Op.and]: [{friendId: userId}, {state: 'REQUESTING'}, {read: false}]}
     })
 }
 
@@ -88,9 +93,25 @@ exports.getUnread = function (userId){
  * @param userId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getMine = function (userId){
-    return RelationEvent.findAll({where:
-            {[Op.or]:[{friendId: userId},{userId:userId}]}
+exports.getMine = function (userId) {
+    return RelationEvent.findAll({
+        where: {
+            [Op.or]: [{friendId: userId}, {userId: userId}]
+        },
+        include:[
+            {
+                attributes:['id','avatar','nickname'],
+                foreignKey:'friendId',
+                as:'user2',
+                model:User
+            },
+            {
+                attributes:['id','avatar','nickname'],
+                foreignKey:'userId',
+                as:'user1',
+                model:User
+            }
+        ]
     })
 }
 
@@ -99,9 +120,10 @@ exports.getMine = function (userId){
  * @param userId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getRejected = function (userId){
-    return RelationEvent.findAll({where:
-            {[Op.and]:[{userId:userId},{state:'REJECTED'}]}
+exports.getRejected = function (userId) {
+    return RelationEvent.findAll({
+        where:
+            {[Op.and]: [{userId: userId}, {state: 'REJECTED'}]}
     })
 }
 
@@ -110,9 +132,10 @@ exports.getRejected = function (userId){
  * @param userId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getDeleted = function (userId){
-    return RelationEvent.findAll({where:
-            {[Op.and]:[{friendId:userId},{state:'DELETE'}]}
+exports.getDeleted = function (userId) {
+    return RelationEvent.findAll({
+        where:
+            {[Op.and]: [{friendId: userId}, {state: 'DELETE'}]}
     })
 }
 
@@ -122,16 +145,18 @@ exports.getDeleted = function (userId){
  * @param friendId
  * @returns {Promise<number>}
  */
-exports.delFriend = function (userId,friendId){
-    return UserConversation.destroy({where: {[Op.or]: [{key: userId + '-' + friendId}, {key: friendId + '-' + userId}]}}).then((value)=>{
-        return UserRelation.destroy({where:{
-            [Op.or]: [
-                {[Op.and]:[{userId: userId},{friend:friendId}]},
-                {[Op.and]:[{userId:friendId},{friend:userId}]}
+exports.delFriend = function (userId, friendId) {
+    return UserConversation.destroy({where: {[Op.or]: [{key: userId + '-' + friendId}, {key: friendId + '-' + userId}]}}).then((value) => {
+        return UserRelation.destroy({
+            where: {
+                [Op.or]: [
+                    {[Op.and]: [{userId: userId}, {friend: friendId}]},
+                    {[Op.and]: [{userId: friendId}, {friend: userId}]}
                 ]
-        }})
-    }).catch((err)=>{
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+            }
+        })
+    }).catch((err) => {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
 }
 
@@ -141,12 +166,12 @@ exports.delFriend = function (userId,friendId){
  * @param friendId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>>}
  */
-exports.deleteEvent = function (userId,friendId){
+exports.deleteEvent = function (userId, friendId) {
     return RelationEvent.create({
         userId: userId,
         friendId: friendId,
         state: 'DELETE',
-        read:false
+        read: false
     })
 }
 
@@ -155,9 +180,9 @@ exports.deleteEvent = function (userId,friendId){
  * @param userId
  * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.markRead = function (userId){
+exports.markRead = function (userId) {
     return RelationEvent.update(
-        {read:true},
-        {where:{friendId:userId}}
+        {read: true},
+        {where: {friendId: userId}}
     )
 }
