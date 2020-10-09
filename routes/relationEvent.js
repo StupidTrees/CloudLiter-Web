@@ -22,7 +22,7 @@ router.post('/event/request',function (req,res){
  * 处理好友申请
  */
 router.post('/event/response',function (req,res){
-    service.resFriendApply(req.body.id,req.body.action).then((value)=>{
+    service.resFriendApply(req.body.eventId,req.body.action).then((value)=>{
         res.send(value)
     }).catch((err)=>{
         res.send(err)
@@ -92,8 +92,8 @@ router.get('/event/query_rejected',function (req,res){
 /**
  * 删除好友
  */
-router.post('/event/relation_delete_friend',function (req,res){
-    let queryId = req.body.userId
+router.post('/event/delete_friend',function (req,res){
+    let queryId = req.body.authId
     if(req.body.userId!==undefined){
         queryId = req.body.userId
     }

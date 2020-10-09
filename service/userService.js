@@ -38,6 +38,7 @@ exports.userSignUp = async function (username, password, gender, nickname) {
     try {
         value = await repository.createUser(username, password, gender, nickname)
     } catch (e) {
+        console.log('sing_up_error',e)
         if (e.original.code === 'ER_DUP_ENTRY') { //有重复主键，说明用户已存在
             return Promise.reject(jsonUtils.getResponseBody(codes.signup_duplicated_username))
         } else {

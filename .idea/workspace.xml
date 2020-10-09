@@ -31,7 +31,12 @@
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="好友请求的查询可返回好友头像等信息">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/relationEventRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/relationEventRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/relationEvent.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/relationEvent.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/relationEventService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationEventService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/codes.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/codes.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,6 +138,7 @@
       <workItem from="1601969915340" duration="4572000" />
       <workItem from="1601979971073" duration="16289000" />
       <workItem from="1602217978167" duration="3616000" />
+      <workItem from="1602232109057" duration="8834000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -288,10 +294,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="93" y="93" width="1181" height="685" key="DirDiffDialog/0.0.1368.872@0.0.1368.872" timestamp="1601008840131" />
-    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1601964974089">
+    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1602232733326">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1601964974089" />
+    <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1602232733326" />
     <state x="558" y="334" key="Github.ShareDialog" timestamp="1600867111588">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -400,9 +406,9 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="346" y="203" key="run.anything.popup/0.0.1368.872@0.0.1368.872" timestamp="1601480740459" />
-    <state x="355" y="192" width="672" height="678" key="search.everywhere.popup" timestamp="1601831337761">
+    <state x="356" y="193" width="672" height="678" key="search.everywhere.popup" timestamp="1602240962807">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="355" y="192" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1601831337761" />
+    <state x="356" y="193" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1602240962807" />
   </component>
 </project>

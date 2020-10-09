@@ -2,11 +2,13 @@ const models = require('../database/models')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const Op = models.Op
+const tools = require('../utils/tools')
 /**
  * 仓库层：用户关系数据读写
  */
 
 const UserRelation = models.UserRelation
+const Message = models.Message
 const UserConversation = models.Conversation
 const RelationEvent = models.RelationEvent
 const User = models.User
@@ -36,8 +38,8 @@ exports.applyFriend = async function (userId, friendId) {
 
 /**
  * 接受好友申请
- * @param eventId
  * @returns {Promise<{user1: ({type: *}|{}), user2: {type: *}}>}
+ * @param id
  */
 exports.acceptFriendApply = async function (id) {
     let result
@@ -52,6 +54,7 @@ exports.acceptFriendApply = async function (id) {
                 ]
             }
         })
+
     return {user1: result.userId, user2: result.friendId}
 }
 
@@ -98,18 +101,20 @@ exports.getMine = function (userId) {
         where: {
             [Op.or]: [{friendId: userId}, {userId: userId}]
         },
-        include:[
+        order: [['updatedAt', 'DESC']]
+        ,
+        include: [
             {
-                attributes:['id','avatar','nickname'],
-                foreignKey:'friendId',
-                as:'user2',
-                model:User
+                attributes: ['id', 'avatar', 'nickname'],
+                foreignKey: 'friendId',
+                as: 'user2',
+                model: User
             },
             {
-                attributes:['id','avatar','nickname'],
-                foreignKey:'userId',
-                as:'user1',
-                model:User
+                attributes: ['id', 'avatar', 'nickname'],
+                foreignKey: 'userId',
+                as: 'user1',
+                model: User
             }
         ]
     })
@@ -146,18 +151,31 @@ exports.getDeleted = function (userId) {
  * @returns {Promise<number>}
  */
 exports.delFriend = function (userId, friendId) {
-    return UserConversation.destroy({where: {[Op.or]: [{key: userId + '-' + friendId}, {key: friendId + '-' + userId}]}}).then((value) => {
+    let id = tools.getP2PIdOrdered(userId, friendId)
+    return Message.destroy({
+        where: {
+            conversationId:id
+        }
+    }).then((value) => {
+        return UserConversation.destroy({
+            where: {
+                key: id
+            }
+        })
+    }).then((value) => {
         return UserRelation.destroy({
             where: {
                 [Op.or]: [
-                    {[Op.and]: [{userId: userId}, {friend: friendId}]},
-                    {[Op.and]: [{userId: friendId}, {friend: userId}]}
+                    {
+                        key: tools.getP2PId(userId, friendId)
+                    }, {
+                        key: tools.getP2PId(friendId, userId)
+                    }
                 ]
             }
         })
-    }).catch((err) => {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
+
 }
 
 /**
@@ -166,7 +184,7 @@ exports.delFriend = function (userId, friendId) {
  * @param friendId
  * @returns {Promise<Model<TModelAttributes, TCreationAttributes>>}
  */
-exports.deleteEvent = function (userId, friendId) {
+exports.createDeleteEvent = function (userId, friendId) {
     return RelationEvent.create({
         userId: userId,
         friendId: friendId,

@@ -41,20 +41,17 @@ exports.applyFriend = async  function(userId,friendId){
 
 /**
  * 处理好友申请
- * @param eventId
+ * @param id
  * @param action
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.resFriendApply = async function resFriendApply(id,action){
-    if(action === 'ACCEPT'){
+    if(equals(action,'ACCEPT')){
         let message
         try{
             message = await eventRepository.acceptFriendApply(id)
-        }
-        catch (err) {
-            if(message === undefined){
-                return Promise.reject(jsonUtils.getResponseBody(codes.apply_not_exists))
-            }
+        } catch (err) {
+            console.log('err',err)
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
         }
         //在关系表里插入数据
@@ -81,23 +78,20 @@ exports.resFriendApply = async function resFriendApply(id,action){
         }
         return  Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }
-    else if(action === 'REJECT'){
+    else if(equals(action,'REJECT')){
         let message
         try{
             message = await eventRepository.rejectFriendApply(id)
-        }
-        catch (err){
-            if(message === undefined){
-                return Promise.reject(jsonUtils.getResponseBody(codes.apply_not_exists))
-            }
+        } catch (err){
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
         }
-        if(equals(message,0)){
+        console.log("reject",message)
+        if(message === null || equals(message,0)){
             return  Promise.reject(jsonUtils.getResponseBody(codes.apply_not_exists))
         }
         return Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }
-    return  Promise.reject(jsonUtils.getResponseBody(codes.format_error_empty))
+    return Promise.reject(jsonUtils.getResponseBody(codes.format_error_relation_action))
 }
 
 /**
@@ -165,6 +159,7 @@ exports.getMine = async function(userId){
             friendId:item.friendId,
             otherAvatar:targetUser.avatar,
             otherNickname:targetUser.nickname,
+            otherId:targetUser.id,
             state:item.state,
             createdAt:item.createdAt,
             updatedAt:item.updatedAt
@@ -207,7 +202,7 @@ exports.delFriend = async function(userId,friendId){
         return Promise.reject(jsonUtils.getResponseBody(codes.relation_not_exists))
     }
     try{
-        await eventRepository.deleteEvent(userId,friendId)
+        await eventRepository.createDeleteEvent(userId,friendId)
     }catch (err){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     }
