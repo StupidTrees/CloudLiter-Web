@@ -29,10 +29,8 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="更新飞龙任务书">
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="好友请求的查询可返回好友头像等信息">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/relationEventRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/relationEventRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/relationEventService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationEventService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -134,7 +132,7 @@
       <workItem from="1601965516355" duration="389000" />
       <workItem from="1601969915340" duration="4572000" />
       <workItem from="1601979971073" duration="16289000" />
-      <workItem from="1602217978167" duration="2130000" />
+      <workItem from="1602217978167" duration="3616000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -206,7 +204,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601979098978</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="好友请求的查询可返回好友头像等信息">
+      <created>1602223538189</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1602223538189</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,7 +252,8 @@
     <MESSAGE value="更新第二阶段开发任务" />
     <MESSAGE value="收到消息时返回备注" />
     <MESSAGE value="更新飞龙任务书" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新飞龙任务书" />
+    <MESSAGE value="好友请求的查询可返回好友头像等信息" />
+    <option name="LAST_COMMIT_MESSAGE" value="好友请求的查询可返回好友头像等信息" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="95" key="#Deployment" timestamp="1601964975688">
@@ -366,18 +372,18 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1602167896581" />
-    <state x="127" y="43" key="SettingsEditor" timestamp="1601983000298">
+    <state x="127" y="43" key="SettingsEditor" timestamp="1602223570636">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1601983000298" />
+    <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1602223570636" />
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601819373910">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key/0.0.1368.872@0.0.1368.872" timestamp="1601819373910" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1602168090546">
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1602223587914">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1602168090546" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1602223587914" />
     <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601444352854">
       <screen x="0" y="0" width="1368" height="872" />
     </state>

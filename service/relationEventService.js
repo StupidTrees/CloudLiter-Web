@@ -160,7 +160,7 @@ exports.getMine = async function(userId){
         let user2Data = item.get().user2.get()
         let targetUser = equals(userId,user1Data.id)?user2Data:user1Data
         result.push({
-            key:item.key,
+            id:item.id,
             userId:item.userId,
             friendId:item.friendId,
             otherAvatar:targetUser.avatar,
