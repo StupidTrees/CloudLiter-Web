@@ -15,31 +15,37 @@ exports.createNewGroup=function(userId,groupName){
     )
 }
 exports.changeGroupNum=function(userId,friendId,groupId){
+    let key = tools.getP2PId(userId,friendId)
     return Relation.update({
-        groupId:groupId
+        group:groupId
     },
         {
             where: {
-                [Op.and]:[
-                    {
-                        userId:userId
-                    },
-                    {
-                        friendId:friendId
-                    }
-                ]
+                key:key
             }
         })
 }
-exports.deleteGroup=function(id){
+exports.deleteGroup=function(groupId){
     return Group.destroy(
         {
-            where:
-                {
-                    id:id
-                }
+            where:{
+                id:groupId
+            }
         }
-    )
+    ).then((value)=>{
+        return Relation.update(
+            {
+                group:null
+            },
+            {
+                where:
+                    {
+                        group:groupId
+                    }
+            }
+        )
+    })
+
 }
 exports.findAllGroup=function(userId){
     return Group.findAll(

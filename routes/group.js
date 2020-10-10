@@ -20,7 +20,7 @@ router.post('/add',function(req,res){
     })
 })
 router.post('/assign',function(req,res){
-    let queryId
+    let queryId = req.body.authId
     if(req.body.userId!==undefined){
         queryId = req.body.userId
     }
@@ -34,17 +34,14 @@ router.post('/assign',function(req,res){
   //  {
        let qureyGroupId = req.body.groupId
   //  }
-    service.createGroup(queryId,qureyFriendId,qureyGroupId).then((value)=>{
+    service.setGroupNum(queryId,qureyFriendId,qureyGroupId).then((value)=>{
         res.send(value)
     }).catch(err=>{
         res.send(err)
     })
 })
 router.post('/delete',function(req,res){
-    let queryGroupId
-    if(req.body.groupId!==undefined){
-        queryGroupId = req.body.GroupId
-    }
+    let queryGroupId = req.body.groupId
 
     service.deleteGroup(queryGroupId).then((value)=>{
         res.send(value)
@@ -53,7 +50,7 @@ router.post('/delete',function(req,res){
     })
 })
 router.post('/get',function(req,res){
-    let queryUserId
+    let queryUserId = req.body.authId
     if(req.body.userId!==undefined){
         queryUserId = req.body.userId
     }
