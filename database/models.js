@@ -292,3 +292,34 @@ this.Message.belongsTo(this.UserRelation,{
 
 this.Message.sync({force: false}).then(r => r)
 
+exports.Group = con.sequelize.define(
+    'group',{
+        id:{
+            type:DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        userId: {
+            type: DataTypes.BIGINT,
+            // references:'user', //关联表名
+            // referencesKey:'id' //关联表的列名
+        },
+        groupName: {
+            type: DataTypes.STRING,
+            // references:'user', //关联表名
+            // referencesKey:'id' //关联表的列名
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    }
+)
+this.Group.belongsTo(this.User,{
+    foreignKey:'userId',
+    targetKey:'id',
+    as:'user'
+})
+this.Group.sync({force: false}).then(r => r)
