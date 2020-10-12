@@ -92,6 +92,10 @@ exports.codes = {
         code:3016,
         message:'颜色格式不正确！'
     },
+    groupname_exists_error:{
+        code:3017,
+        message:'组名已存在！'
+    },
     other_error:{
         code:5000,
         message:'其他错误'

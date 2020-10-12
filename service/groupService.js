@@ -9,16 +9,18 @@ const fs = require('fs')
 const path = require('path')
 
 exports.createGroup = async function(userId,groupName){
-    let value = null
-    try {
-        value = await groupRepository.createNewGroup(userId,groupName)
-    } catch (e) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    let flag = null
+    flag = await groupRepository.decideExistingName(userId,groupName)
+    if(flag.length === 0){
+        let value = null
+        try {
+            value = await groupRepository.createNewGroup(userId,groupName)
+        } catch (e) {
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }
-    if (value.length === 0) { //获取到的用户数量为0：用户不存在
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, null))
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.groupname_exists_error))
 }
 exports.setGroupNum = async function(userId,friendId,groupId){
     let value = null
@@ -27,10 +29,8 @@ exports.setGroupNum = async function(userId,friendId,groupId){
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    console.log(value)
-    if (value === 0) { //获取到的用户数量为0
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, null))
-    }
+
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 exports.deleteGroup = async function(groupId){
     let value = null
@@ -39,9 +39,7 @@ exports.deleteGroup = async function(groupId){
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    if (value.length === 0) { //获取到的用户数量为0：用户不存在
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, null))
-    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 exports.findAllGroup = async function(userId){
     let value = null
@@ -50,8 +48,8 @@ exports.findAllGroup = async function(userId){
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    console.log(value)
     if (value.length === 0) { //获取到的用户数量为0：用户不存在
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, null))
     }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }

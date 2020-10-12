@@ -6,6 +6,18 @@ const Group = models.Group
 const Relation = models.UserRelation
 const User = models.User
 
+exports.decideExistingName=function (userId,groupName){
+    return Group.findAll(
+        {
+            where:{
+                [Op.and]:[
+                    {userId:userId},
+                    {groupName:groupName}
+                    ]
+            }
+        }
+    )
+}
 exports.createNewGroup=function(userId,groupName){
     return Group.create(
         {
