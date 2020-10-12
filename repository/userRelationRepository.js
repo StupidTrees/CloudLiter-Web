@@ -125,6 +125,37 @@ exports.isFriend = function (id1, id2) {
 
 }
 /**
+ * 创建分组,给key分配一个名为group_num的组
+ * @param key
+ * @param group_num
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.createGroup=function (key,group_num)
+{
+    return User.update({
+        group: group_num
+    }, {
+        where: {
+            key: key
+        }
+    })
+}
+/**
+ * 删除分组
+ * @param key
+ * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ */
+exports.deleteGroup=function(key)
+{
+    return User.update({
+        group: null
+    }, {
+        where: {
+            key: key
+        }
+    })
+}
+/**
  * 添加朋友备注
  * @param id1
  * @param id2
