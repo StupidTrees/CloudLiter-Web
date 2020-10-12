@@ -45,7 +45,7 @@ exports.acceptFriendApply = async function (id) {
     let result
     result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
-        {state: 'ACCEPTED'},
+        {state: 'ACCEPTED', responseRead: false},
         {
             where: {
                 [Op.or]: [
@@ -67,7 +67,7 @@ exports.rejectFriendApply = async function (id) {
     let result
     result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
-        {state: 'REJECTED'},
+        {state: 'REJECTED', responseRead: false},
         {
             where: {
                 [Op.or]: [
@@ -82,7 +82,6 @@ exports.rejectFriendApply = async function (id) {
 /**
  * 获取好友申请信息（对方正在申请且未读）
  * @param userId
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
 exports.getUnread = function (userId) {
     return RelationEvent.findAll({
@@ -90,6 +89,31 @@ exports.getUnread = function (userId) {
             {[Op.and]: [{friendId: userId}, {state: 'REQUESTING'}, {read: false}]}
     })
 }
+
+/**
+ * 计数未读好友事件数目
+ * @param userId
+ */
+exports.countUnread = function (userId) {
+    return RelationEvent.count({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        {friendId: userId},
+                        {read: false}]
+                },
+                {
+                    [Op.and]: [
+                        {userId: userId},
+                        {responseRead: false}]
+                }
+
+            ]
+        }
+    })
+}
+
 
 /**
  * 获取好友申请信息（所有和自己相关）
@@ -101,7 +125,7 @@ exports.getMine = function (userId) {
         where: {
             [Op.or]: [{friendId: userId}, {userId: userId}]
         },
-        order: [['updatedAt', 'DESC']]
+        order: [['createdAt', 'DESC']]
         ,
         include: [
             {
@@ -120,29 +144,6 @@ exports.getMine = function (userId) {
     })
 }
 
-/**
- * 获取自己被拒绝的申请
- * @param userId
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
- */
-exports.getRejected = function (userId) {
-    return RelationEvent.findAll({
-        where:
-            {[Op.and]: [{userId: userId}, {state: 'REJECTED'}]}
-    })
-}
-
-/**
- * 获取自己被删的事件
- * @param userId
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
- */
-exports.getDeleted = function (userId) {
-    return RelationEvent.findAll({
-        where:
-            {[Op.and]: [{friendId: userId}, {state: 'DELETE'}]}
-    })
-}
 
 /**
  * 删除好友与会话
@@ -150,11 +151,11 @@ exports.getDeleted = function (userId) {
  * @param friendId
  * @returns {Promise<number>}
  */
-exports.delFriend = function (userId, friendId) {
+exports.deleteFriend = function (userId, friendId) {
     let id = tools.getP2PIdOrdered(userId, friendId)
     return Message.destroy({
         where: {
-            conversationId:id
+            conversationId: id
         }
     }).then((value) => {
         return UserConversation.destroy({
@@ -196,11 +197,26 @@ exports.createDeleteEvent = function (userId, friendId) {
 /**
  * 将用户的所有未读标记为已读
  * @param userId
- * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
 exports.markRead = function (userId) {
     return RelationEvent.update(
         {read: true},
-        {where: {friendId: userId}}
-    )
+        {
+            where: {
+                friendId: userId,
+            }
+        }
+    ).then((() => {
+        return RelationEvent.update(
+            {responseRead: true},
+            {
+                where: {
+                    [Op.and]: [
+                        {userId: userId},
+                        {responseRead: false}
+                    ]
+                }
+            }
+        )
+    }))
 }

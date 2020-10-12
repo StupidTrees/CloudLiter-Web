@@ -21,6 +21,7 @@ exports.newConversation = function (id1, id2) {
         key: smallId + '-' + largeId,
         user1Id: smallId,
         user2Id: largeId,
+        lastMessage:'已经成为好友啦，说句话吧！',
         relation1Id: smallId + '-' + largeId,
         relation2Id: largeId + '-' + smallId
     })

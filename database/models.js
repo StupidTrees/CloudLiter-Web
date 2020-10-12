@@ -203,6 +203,10 @@ exports.RelationEvent = con.sequelize.define(
             type:DataTypes.BOOLEAN,
             allowNull:false,
         },
+        responseRead:{
+            type:DataTypes.BOOLEAN,
+            allowNull:true
+        },
         createdAt:{
             type: DataTypes.DATE
         },

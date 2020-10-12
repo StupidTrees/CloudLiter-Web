@@ -45,7 +45,7 @@ exports.applyFriend = async  function(userId,friendId){
  * @param action
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.resFriendApply = async function resFriendApply(id,action){
+exports.responseFriendApply = async function resFriendApply(id, action){
     if(equals(action,'ACCEPT')){
         let message
         try{
@@ -94,46 +94,22 @@ exports.resFriendApply = async function resFriendApply(id,action){
     return Promise.reject(jsonUtils.getResponseBody(codes.format_error_relation_action))
 }
 
-/**
- * 获取好友请求信息
- * @param userId
- * @returns {Promise<never>}
- */
-exports.getUnread = async function(userId){
-    let message
-    try{
-        message = await eventRepository.getUnread(userId)
-    }catch (err){
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-    }
-    let result = []
-    message.forEach(function (item){
-        result.push({
-            key:item.key,
-            userId:item.userId,
-            friendId:item.friendId,
-            state:item.state,
-            createdAt:item.createdAt,
-            updatedAt:item.updatedAt
-        })
-    })
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
-}
 
 /**
- * 获取好友请求数
+ * 获取未读好友事件数
  * @param userId
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.countUnread = async function (userId){
-    let message
+    let result
     try{
-        message = await eventRepository.getUnread(userId)
+        result = await eventRepository.countUnread(userId)
     }catch (err){
+        console.log(err,err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     }
-    let count = message.length
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
+
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
 }
 
 /**
@@ -153,6 +129,12 @@ exports.getMine = async function(userId){
         let user1Data = item.get().user1.get()
         let user2Data = item.get().user2.get()
         let targetUser = equals(userId,user1Data.id)?user2Data:user1Data
+        let unread = false
+        if(equals(item.get().userId,userId)){ //自己发出的
+            unread = (item.get().responseRead===false)
+        }else{ //发给自己的
+            unread = !item.get().read
+        }
         result.push({
             id:item.id,
             userId:item.userId,
@@ -162,27 +144,13 @@ exports.getMine = async function(userId){
             otherId:targetUser.id,
             state:item.state,
             createdAt:item.createdAt,
-            updatedAt:item.updatedAt
+            updatedAt:item.updatedAt,
+            unread:unread
         })
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
 }
 
-/**
- * 获取自己被拒绝的申请数
- * @param userId
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
- */
-exports.countRejected = async function(userId){
-    let message
-    try{
-        message = await eventRepository.getRejected(userId)
-    }catch (err){
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-    }
-    let count = message.length
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
-}
 
 /**
  * 删除好友，增加删除事件
@@ -190,10 +158,10 @@ exports.countRejected = async function(userId){
  * @param friendId
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.delFriend = async function(userId,friendId){
+exports.deleteFriend = async function(userId, friendId){
     let value
     try{
-        value = await eventRepository.delFriend(userId,friendId)
+        value = await eventRepository.deleteFriend(userId,friendId)
     }catch (err){
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
@@ -209,21 +177,7 @@ exports.delFriend = async function(userId,friendId){
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
-/**
- * 计数自己被删的事件
- * @param userId
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
- */
-exports.countDeleted = async function(userId){
-    let message
-    try{
-        message = await eventRepository.getDeleted(userId)
-    }catch (err){
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-    }
-    let count = message.length
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,count))
-}
+
 
 /**
  * 将用户的所有未读标记为已读
