@@ -104,6 +104,10 @@ exports.codes = {
         code:3019,
         message:'小组不存在！'
     },
+    not_have_group:{
+        code:3020,
+        message:'该用户无分组'
+    },
     other_error:{
         code:5000,
         message:'其他错误'
