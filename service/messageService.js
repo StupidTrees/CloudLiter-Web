@@ -67,20 +67,24 @@ exports.getMessages = async function(conversationId,pageSize,pageNum){
  * @param userId
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.getUnreadMessage = async function(userId){
+exports.countUnreadMessage = async function(userId){
     let value = null
     try {
-        value = await repository.getUnreadMessagesOfOneUser(userId)
+        value = await repository.getUnreadConversationsOfOneUser(userId)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
     }
     if(value===null){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
-    let res = []
+    let res = {}
     value.forEach(function (item) {
         //console.log('item',item.get())
-        res.push(item)
+        if(!res.hasOwnProperty(item.get().conversationId)){
+            res[item.get().conversationId] = 1
+        }else{
+            res[item.get().conversationId]+= 1
+        }
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
 }

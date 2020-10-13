@@ -8,8 +8,8 @@ router.post('/add',function(req,res){
     if(req.body.userId!==undefined){
         queryId = req.body.userId
     }
-    let qureyGroupName = req.body.groupName
-    service.createGroup(queryId,qureyGroupName).then((value)=>{
+    let queryGroupName = req.body.groupName
+    service.createGroup(queryId,queryGroupName).then((value)=>{
         res.send(value)
     }).catch(err=>{
         res.send(err)

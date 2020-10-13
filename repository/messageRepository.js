@@ -16,7 +16,7 @@ exports.saveMessage = function (message) {
     let minId = Math.min(message.fromId, message.toId)
     let maxId = Math.max(message.fromId, message.toId)
     return Message.create({
-        read:false,
+        read: false,
         fromId: message.fromId,
         toId: message.toId,
         content: message.content,
@@ -31,53 +31,55 @@ exports.saveMessage = function (message) {
  * @param pageSize 分页大小
  * @param pageNum 分页标号，从0开始
  */
-exports.getMessagesOfOneConversation = function (conversationId,pageSize,pageNum) {
+exports.getMessagesOfOneConversation = function (conversationId, pageSize, pageNum) {
     return Message.findAll({
         where: {
             conversationId: {
                 [Op.eq]: conversationId
             }
         },
-        offset:pageSize*pageNum,
-        limit:1*pageSize,
-        order:[['id','DESC']]
+        offset: pageSize * pageNum,
+        limit: 1 * pageSize,
+        order: [['id', 'DESC']]
     })
 }
 
 /**
- * 获取某用户的所有未读消息
+ * 获取某用户的所有未读消息(只需要对话)
  * @param userId
  */
-exports.getUnreadMessagesOfOneUser = function (userId) {
-    return Message.findAll({
-        where: {
-            [Op.and]: [
-                {
-                    toId: userId
-                },
-                {
-                    read: false
-                }
-            ]
-        }
-    })
+exports.getUnreadConversationsOfOneUser = function (userId) {
+    return Message.findAll(
+        {
+            attributes: ['conversationId'],
+            where: {
+                [Op.and]: [
+                    {
+                        toId: userId
+                    },
+                    {
+                        read: false
+                    }
+                ]
+            }
+        })
 }
 
 /**
  * 将某对话下的所有消息标记为已读
  * @param conversationId
  */
-exports.markAllRead = function (toUserId,conversationId){
+exports.markAllRead = function (toUserId, conversationId) {
     return Message.update({
-        read:true
-    },{
-        where:{
-            [Op.and]:[
+        read: true
+    }, {
+        where: {
+            [Op.and]: [
                 {
-                    conversationId:conversationId
+                    conversationId: conversationId
                 },
                 {
-                    toId:toUserId
+                    toId: toUserId
                 }
             ]
 
@@ -89,12 +91,12 @@ exports.markAllRead = function (toUserId,conversationId){
  * 将某消息标记为已读
  * @param messageId
  */
-exports.markRead = function (messageId){
+exports.markRead = function (messageId) {
     return Message.update({
-        read:true
-    },{
-        where:{
-            id:messageId
+        read: true
+    }, {
+        where: {
+            id: messageId
         }
     })
 }
