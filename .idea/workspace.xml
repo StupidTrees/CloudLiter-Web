@@ -29,13 +29,14 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="去掉几个发现用不着的接口">
-      <change afterPath="$PROJECT_DIR$/service/emotionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/bin/www" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/messageRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/messageRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/group.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/group.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/messageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="改个名">
+      <change afterPath="$PROJECT_DIR$/service/ShieldingService.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service/dictionary/敏感词库.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/message.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/message.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/emotionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/emotionService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,6 +90,12 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\projects\Hichat\开发任务书\阶段2" />
+      <recent name="E:\projects\Hichat\repository" />
+      <recent name="E:\projects\Hichat\utils" />
+      <recent name="E:\projects\Hichat\mysql" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\projects\Hichat\开发任务书\阶段2" />
       <recent name="E:\projects\Hichat\routes" />
@@ -96,14 +103,8 @@
       <recent name="E:\projects\Hichat\database" />
       <recent name="E:\projects\Hichat" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\projects\Hichat\开发任务书\阶段2" />
-      <recent name="E:\projects\Hichat\repository" />
-      <recent name="E:\projects\Hichat\utils" />
-      <recent name="E:\projects\Hichat\mysql" />
-    </key>
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
   <component name="SvnConfiguration">
     <configuration>C:\Users\23211\AppData\Roaming\Subversion</configuration>
   </component>

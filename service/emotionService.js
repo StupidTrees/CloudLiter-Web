@@ -1,6 +1,18 @@
-const sentiment = require('sentiment')
+const Sentiment = require('sentiment')
+const sentiment = new Sentiment({
 
-var Sentiment = require('sentiment');
-var sentiment = new Sentiment();
-var result = sentiment.analyze('Cats are stupid.');
-console.dir(result);    // Score: -2, Comparative: -0.666
+})
+// const nodejieba = require("nodejieba");
+// let result = nodejieba.cut("南京市长江大桥");
+// const cnrLanguage = {
+//     labels: {
+//         '愚蠢': -2,
+//         '笨蛋':-1.8
+//     }
+// };
+// sentiment.registerLanguage('cn', cnrLanguage);
+// sentiment.analyze("南京长江大桥",{
+//     language:cnrLanguage
+// },function () {
+//
+// })

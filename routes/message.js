@@ -24,4 +24,8 @@ router.get('/get', function (req, res) {
     })
 })
 
+const sensitive = require('../service/ShieldingService')
+router.get('/detective',function (req,res) {
+    res.send(sensitive.checkSensitive(req.query.sentence))
+})
 module.exports = router;

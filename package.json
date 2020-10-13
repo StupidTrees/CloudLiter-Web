@@ -11,6 +11,7 @@
     "debug": "~2.6.9",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
+    "fastscan": "^1.0.6",
     "formidable": "^1.2.2",
     "http": "0.0.1-security",
     "http-errors": "~1.6.3",
@@ -26,5 +27,8 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
     "utf-8-validate": "^5.0.2"
+  },
+  "devDependencies": {
+    "sentiment": "^5.0.2"
   }
 }

@@ -260,6 +260,9 @@ exports.Message = con.sequelize.define(
         read:{
           type:DataTypes.BOOLEAN
         },
+        sensitive:{
+            type:DataTypes.BOOLEAN
+        },
         createdAt: {
             type: DataTypes.DATE
         },
