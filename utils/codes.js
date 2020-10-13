@@ -96,6 +96,14 @@ exports.codes = {
         code:3017,
         message:'组名已存在！'
     },
+    not_friend_build_group_error:{
+        code:3018,
+        message:'不是好友不能加分组！'
+    },
+    group_not_existed:{
+        code:3019,
+        message:'小组不存在！'
+    },
     other_error:{
         code:5000,
         message:'其他错误'

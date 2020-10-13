@@ -26,6 +26,18 @@ exports.createNewGroup=function(userId,groupName){
         }
     )
 }
+exports.isFriend=function (userId,friendId){
+    return Relation.findAll(
+        {
+            where:{
+                [Op.and]:[
+                    {userId:userId},
+                    {friend:friendId}
+                ]
+            }
+        }
+    )
+}
 exports.changeGroupNum=function(userId,friendId,groupId){
     let key = tools.getP2PId(userId,friendId)
     return Relation.update({
@@ -36,6 +48,15 @@ exports.changeGroupNum=function(userId,friendId,groupId){
                 key:key
             }
         })
+}
+exports.isGroupExisted=function(groupId){
+    return Group.findAll(
+        {
+            where:{
+                id:groupId
+            }
+        }
+    )
 }
 exports.deleteGroup=function(groupId){
     return Group.destroy(
