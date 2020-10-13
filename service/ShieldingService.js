@@ -6,7 +6,7 @@ const words = []
 
 async function initScanner(){
     return new Promise((resolve)=>{
-        let fRead = fs.createReadStream('service/dictionary/敏感词库.txt');
+        let fRead = fs.createReadStream(path.join(__dirname, '../')+'service/dictionary/敏感词库.txt');
         let objReadline = readline.createInterface({input: fRead});
         objReadline.on('line', line => {
             words.push(line);
@@ -30,14 +30,14 @@ initScanner().then((value=>{
  * @param sentence 句子
  * @returns {boolean} 是否包含敏感词
  */
-exports.checkSensitive = function(sentence){
+exports.checkSensitive = async function(sentence){
     if(scanner!=null){
         let offWords = scanner.search(sentence);
         console.log(offWords)
-        return offWords.length>0
+        return Promise.resolve(offWords.length>0)
     }
     console.log('敏感词库尚未加载！')
-    return false
+    return Promise.reject()
 }
 
 

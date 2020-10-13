@@ -20,6 +20,7 @@ const server = http.createServer(app);
 
 const convService = require('../service/conversationService')
 const messageService = require('../service/messageService')
+const shieldingService = require('../service/ShieldingService')
 const io = require('socket.io').listen(server);
 const tools = require('../utils/tools')
 const textUtils = require('../utils/textUtils')
@@ -186,16 +187,24 @@ io.on('connection', socket => {
         let obj = JSON.parse(objStr)
         console.log('发送消息', obj)
         console.log('对方的socketId为', id2SocketId[obj.toId])
-        //更新对话信息
-        convService.updateConversation(obj.fromId, obj.toId, obj).then()
-        //保存消息，保存成功才能传递给对方
-        messageService.saveMessage(obj).then((value) => {
-            io.to(id2SocketId[obj.toId]).emit('message', value.data);
-            console.log('value',value)
-            console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
-        }, (err) => {
-            console.log("消息发送失败", err)
-        })
+        //敏感词检测
+        shieldingService.checkSensitive(obj.content).then((value=>{
+            if(value){
+                obj.content = '*包含敏感信息*'
+            }
+            obj.sensitive = value
+            //更新对话信息
+            convService.updateConversation(obj.fromId, obj.toId, obj).then()
+            //保存消息，保存成功才能传递给对方
+            messageService.saveMessage(obj).then((value) => {
+                io.to(id2SocketId[obj.toId]).emit('message', value.data);
+                console.log('value',value)
+                console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
+            }, (err) => {
+                console.log("消息发送失败", err)
+            })
+        }))
+
     });
 
     //获取某好友是否在线
