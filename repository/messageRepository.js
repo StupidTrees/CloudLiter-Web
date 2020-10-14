@@ -21,6 +21,7 @@ exports.saveMessage = function (message) {
         toId: message.toId,
         content: message.content,
         relationId: message.fromId + '-' + message.toId,
+        sensitive:message.sensitive,
         conversationId: minId + '-' + maxId
     })
 }

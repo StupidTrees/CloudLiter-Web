@@ -107,11 +107,11 @@ exports.getConversationById = function (userId,friendId){
  * 更新会话的最新消息
  * @param fromId
  * @param toId
- * @param message
+ * @param lastMessage
  */
-exports.updateConversation = function (fromId,toId,message){
+exports.updateConversation = function (fromId,toId,lastMessage){
     return Conversation.update({
-        lastMessage:message.content
+        lastMessage:lastMessage
     },{
         where:{
             key:{

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig host="47.103.202.97" id="fee87dec-e9cf-4da1-9b4a-3c4510778902" keyPath="C:\tools\aliyun\stupidtree.pem" port="22" nameFormat="DESCRIPTIVE" username="root" />
+      <sshConfig host="47.103.202.97" id="fee87dec-e9cf-4da1-9b4a-3c4510778902" keyPath="F:\tools\aliyun\stupidtree.pem" port="22" nameFormat="DESCRIPTIVE" username="root" />
     </configs>
   </component>
 </project>

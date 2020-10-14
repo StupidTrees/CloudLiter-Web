@@ -30,10 +30,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="加入敏感词屏蔽">
+      <change afterPath="$PROJECT_DIR$/bin/long_connection.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/bin/www" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/ShieldingService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/ShieldingService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/conversationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/conversationRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/messageRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/messageRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +104,7 @@
       <recent name="E:\projects\Hichat" />
     </key>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
   <component name="SvnConfiguration">
     <configuration>C:\Users\23211\AppData\Roaming\Subversion</configuration>
   </component>
@@ -290,16 +293,20 @@
     <option name="LAST_COMMIT_MESSAGE" value="加入敏感词屏蔽" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="277" y="95" key="#Deployment" timestamp="1602566437287">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="311" y="90" key="#Deployment" timestamp="1602586667044">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1602566437287" />
-    <state x="311" y="90" key="#Deployment/0.0.1536.824@0.0.1536.824" timestamp="1602258547991" />
-    <state x="262" y="83" key="#SSH_Configurations" timestamp="1602566435686">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="311" y="90" key="#Deployment/0.0.1536.824@0.0.1536.824" timestamp="1602586667044" />
+    <state x="651" y="274" key="#Notifications" timestamp="1602582030627">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="651" y="274" key="#Notifications/0.0.1536.824@0.0.1536.824" timestamp="1602582030627" />
+    <state x="294" y="78" key="#SSH_Configurations" timestamp="1602586666135">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="262" y="83" key="#SSH_Configurations/0.0.1368.872@0.0.1368.872" timestamp="1602566435686" />
-    <state x="294" y="78" key="#SSH_Configurations/0.0.1536.824@0.0.1536.824" timestamp="1602258532745" />
+    <state x="294" y="78" key="#SSH_Configurations/0.0.1536.824@0.0.1536.824" timestamp="1602586666135" />
     <state x="480" y="303" key="#Usage_Scope" timestamp="1600789031314">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -332,11 +339,11 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="93" y="93" width="1181" height="685" key="DirDiffDialog/0.0.1368.872@0.0.1368.872" timestamp="1601008840131" />
-    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1602566433886">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="523" y="182" key="FileChooserDialogImpl" timestamp="1602586665089">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1602566433886" />
-    <state x="523" y="182" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1602260071383" />
+    <state x="523" y="182" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1602586665089" />
     <state x="558" y="334" key="Github.ShareDialog" timestamp="1600867111588">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -345,26 +352,26 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="539" y="134" key="Github.UntrackedFilesDialog/0.0.1368.872@0.0.1368.872" timestamp="1600867604575" />
-    <state width="1326" height="281" key="GridCell.Tab.0.bottom" timestamp="1602568838753">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="312" key="GridCell.Tab.0.bottom" timestamp="1602586450410">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1326" height="281" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1602568838753" />
-    <state width="746" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1602259888846" />
-    <state width="1326" height="281" key="GridCell.Tab.0.center" timestamp="1602568838752">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="312" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
+    <state width="1493" height="312" key="GridCell.Tab.0.center" timestamp="1602586450410">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1326" height="281" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1602568838752" />
-    <state width="746" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1602259888846" />
-    <state width="1326" height="281" key="GridCell.Tab.0.left" timestamp="1602568838751">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="312" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
+    <state width="1493" height="312" key="GridCell.Tab.0.left" timestamp="1602586450410">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1326" height="281" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1602568838751" />
-    <state width="746" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1602259888846" />
-    <state width="1326" height="281" key="GridCell.Tab.0.right" timestamp="1602568838752">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state width="1493" height="312" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
+    <state width="1493" height="312" key="GridCell.Tab.0.right" timestamp="1602586450410">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1326" height="281" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1602568838752" />
-    <state width="746" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1602259888846" />
+    <state width="1493" height="312" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
     <state width="1326" height="281" key="GridCell.Tab.1.bottom" timestamp="1602568838754">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -421,11 +428,11 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1602167896581" />
-    <state x="99" y="74" key="SettingsEditor" timestamp="1602520776536">
+    <state x="99" y="74" key="SettingsEditor" timestamp="1602586489740">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="127" y="43" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1602223570636" />
-    <state x="99" y="74" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1602520776536" />
+    <state x="99" y="74" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1602586489740" />
     <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601819373910">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
