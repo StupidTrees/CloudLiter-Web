@@ -30,7 +30,8 @@ router.get('/get', function (req, res) {
  * 拉取某一对话的最新消息
  */
 router.get('/pull_latest', function (req, res) {
-    let afterId = req.query.afterId===undefined?null:req.query.afterId
+    let afterId = (req.query.afterId===undefined||req.query.afterId==null||equals(req.query.afterId,'null'))
+        ?null:req.query.afterId
     service.pullLatestMessage(req.query.conversationId,afterId).then((value)=>{
         res.send(value)
     },(err)=>{
@@ -39,7 +40,7 @@ router.get('/pull_latest', function (req, res) {
     })
 })
 
-const sensitive = require('../service/ShieldingService')
+const sensitive = require('../service/shieldingService')
 const {equals} = require("../utils/textUtils");
 router.get('/detective',function (req,res) {
     res.send(sensitive.checkSensitive(req.query.sentence))
