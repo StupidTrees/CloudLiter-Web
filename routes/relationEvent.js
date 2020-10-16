@@ -22,7 +22,7 @@ router.post('/event/request',function (req,res){
  * 处理好友申请
  */
 router.post('/event/response',function (req,res){
-    service.resFriendApply(req.body.id,req.body.action).then((value)=>{
+    service.responseFriendApply(req.body.eventId,req.body.action).then((value)=>{
         res.send(value)
     }).catch((err)=>{
         res.send(err)
@@ -45,7 +45,7 @@ router.post('/event/response',function (req,res){
 // })
 
 /**
- * 对好友请求计数
+ * 对未读好友事件计数
  */
 router.get('/event/count_unread',function (req,res){
     let queryId = req.query.authId
@@ -74,46 +74,38 @@ router.get('/event/query_mine',function (req,res){
     })
 })
 
+
 /**
- * 计数被拒绝的请求数
+ * 标记所有好友事件已读
  */
-router.get('/event/query_rejected',function (req,res){
-    let queryId = req.query.authId
-    if(req.query.userId !== undefined){
-        queryId = req.query.userId
+router.post('/event/mark_read',function (req,res){
+    let queryId = req.body.authId
+    if(req.body.userId !== undefined){
+        queryId = req.body.userId
     }
-    service.countRejected(queryId).then(value => {
+    service.markRead(queryId).then(value => {
         res.send(value)
     }).catch(err=>{
         res.send(err)
     })
 })
+
 
 /**
  * 删除好友
  */
-router.post('/event/relation_delete_friend',function (req,res){
-    let queryId = req.body.userId
+router.post('/event/delete_friend',function (req,res){
+    let queryId = req.body.authId
     if(req.body.userId!==undefined){
         queryId = req.body.userId
     }
-    service.delFriend(queryId,req.body.friendId).then(value => {
+    service.deleteFriend(queryId,req.body.friendId).then(value => {
         res.send(value)
     }).catch(err=>{
         res.send(err)
     })
 })
 
-router.get('/event/query_deleted',function (req,res){
-    let queryId = req.query.authId
-    if(req.query.userId !== undefined){
-        queryId = req.query.userId
-    }
-    service.countDeleted(queryId).then(value => {
-        res.send(value)
-    }).catch(err=>{
-        res.send(err)
-    })
-})
+
 
 module.exports = router

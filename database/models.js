@@ -178,6 +178,9 @@ this.Conversation.belongsTo(this.User,{
 })
 this.Conversation.sync({force: false}).then(r => r)
 
+/**
+ * 好友事件表
+ */
 exports.RelationEvent = con.sequelize.define(
     'relationEvent',{
         id:{
@@ -199,6 +202,10 @@ exports.RelationEvent = con.sequelize.define(
         read:{
             type:DataTypes.BOOLEAN,
             allowNull:false,
+        },
+        responseRead:{
+            type:DataTypes.BOOLEAN,
+            allowNull:true
         },
         createdAt:{
             type: DataTypes.DATE
@@ -252,6 +259,9 @@ exports.Message = con.sequelize.define(
         },
         read:{
           type:DataTypes.BOOLEAN
+        },
+        sensitive:{
+            type:DataTypes.BOOLEAN
         },
         createdAt: {
             type: DataTypes.DATE

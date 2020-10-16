@@ -37,6 +37,7 @@ exports.createUser = function (username, password, gender, nickname) {
             password: password,
             gender: gender,
             nickname: nickname,
+            color:'BLUE'
         }
     )
 }

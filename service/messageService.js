@@ -38,16 +38,15 @@ exports.saveMessage = async function(message){
 }
 
 /**
- * 获取某对话的所有消息
+ * 获取某对话的历史消息
  * @param conversationId 对话id
+ * @param fromId
  * @param pageSize 分页大小
- * @param pageNum 页码
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.getMessages = async function(conversationId,pageSize,pageNum){
+exports.queryHistoryMessage = async function(conversationId, fromId, pageSize){
     let value = null
     try {
-        value = await repository.getMessagesOfOneConversation(conversationId,pageSize,pageNum)
+        value = await repository.getMessagesOfOneConversation(conversationId,fromId,pageSize)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
     }
@@ -62,15 +61,17 @@ exports.getMessages = async function(conversationId,pageSize,pageNum){
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
 }
 
+
+
 /**
- * 获得某用户所有未读消息
- * @param userId
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ * 拉取某对话的最新消息
+ * @param conversationId 对话id
+ * @param afterId
  */
-exports.getUnreadMessage = async function(userId){
+exports.pullLatestMessage = async function(conversationId,afterId){
     let value = null
     try {
-        value = await repository.getUnreadMessagesOfOneUser(userId)
+        value = await repository.pullLatestMessagesOfConversation(conversationId,afterId)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
     }
@@ -79,8 +80,35 @@ exports.getUnreadMessage = async function(userId){
     }
     let res = []
     value.forEach(function (item) {
-        //console.log('item',item.get())
         res.push(item)
+    })
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
+}
+
+
+/**
+ * 获得某用户所有未读消息
+ * @param userId
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.countUnreadMessage = async function(userId){
+    let value = null
+    try {
+        value = await repository.getUnreadConversationsOfOneUser(userId)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+    }
+    if(value===null){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+    }
+    let res = {}
+    value.forEach(function (item) {
+        //console.log('item',item.get())
+        if(!res.hasOwnProperty(item.get().conversationId)){
+            res[item.get().conversationId] = 1
+        }else{
+            res[item.get().conversationId]+= 1
+        }
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
 }

@@ -96,9 +96,9 @@ exports.getConversationById = async function (userId, friendId) {
  * @param toId
  * @param message
  */
-exports.updateConversation = async function (fromId, toId, message) {
+exports.updateConversation = async function (fromId, toId, lastMessage) {
     try {
-        await repository.updateConversation(fromId, toId, message)
+        await repository.updateConversation(fromId, toId, lastMessage)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }

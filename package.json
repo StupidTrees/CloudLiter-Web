@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -11,6 +12,7 @@
     "debug": "~2.6.9",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
+    "fastscan": "^1.0.6",
     "formidable": "^1.2.2",
     "http": "0.0.1-security",
     "http-errors": "~1.6.3",
@@ -18,6 +20,7 @@
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
+    "node-gyp": "^7.1.1",
     "pug": "2.0.0-beta11",
     "sequelize": "^6.3.5",
     "socket.io": "^2.3.0",
@@ -26,5 +29,9 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
     "utf-8-validate": "^5.0.2"
+  },
+  "devDependencies": {
+    "patch-package": "^6.2.2",
+    "sentiment": "^5.0.2"
   }
 }

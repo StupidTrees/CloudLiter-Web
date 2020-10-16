@@ -85,9 +85,12 @@ exports.codes = {
     },
     apply_not_exists:{
         code:3015,
-        message:'没有这种好友申请'
+        message:'好友申请不存在'
     },
-
+    format_error_relation_action:{
+        code:3017,
+        message:'好友操作格式不正确！'
+    },
     format_error_color:{
         code:3016,
         message:'颜色格式不正确！'
