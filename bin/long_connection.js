@@ -177,12 +177,14 @@ function onConnect(socket) {
         console.log('对方的socketId为', id2SocketId[obj.toId])
         async function processSentence(text){
             //情感分析
-            let emotion =  await emotionService.analyzeEmotion(text)
-            console.log("情感分析结果",emotion)
+            let emotionResult =  await emotionService.analyzeEmotion(text)
+            console.log("情感分析结果",emotionResult)
+            let emotionScore = emotionResult.score
+            let segmentation = emotionResult.segmentation
             //敏感词检测
             let sensitive = await shieldingService.checkSensitive(text)
             console.log("敏感判定结果",sensitive)
-            return Promise.resolve({emotion:emotion,sensitive:sensitive})
+            return Promise.resolve({emotion:emotionScore,sensitive:sensitive})
         }
 
         processSentence(obj.content).then((value)=>{
