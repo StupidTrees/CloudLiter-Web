@@ -7,10 +7,10 @@ path = require('path')
 
 let init = false
 
-async function initEmotionAnalyze(){
-    return new Promise((resolve,reject)=>{
+async function initEmotionAnalyze() {
+    return new Promise((resolve, reject) => {
         nodejieba.load()
-        let fRead = fs.createReadStream(path.join(__dirname, '../')+'service/dictionary/汉语情感词极值表.txt');
+        let fRead = fs.createReadStream(path.join(__dirname, '../') + 'service/dictionary/汉语情感词极值表.txt');
         let objReadline = readline.createInterface({input: fRead});
         let dict = {}
         objReadline.on('line', line => {
@@ -29,24 +29,24 @@ async function initEmotionAnalyze(){
 }
 
 
-initEmotionAnalyze().then((()=>{
+initEmotionAnalyze().then((() => {
     init = true
 }))
 
-exports.analyzeEmotion = function(str){
-    return new Promise((resolve,reject)=>{
-        if(!init){
+exports.analyzeEmotion = function (str) {
+    return new Promise((resolve, reject) => {
+        if (!init) {
             reject()
-        }else{
-            sentiment.analyze(str,{
-                language:'cn'
-            },function (str) {
+        } else {
+            sentiment.analyze(str, {
+                language: 'cn'
+            }, function (str) {
                 let res = nodejieba.cut(str)
                 console.log(res)
-                return res
-            },function (nul,res) {
+                return {segmentation: res, result: res}
+            }, function (nul, res) {
                 console.log(res)
-                resolve(res.score)
+                resolve({segmentation:res.segmentation, score:res.result.score})
             })
         }
 
