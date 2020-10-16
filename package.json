@@ -31,6 +31,7 @@
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
+    "nodejieba": "^2.4.1",
     "patch-package": "^6.2.2",
     "sentiment": "^5.0.2"
   }

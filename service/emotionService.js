@@ -1,20 +1,58 @@
 const Sentiment = require('sentiment')
-const sentiment = new Sentiment({
-
-})
+const fs = require('fs')
+const readline = require('readline')
+const sentiment = new Sentiment({})
 const nodejieba = require("nodejieba");
+path = require('path')
 
-const cnrLanguage = {
-    labels: {
-        '愚蠢': -2,
-        '笨蛋':-1.8
-    }
-};
-sentiment.registerLanguage('cn', cnrLanguage);
-sentiment.analyze("南京长江大桥",{
-    language:cnrLanguage
-},function (str) {
-    return nodejieba.cut(str);
-},function (res) {
-    console.log(res)
-})
+let init = false
+
+async function initEmotionAnalyze(){
+    return new Promise((resolve,reject)=>{
+        nodejieba.load()
+        let fRead = fs.createReadStream(path.join(__dirname, '../')+'service/dictionary/汉语情感词极值表.txt');
+        let objReadline = readline.createInterface({input: fRead});
+        let dict = {}
+        objReadline.on('line', line => {
+            let word = line.split('\t')[0]
+            dict[word] = parseFloat(line.split('\t')[1])
+        });
+        objReadline.on('close', () => {
+            console.log('已加载情感词库');
+            const cnrLanguage = {
+                labels: dict
+            };
+            sentiment.registerLanguage('cn', cnrLanguage);
+            resolve(sentiment)
+        });
+    })
+}
+
+
+initEmotionAnalyze().then((()=>{
+    init = true
+}))
+
+exports.analyzeEmotion = function(str){
+    return new Promise((resolve,reject)=>{
+        if(!init){
+            reject()
+        }else{
+            sentiment.analyze(str,{
+                language:'cn'
+            },function (str) {
+                let res = nodejieba.cut(str)
+                console.log(res)
+                return res
+            },function (nul,res) {
+                console.log(res)
+                resolve(res.score)
+            })
+        }
+
+    })
+
+}
+
+
+

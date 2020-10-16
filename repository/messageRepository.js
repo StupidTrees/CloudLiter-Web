@@ -1,4 +1,5 @@
 const models = require('../database/models')
+const tools = require('../utils/tools')
 const {equals} = require("../utils/textUtils");
 const Op = models.Op
 /**
@@ -10,12 +11,12 @@ const Relation = models.UserRelation
 const User = models.User
 const Message = models.Message
 
+
 /**
  * 将消息保存
  */
 exports.saveMessage = function (message) {
-    let minId = Math.min(message.fromId, message.toId)
-    let maxId = Math.max(message.fromId, message.toId)
+    let id = tools.getP2PIdOrdered(message.fromId,message.toId)
     return Message.create({
         read: false,
         fromId: message.fromId,
@@ -23,7 +24,8 @@ exports.saveMessage = function (message) {
         content: message.content,
         relationId: message.fromId + '-' + message.toId,
         sensitive: message.sensitive,
-        conversationId: minId + '-' + maxId
+        emotion: message.emotion,
+        conversationId: id
     })
 }
 

@@ -1,0 +1,22 @@
+diff --git a/node_modules/sentiment/lib/index.js b/node_modules/sentiment/lib/index.js
+index 31add3f..e033d8e 100644
+--- a/node_modules/sentiment/lib/index.js
++++ b/node_modules/sentiment/lib/index.js
+@@ -36,7 +36,7 @@ Sentiment.prototype.registerLanguage = function (languageCode, language) {
+  *     - Optional callback
+  * @return {Object}
+  */
+-Sentiment.prototype.analyze = function (phrase, opts, callback) {
++Sentiment.prototype.analyze = function (phrase, opts, tokenizer,callback) {
+     // Parse arguments
+     if (typeof phrase === 'undefined') phrase = '';
+     if (typeof opts === 'function') {
+@@ -54,7 +54,7 @@ Sentiment.prototype.analyze = function (phrase, opts, callback) {
+     }
+ 
+     // Storage objects
+-    var tokens      = tokenize(phrase),
++    var tokens      = tokenizer(phrase),
+         score       = 0,
+         words       = [],
+         positive    = [],

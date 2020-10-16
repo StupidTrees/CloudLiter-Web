@@ -1,6 +1,7 @@
 const convService = require('../service/conversationService')
 const messageService = require('../service/messageService')
-const shieldingService = require('../service/ShieldingService')
+const shieldingService = require('../service/shieldingService')
+const emotionService = require('../service/emotionService')
 const tools = require('../utils/tools')
 const textUtils = require('../utils/textUtils')
 
@@ -174,11 +175,21 @@ function onConnect(socket) {
         let obj = JSON.parse(objStr)
         console.log('发送消息', obj)
         console.log('对方的socketId为', id2SocketId[obj.toId])
-        //敏感词检测
-        shieldingService.checkSensitive(obj.content).then((value => {
-            obj.sensitive = value
+        async function processSentence(text){
+            //情感分析
+            let emotion =  await emotionService.analyzeEmotion(text)
+            console.log("情感分析结果",emotion)
+            //敏感词检测
+            let sensitive = await shieldingService.checkSensitive(text)
+            console.log("敏感判定结果",sensitive)
+            return Promise.resolve({emotion:emotion,sensitive:sensitive})
+        }
+
+        processSentence(obj.content).then((value)=>{
+            obj.sensitive = value.sensitive
+            obj.emotion = value.emotion
             //更新对话信息
-            convService.updateConversation(obj.fromId, obj.toId, value?'*敏感信息*':obj.content).then()
+            convService.updateConversation(obj.fromId, obj.toId, value.sensitive?'*敏感信息*':obj.content).then()
             //保存消息，保存成功才能传递给对方
             messageService.saveMessage(obj).then((value) => {
                 io.to(id2SocketId[obj.toId]).emit('message', value.data);
@@ -189,7 +200,8 @@ function onConnect(socket) {
             }, (err) => {
                 console.log("消息发送失败", err)
             })
-        }))
+        })
+
 
     });
 
