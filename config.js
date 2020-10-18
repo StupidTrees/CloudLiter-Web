@@ -12,6 +12,8 @@ module.exports = {
         port:3306
     },
     files:{
-        avatarDir:'files/img/avatar/'
+        avatarDir:'files/img/avatar/',
+        chatImageDir:'files/img/chat/',
+        nsfwModelDir:'service/model/'
     }
 }

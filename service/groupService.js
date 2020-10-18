@@ -48,8 +48,5 @@ exports.findAllGroup = async function(userId){
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    if (value.length === 0) { //获取到的用户数量为0：用户不存在
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, null))
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,value))
 }

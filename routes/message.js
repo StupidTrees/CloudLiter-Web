@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs')
 /**
  * 路由层：用户操作
  */
@@ -11,17 +12,17 @@ const service = require('../service/messageService')
  * 查询某一对话的消息记录
  */
 router.get('/get', function (req, res) {
-    if(req.query.pageSize===undefined){
+    if (req.query.pageSize === undefined) {
         req.query.pageSize = 15
     }
-    let fromId = (req.query.fromId===undefined||req.query.fromId==null||equals(req.query.fromId,'null'))
-        ?null:req.query.fromId
-    console.log("fromId",fromId)
-    service.queryHistoryMessage(req.query.conversationId,fromId,req.query.pageSize).then((value)=>{
+    let fromId = (req.query.fromId === undefined || req.query.fromId == null || equals(req.query.fromId, 'null'))
+        ? null : req.query.fromId
+    console.log("fromId", fromId)
+    service.queryHistoryMessage(req.query.conversationId, fromId, req.query.pageSize).then((value) => {
         //console.log("value",value)
         res.send(value)
-    },(err)=>{
-        console.log('err',err)
+    }, (err) => {
+        console.log('err', err)
         res.send(err)
     })
 })
@@ -30,19 +31,67 @@ router.get('/get', function (req, res) {
  * 拉取某一对话的最新消息
  */
 router.get('/pull_latest', function (req, res) {
-    let afterId = (req.query.afterId===undefined||req.query.afterId==null||equals(req.query.afterId,'null'))
-        ?null:req.query.afterId
-    service.pullLatestMessage(req.query.conversationId,afterId).then((value)=>{
+    let afterId = (req.query.afterId === undefined || req.query.afterId == null || equals(req.query.afterId, 'null'))
+        ? null : req.query.afterId
+    service.pullLatestMessage(req.query.conversationId, afterId).then((value) => {
         res.send(value)
-    },(err)=>{
-        console.log('err',err)
+    }, (err) => {
+        console.log('err', err)
         res.send(err)
     })
 })
 
-const sensitive = require('../service/shieldingService')
-const {equals} = require("../utils/textUtils");
-router.get('/detective',function (req,res) {
-    res.send(sensitive.checkSensitive(req.query.sentence))
+/**
+ * 发送图片消息
+ * toId在Param中
+ */
+router.post('/send_image', function (req, res) {
+    const form = new formidable.IncomingForm()
+    //设置文件保存的目标路径
+    let targetPath = path.join(__dirname, '../') + config.files.chatImageDir
+    // 如果目录不存在则创建
+    if (!fs.existsSync(targetPath)) fs.mkdirSync(targetPath, {
+        recursive: true
+    })
+    //设置文件目标路径
+    form.uploadDir = targetPath
+    // 上传文件大小限制
+    form.maxFieldsSize = 20 * 1024 * 1024
+    let userId = req.body.authId
+    let toId = req.query.toId
+    let uuid = req.query.uuid
+    console.log("request", req.query)
+    //从请求头中读取前端传来的文件files
+    form.parse(req, function (err, fields, files) {
+        if (err) {
+            res.send(jsonUtils.getResponseBody(codes.other_error, err))
+        } else {
+            service.sendImageMessage(userId, toId, files,uuid).then(
+                (value) => {
+                    res.send(value)
+                }, (err) => {
+                    res.send(err)
+                }
+            )
+        }
+    })
 })
+
+/**
+ * 按文件名直接获取聊天文件
+ */
+router.get('/image',function (req,res){
+    service.getChatImage(req.query.path).then(r => {
+        res.writeHead(200, "Ok");
+        res.write(r,"binary"); //格式必须为 binary，否则会出错
+        res.end();
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+const formidable = require("formidable");
+const jsonUtils = require("../utils/jsonUtils");
+const config = require("../config");
+const {codes} = require("../utils/codes");
+const {equals} = require("../utils/textUtils");
 module.exports = router;

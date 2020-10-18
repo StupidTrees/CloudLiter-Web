@@ -263,8 +263,15 @@ exports.Message = con.sequelize.define(
         sensitive: {
             type: DataTypes.BOOLEAN
         },
+        type:{
+            type:DataTypes.ENUM('TXT','IMG'),
+            default: 'TXT'
+        },
         emotion: {
             type: DataTypes.FLOAT
+        },
+        extra:{
+          type:DataTypes.STRING
         },
         createdAt: {
             type: DataTypes.DATE

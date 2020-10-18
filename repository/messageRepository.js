@@ -2,6 +2,7 @@ const models = require('../database/models')
 const tools = require('../utils/tools')
 const {equals} = require("../utils/textUtils");
 const Op = models.Op
+
 /**
  * 仓库层：对话表数据读写
  */
@@ -25,7 +26,9 @@ exports.saveMessage = function (message) {
         relationId: message.fromId + '-' + message.toId,
         sensitive: message.sensitive,
         emotion: message.emotion,
-        conversationId: id
+        conversationId: id,
+        type:message.type,
+        extra:JSON.stringify(message.extra)
     })
 }
 
@@ -129,6 +132,7 @@ exports.getUnreadConversationsOfOneUser = function (userId) {
 
 /**
  * 将某对话下的所有消息标记为已读
+ * @param toUserId
  * @param conversationId
  */
 exports.markAllRead = function (toUserId, conversationId) {
@@ -162,3 +166,5 @@ exports.markRead = function (messageId) {
         }
     })
 }
+
+

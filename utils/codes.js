@@ -95,9 +95,13 @@ exports.codes = {
         code:3016,
         message:'颜色格式不正确！'
     },
-    groupname_exists_error:{
+    group_name_exists_error:{
         code:3017,
         message:'组名已存在！'
+    },
+    no_chat_image_file:{
+        code:3018,
+        message:'没有找到聊天图片！'
     },
     other_error:{
         code:5000,

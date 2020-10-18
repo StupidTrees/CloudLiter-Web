@@ -36,7 +36,7 @@ router.post('/delete',function(req,res){
         res.send(err)
     })
 })
-router.post('/get',function(req,res){
+router.get('/get',function(req,res){
     let queryUserId = req.body.authId
     if(req.body.userId!==undefined){
         queryUserId = req.body.userId

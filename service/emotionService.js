@@ -34,25 +34,23 @@ initEmotionAnalyze().then((() => {
 }))
 
 exports.analyzeEmotion = function (str) {
+    str = str.replace(/\[y[0-9]*\]/g,'') //将表情去除
     return new Promise((resolve, reject) => {
         if (!init) {
             reject()
         } else {
+            let tokens = nodejieba.cut(str)
             sentiment.analyze(str, {
                 language: 'cn'
             }, function (str) {
-                let res = nodejieba.cut(str)
-                console.log(res)
-                return {segmentation: res, result: res}
+                return tokens
             }, function (nul, res) {
                 console.log(res)
-                resolve({segmentation:res.segmentation, score:res.result.score})
+                resolve({segmentation:tokens, score:res.score})
             })
         }
 
     })
 
 }
-
-
 
