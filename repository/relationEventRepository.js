@@ -24,7 +24,7 @@ exports.applyFriend = async function (userId, friendId) {
     if (message.length !== 0) {
         return 1
     }
-    message = await UserRelation.findAll({where: {[Op.and]: [{userId: userId}, {friend: friendId}]}})
+    message = await UserRelation.findAll({where: {[Op.and]: [{userId: userId}, {friendId: friendId}]}})
     if (message.length !== 0) {
         return 2
     }

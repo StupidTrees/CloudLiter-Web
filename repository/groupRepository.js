@@ -29,7 +29,7 @@ exports.createNewGroup=function(userId,groupName){
 exports.changeGroupNum=function(userId,friendId,groupId){
     let key = tools.getP2PId(userId,friendId)
     return Relation.update({
-        group:groupId
+        groupId:groupId
     },
         {
             where: {
@@ -47,12 +47,12 @@ exports.deleteGroup=function(groupId){
     ).then((value)=>{
         return Relation.update(
             {
-                group:null
+                groupId:null
             },
             {
                 where:
                     {
-                        group:groupId
+                        groupId:groupId
                     }
             }
         )

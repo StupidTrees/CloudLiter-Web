@@ -94,6 +94,7 @@ router.get('/query',function(req,res){
     service.queryRelation(queryId,req.query.friendId).then((value )=>{
         res.send(value)
     },(err)=>{
+        console.log(err)
         res.send(err)
     })
 })

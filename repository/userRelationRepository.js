@@ -11,27 +11,36 @@ const UserRelation = models.UserRelation
 const UserConversation = models.Conversation
 const RelationEvent = models.RelationEvent
 const User = models.User
+const Group = models.Group
 
 /**
  * 根据用户id，获取属于该用户的所有好友
  * @param id
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
-exports.getFriendsWithId = function (id) {
+exports.getFriendsOfId = function (id) {
     //查找关系表，并把关系表的外键（好友）对应的User表的内容include进来
     //最终返回的是用户信息列表
     return UserRelation.findAll({
-        where: {
-            userId: {
-                [Op.eq]: id
+            where: {
+                userId: {
+                    [Op.eq]: id
+                }
             }
+            , include: [
+                { //把friend字段的用户对象也查出来
+                    foreignKey: 'friendId',
+                    as: 'user',
+                    model: User
+                },
+                {
+                    foreignKey: 'groupId',
+                    attributes: ['groupName'],
+                    model: Group,
+                    as: 'group'
+                }
+            ]
         }
-        , include: [{ //把friend字段的用户对象也查出来
-            //attributes:[],
-            as: 'user',
-            model: User
-        }]
-    })
+    )
 }
 
 /**
@@ -39,17 +48,27 @@ exports.getFriendsWithId = function (id) {
  * @param myId 我的id
  * @param friendId 朋友的id
  */
-exports.queryRelationWithId = function (myId,friendId) {
-    let id = tools.getP2PId(myId,friendId)
+exports.queryRelationWithId = function (myId, friendId) {
+    let id = tools.getP2PId(myId, friendId)
     return UserRelation.findAll({
         where: {
             key: id
         }
-        , include: [{ //把friend字段的用户对象也查出来
-            //attributes:[],
-            as: 'user',
-            model: User
-        }]
+        , include: [
+            { //把friend字段的用户对象也查出来
+                //attributes:[],
+                foreignKey: "friendId",
+                as: 'user',
+                model: User
+            },
+            {
+                attributes: ['groupName'],
+                foreignKey: 'groupId',
+                model: Group,
+                as: 'group'
+            }
+
+        ]
     })
 }
 
@@ -58,18 +77,19 @@ exports.queryRelationWithId = function (myId,friendId) {
  * @param myId 我的id
  * @param friendId 朋友的id
  */
-exports.queryRemarkWithId = function (myId,friendId) {
+exports.queryRemarkWithId = function (myId, friendId) {
 
-    let id = tools.getP2PId(myId,friendId)
+    let id = tools.getP2PId(myId, friendId)
     return UserRelation.findAll({
-        attributes:['remark'],
+        attributes: ['remark'],
         where: {
             key: id
         }, include: [{ //把friend字段的用户对象也查出来
-        attributes:['nickname','avatar'],
-        as: 'user',
-        model: User
-    }]
+            foreignKey: "friendId",
+            attributes: ['nickname', 'avatar'],
+            as: 'user',
+            model: User
+        }]
     })
 }
 
@@ -78,21 +98,20 @@ exports.queryRemarkWithId = function (myId,friendId) {
  *建立好友关系
  * @param id1 用户1
  * @param id2 用户2
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>>}
  */
 exports.makeFriends = function (id1, id2) {
     //这将在关系表中插入两行数据，即id1->id2和id2->id1
     return UserRelation.create({
         key: id1 + '-' + id2,
         userId: id1,
-        friend: id2,
-        group: null
+        friendId: id2,
+        groupId: null
     }).then((user) => {
         return UserRelation.create({
             key: id2 + '-' + id1,
             userId: id2,
-            friend: id1,
-            group: null
+            friendId: id1,
+            groupId: null
         })
     })
 }
@@ -115,7 +134,7 @@ exports.isFriend = function (id1, id2) {
                     }
                 },
                 {
-                    friend: {
+                    friendId: {
                         [Op.eq]: id2
                     }
                 }
@@ -130,10 +149,9 @@ exports.isFriend = function (id1, id2) {
  * @param group_num
  * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.createGroup=function (key,group_num)
-{
+exports.createGroup = function (key, group_num) {
     return User.update({
-        group: group_num
+        groupId: group_num
     }, {
         where: {
             key: key
@@ -145,10 +163,9 @@ exports.createGroup=function (key,group_num)
  * @param key
  * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.deleteGroup=function(key)
-{
+exports.deleteGroup = function (key) {
     return User.update({
-        group: null
+        groupId: null
     }, {
         where: {
             key: key
@@ -166,7 +183,7 @@ exports.friendRemark = function (id1, id2, remark) {
     return UserRelation.update({
         remark: remark
     }, {
-        where: {[Op.and]: [{userId: id1}, {friend: id2}]}
+        where: {[Op.and]: [{userId: id1}, {friendId: id2}]}
     })
 }
 
@@ -176,10 +193,10 @@ exports.friendRemark = function (id1, id2, remark) {
  * @param id2
  * @returns {Promise<number>}
  */
-exports.deleteFriend = function (id1,id2){
-    return UserConversation.destroy({where: {[Op.or]: [{key: id1 + '-' + id2}, {key: id2 + '-' + id1}]}}).then((value)=>{
-        return UserRelation.destroy({where:{[Op.and]:[{userId: id1},{friend:id2}]}})
-    }).catch((err)=>{
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+exports.deleteFriend = function (id1, id2) {
+    return UserConversation.destroy({where: {[Op.or]: [{key: id1 + '-' + id2}, {key: id2 + '-' + id1}]}}).then((value) => {
+        return UserRelation.destroy({where: {[Op.and]: [{userId: id1}, {friendId: id2}]}})
+    }).catch((err) => {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
 }

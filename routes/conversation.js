@@ -19,6 +19,7 @@ router.get('/get', function (req, res, next) {
     service.getConversations(queryId).then((value)=>{
         res.send(value)
     },(err)=>{
+        console.log(err)
         res.send(err)
     })
 })
