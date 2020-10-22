@@ -29,6 +29,11 @@ exports.User = con.sequelize.define(
             type: DataTypes.ENUM('MALE', 'FEMALE'),
             allowNull: false
         },
+        color: {
+            type: DataTypes.ENUM('RED', 'ORANGE', 'YELLOW', 'GREEN', 'CYAN', 'BLUE', 'PURPLE'),
+            allowNull: false,
+            default: 'BLUE'
+        },
         nickname: {
             type: DataTypes.STRING,
             allowNull: true
@@ -37,9 +42,9 @@ exports.User = con.sequelize.define(
             type: DataTypes.STRING,
             allowNull: true
         },
-        avatar:{
-            type:DataTypes.STRING,
-            allowNull:true
+        avatar: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
         createdAt: {
             type: DataTypes.DATE
@@ -62,8 +67,8 @@ this.User.sync({force: false}).then(r => r)
  */
 exports.UserRelation = con.sequelize.define(
     'relation', {
-        key:{
-            type:DataTypes.STRING,
+        key: {
+            type: DataTypes.STRING,
             primaryKey: true
         },
         userId: {
@@ -76,7 +81,7 @@ exports.UserRelation = con.sequelize.define(
             // references:'user', //关联表名
             // referencesKey:'id' //关联表的列名
         },
-        remark:{
+        remark: {
             type: DataTypes.STRING
             //备注
         },
@@ -95,9 +100,9 @@ exports.UserRelation = con.sequelize.define(
     }
 );
 
-this.User.hasMany(this.UserRelation,{
-    foreignKey:'id',
-    targetKey:'userId'
+this.User.hasMany(this.UserRelation, {
+    foreignKey: 'id',
+    targetKey: 'userId'
 })
 
 
@@ -105,7 +110,7 @@ this.User.hasMany(this.UserRelation,{
 this.UserRelation.belongsTo(this.User, {
     foreignKey: 'friend',
     targetKey: 'id',
-    as:'user'
+    as: 'user'
 })
 
 //将定义好的模型同步到数据表，不强制覆盖
@@ -116,9 +121,9 @@ this.UserRelation.sync({force: false}).then(r => r)
  * 会话表
  */
 exports.Conversation = con.sequelize.define(
-    'conversation',{
-        key:{
-            type:DataTypes.STRING,
+    'conversation', {
+        key: {
+            type: DataTypes.STRING,
             primaryKey: true
         },
         user1Id: {
@@ -127,16 +132,145 @@ exports.Conversation = con.sequelize.define(
         user2Id: {
             type: DataTypes.BIGINT
         },
-        relation1Id:{
-            type:DataTypes.STRING
+        relation1Id: {
+            type: DataTypes.STRING
         },
-        relation2Id:{
-            type:DataTypes.STRING
+        relation2Id: {
+            type: DataTypes.STRING
         },
-        historyId:{
+        historyId: {
             type: DataTypes.BIGINT
         },
-        lastMessage:{
+        lastMessage: {
+            type: DataTypes.STRING
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    },
+    {
+        tableName: 'conversation'
+    }
+);
+
+this.Conversation.belongsTo(this.User, {
+    foreignKey: 'user1Id',
+    targetKey: 'id',
+    as: 'user1'
+})
+this.Conversation.belongsTo(this.UserRelation, {
+    foreignKey: 'relation1Id',
+    as: 'relation1',
+    targetKey: 'key'
+})
+this.Conversation.belongsTo(this.UserRelation, {
+    foreignKey: 'relation2Id',
+    targetKey: 'key',
+    as: 'relation2'
+})
+this.Conversation.belongsTo(this.User, {
+    foreignKey: 'user2Id',
+    targetKey: 'id',
+    as: 'user2'
+})
+this.Conversation.sync({force: false}).then(r => r)
+
+/**
+ * 好友事件表
+ */
+exports.RelationEvent = con.sequelize.define(
+    'relationEvent', {
+        id: {
+            type: DataTypes.BIGINT,
+            autoIncrement: true,
+            primaryKey: true
+            //userId-friendId
+        },
+        userId: {
+            type: DataTypes.BIGINT
+        },
+        friendId: {
+            type: DataTypes.BIGINT
+        },
+        state: {
+            type: DataTypes.ENUM('REQUESTING', 'ACCEPTED', 'REJECTED', 'DELETE'),
+            allowNull: false
+        },
+        read: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+        },
+        responseRead: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    },
+    {
+        tableName: 'relationEvent'
+    }
+)
+
+this.RelationEvent.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user1'
+})
+this.RelationEvent.belongsTo(this.User, {
+    foreignKey: 'friendId',
+    targetKey: 'id',
+    as: 'user2'
+})
+this.RelationEvent.sync({force: false}).then(r => r)
+
+
+/**
+ * 聊天记录表
+ */
+exports.Message = con.sequelize.define(
+    'message', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        fromId: {
+            type: DataTypes.BIGINT
+        },
+        toId: {
+            type: DataTypes.BIGINT
+        },
+        content: {
+            type: DataTypes.STRING
+        },
+        conversationId: {
+            type: DataTypes.STRING
+        },
+        relationId: {
+            type: DataTypes.STRING
+        },
+        read: {
+            type: DataTypes.BOOLEAN
+        },
+        sensitive: {
+            type: DataTypes.BOOLEAN
+        },
+        type:{
+            type:DataTypes.ENUM('TXT','IMG'),
+            default: 'TXT'
+        },
+        emotion: {
+            type: DataTypes.FLOAT
+        },
+        extra:{
             type:DataTypes.STRING
         },
         createdAt: {
@@ -147,39 +281,78 @@ exports.Conversation = con.sequelize.define(
         }
     },
     {
-        tableName:'conversation'
+        tableName: 'message'
     }
 );
 
-this.Conversation.belongsTo(this.User,{
-    foreignKey:'user1Id',
-    targetKey:'id',
-    as:'user1'
-})
-this.Conversation.belongsTo(this.UserRelation,{
-    foreignKey:'relation1Id',
-    as:'relation1',
-    targetKey:'key'
-})
-this.Conversation.belongsTo(this.UserRelation,{
-    foreignKey:'relation2Id',
-    targetKey:'key',
-    as:'relation2'
-})
-this.Conversation.belongsTo(this.User,{
-    foreignKey:'user2Id',
-    targetKey:'id',
-    as:'user2'
-})
-this.Conversation.sync({force: false}).then(r => r)
 
-exports.RelationEvent = con.sequelize.define(
-    'relationEvent',{
+this.Message.belongsTo(this.User, {
+    foreignKey: 'fromId',
+    targetKey: 'id',
+    as: 'fromUser'
+})
+
+this.Message.belongsTo(this.User, {
+    foreignKey: 'toId',
+    targetKey: 'id',
+    as: 'toUser'
+})
+
+this.Message.belongsTo(this.Conversation, {
+    foreignKey: 'conversationId',
+    targetKey: 'key',
+    as: 'conversation'
+})
+
+this.Message.belongsTo(this.UserRelation, {
+    foreignKey: 'relationId',
+    targetKey: 'key',
+    as: 'relation'
+})
+
+this.Message.sync({force: false}).then(r => r)
+
+exports.Group = con.sequelize.define(
+    'group', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        userId: {
+            type: DataTypes.BIGINT
+            // references:'user', //关联表名
+            // referencesKey:'id' //关联表的列名
+        },
+        groupName: {
+            type: DataTypes.STRING,
+            // references:'user', //关联表名
+            // referencesKey:'id' //关联表的列名
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    }
+)
+this.Group.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+this.Group.sync({force: false}).then(r => r)
+
+exports.wordCloudSum = con.sequelize.define(
+    'wordcloudsum',{
         id:{
-            type:DataTypes.BIGINT,
-            autoIncrement: true,
-            primaryKey:true
-            //userId-friendId
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        state: {
+            type: DataTypes.ENUM('USER','CONVERSATION')
         },
         userId: {
             type: DataTypes.BIGINT
@@ -187,37 +360,81 @@ exports.RelationEvent = con.sequelize.define(
         friendId: {
             type: DataTypes.BIGINT
         },
-        state:{
-            type:DataTypes.ENUM('REQUESTING','ACCEPTED','REJECTED','DELETE'),
-            allowNull:false
-        },
-        read:{
-            type:DataTypes.BOOLEAN,
-            allowNull:false,
-        },
-        createdAt:{
-            type: DataTypes.DATE
-        },
-        updatedAt:{
-            type:DataTypes.DATE
+        totalWord: {
+            type: DataTypes.BIGINT,
+            default: 0
         }
-    },
-    {
-        tableName:'relationEvent'
     }
 )
-
-this.RelationEvent.belongsTo(this.User,{
-    foreignKey:'userId',
-    targetKey:'id',
-    as:'user1'
+this.wordCloudSum.belongsTo(this.User,{
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user1'
 })
-this.RelationEvent.belongsTo(this.User,{
-    foreignKey:'friendId',
-    targetKey:'id',
-    as:'user2'
+this.wordCloudSum.belongsTo(this.User,{
+    foreignKey: 'friendId',
+    targetKey: 'id',
+    as: 'user2'
 })
-this.RelationEvent.sync({force: false}).then(r => r)
+this.wordCloudSum.sync({force: false}).then(r => r)
 
+/*exports.wordCloudUser = con.sequelize.define(
+    'wordclouduser',{
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        userId: {
+            type: DataTypes.BIGINT
+        },
+        word: {
+            type: DataTypes.STRING
+        },
+        num: {
+            type: DataTypes.BIGINT
+        }
+    }
+)
+this.wordCloudUser.belongsTo(this.User,{
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+this.wordCloudUser.sync({force: false}).then( r => r)*/
 
-
+exports.wordCloudBin = con.sequelize.define(
+    'wordcloudbin',{
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        state: {
+            type: DataTypes.ENUM('USER','CONVERSATION')
+        },
+        userId: {
+            type: DataTypes.BIGINT
+        },
+        friendId: {
+            type: DataTypes.BIGINT
+        },
+        word: {
+            type: DataTypes.STRING
+        },
+        num: {
+            type: DataTypes.BIGINT
+        }
+    }
+)
+this.wordCloudBin.belongsTo(this.User,{
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user1'
+})
+this.wordCloudBin.belongsTo(this.User,{
+    foreignKey: 'friendId',
+    targetKey: 'id',
+    as: 'user2'
+})
+this.wordCloudBin.sync({force: false}).then( r => r)
