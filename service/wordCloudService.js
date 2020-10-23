@@ -1,6 +1,7 @@
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const wordCloudRepository = require('../repository/wordCloudRepository')
+const tools = require('../utils/tools')
 
 /**
  * 服务层
@@ -10,12 +11,12 @@ const wordCloudRepository = require('../repository/wordCloudRepository')
 /**
  * 将词汇表统计词频后加入相关的数据库
  * @param {*} userId
- * @param {*} friendId
+ * @param conversationId
  * @param {*} list
  */
-exports.conductList = async function (userId, friendId, list) {
+exports.addToWordCloud = async function (userId,conversationId, list) {
     let store = {}
-    list.forEach((item, index) => {
+    list.forEach((item) => {
         if (store.hasOwnProperty(item)) {
             store[item] += 1
         } else {
@@ -23,11 +24,11 @@ exports.conductList = async function (userId, friendId, list) {
         }
     })
     if (list.length === 0) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.wordCloud_null))
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
     //记录总数
     try {
-        await wordCloudRepository.addConSum(userId, friendId, list.length)
+        await wordCloudRepository.addConSum(conversationId, list.length)
         await wordCloudRepository.addUserSum(userId, list.length)
     } catch (err) {
         console.log(err)
@@ -38,7 +39,7 @@ exports.conductList = async function (userId, friendId, list) {
     let item
     for (item in store) {
         try {
-            await wordCloudRepository.findOrCreateConWord(userId, friendId, item, store[item])
+            await wordCloudRepository.findOrCreateConWord(conversationId, item, store[item])
             await wordCloudRepository.findOrCreateUserWord(userId, item, store[item])
         } catch (err) {
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
@@ -51,7 +52,7 @@ exports.conductList = async function (userId, friendId, list) {
  * 获取用户词云信息
  * @param {*} userId
  */
-exports.getUserCloud = async function (userId) {
+exports.getUserWordCloud = async function (userId) {
     let sum
     let message
     let result = {}
@@ -63,7 +64,7 @@ exports.getUserCloud = async function (userId) {
     result.sum = sum.totalWord
 
     try {
-        message = await wordCloudRepository.getUserMessage(userId)
+        message = await wordCloudRepository.getUserWordCloud(userId)
     } catch (err) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
@@ -77,21 +78,22 @@ exports.getUserCloud = async function (userId) {
 
 /**
  * 获取对话词云信息
- * @param {*} userId
- * @param {*} friendId
+ * @param userId
+ * @param friendId
  */
-exports.getConCloud = async function (userId, friendId) {
+exports.getConversationWordCloud = async function (userId,friendId) {
+    let conversationId = tools.getP2PIdOrdered(userId,friendId)
     let sum
     let message
     let result = {}
     try {
-        sum = await wordCloudRepository.getConSum(userId, friendId)
+        sum = await wordCloudRepository.getConversationSum(conversationId)
     } catch (err) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
     // result.sum = sum.totalWord
     try {
-        message = await wordCloudRepository.getConMessage(userId, friendId)
+        message = await wordCloudRepository.getConversationWordCloud(conversationId)
     } catch (err) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }

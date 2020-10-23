@@ -3,6 +3,8 @@ const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const convRepository = require('../repository/conversationRepository')
+const wordCloudRepository = require("../repository/wordCloudRepository");
+const tools = require("../utils/tools");
 const equals = require('../utils/textUtils').equals
 /**
  * 服务层：关系操作
@@ -162,6 +164,9 @@ exports.deleteFriend = async function(userId, friendId){
     let value
     try{
         value = await eventRepository.deleteFriend(userId,friendId)
+        //同时删除对话词云
+        await wordCloudRepository.deleteConversationSum(tools.getP2PIdOrdered(userId,friendId))
+        await wordCloudRepository.deleteConversationWordCloud(tools.getP2PIdOrdered(userId,friendId))
     }catch (err){
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))

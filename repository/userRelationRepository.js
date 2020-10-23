@@ -188,14 +188,16 @@ exports.friendRemark = function (id1, id2, remark) {
 }
 
 /**
- *
+ * 删除好友
  * @param id1
  * @param id2
  * @returns {Promise<number>}
  */
 exports.deleteFriend = function (id1, id2) {
-    return UserConversation.destroy({where: {[Op.or]: [{key: id1 + '-' + id2}, {key: id2 + '-' + id1}]}}).then((value) => {
-        return UserRelation.destroy({where: {[Op.and]: [{userId: id1}, {friendId: id2}]}})
+    let convId = tools.getP2PIdOrdered(id1, id2)
+    let relId = tools.getP2PId(id1, id2)
+    return UserConversation.destroy({where: {key: convId}}).then((value) => {
+        return UserRelation.destroy({where: {key: relId}})
     }).catch((err) => {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })

@@ -9,6 +9,7 @@ const fs = require('fs')
  */
 
 const service = require('../service/userService')
+const wordCloudService = require("../service/wordCloudService");
 
 
 /**
@@ -173,6 +174,19 @@ router.get('/profile/query_avatar',function (req,res){
         res.send(err)
     })
 })
+
+
+/**
+ * 获取用户词云
+ */
+router.get('/profile/word_cloud',function (req,res){
+    wordCloudService.getUserWordCloud(req.query.userId).then(r=>{
+        res.send(r)
+    }).catch((err)=>{
+        res.send(err)
+    })
+})
+
 
 /**
  * 按文件名直接获取头像

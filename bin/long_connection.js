@@ -4,6 +4,7 @@ const shieldingService = require('../service/shieldingService')
 const emotionService = require('../service/emotionService')
 const tools = require('../utils/tools')
 const textUtils = require('../utils/textUtils')
+const  wordCloudService = require('../service/wordCloudService')
 
 let io
 
@@ -169,12 +170,16 @@ function onConnect(socket) {
         console.log('对方的socketId为', id2SocketId[obj.toId])
         async function processSentence(text){
             //情感分析
-            let emotionResult =  await emotionService.analyzeEmotion(text)
+            let emotionResult =  await emotionService.segmentAndAnalyzeEmotion(text)
             console.log("情感分析结果",emotionResult)
             let emotionScore = emotionResult.score
             let segmentation = emotionResult.segmentation
             //敏感词检测
             let sensitive = await shieldingService.checkSensitive(text)
+            //如果不敏感，就加入到词云统计
+            if(!sensitive){
+                wordCloudService.addToWordCloud(obj.fromId,obj.conversationId,emotionResult.toWordCloud).then()
+            }
             console.log("敏感判定结果",sensitive)
             return Promise.resolve({emotion:emotionScore,sensitive:sensitive,segmentation:segmentation})
         }

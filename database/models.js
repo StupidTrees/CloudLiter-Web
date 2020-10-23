@@ -346,20 +346,12 @@ this.Message.sync({force: false}).then(r => r)
 
 
 exports.wordCloudSum = con.sequelize.define(
-    'wordcloudsum',{
-        id:{
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        state: {
+    'wordCloudSum',{
+        type: {
             type: DataTypes.ENUM('USER','CONVERSATION')
         },
-        userId: {
-            type: DataTypes.BIGINT
-        },
-        friendId: {
-            type: DataTypes.BIGINT
+        key: {
+            type: DataTypes.STRING
         },
         totalWord: {
             type: DataTypes.BIGINT,
@@ -367,58 +359,16 @@ exports.wordCloudSum = con.sequelize.define(
         }
     }
 )
-this.wordCloudSum.belongsTo(this.User,{
-    foreignKey: 'userId',
-    targetKey: 'id',
-    as: 'user1'
-})
-this.wordCloudSum.belongsTo(this.User,{
-    foreignKey: 'friendId',
-    targetKey: 'id',
-    as: 'user2'
-})
 this.wordCloudSum.sync({force: false}).then(r => r)
 
-/*exports.wordCloudUser = con.sequelize.define(
-    'wordclouduser',{
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        userId: {
-            type: DataTypes.BIGINT
-        },
-        word: {
-            type: DataTypes.STRING
-        },
-        num: {
-            type: DataTypes.BIGINT
-        }
-    }
-)
-this.wordCloudUser.belongsTo(this.User,{
-    foreignKey: 'userId',
-    targetKey: 'id',
-    as: 'user'
-})
-this.wordCloudUser.sync({force: false}).then( r => r)*/
 
 exports.wordCloudBin = con.sequelize.define(
-    'wordcloudbin',{
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        state: {
+    'wordCloudBin',{
+        type: {
             type: DataTypes.ENUM('USER','CONVERSATION')
         },
-        userId: {
-            type: DataTypes.BIGINT
-        },
-        friendId: {
-            type: DataTypes.BIGINT
+        key:{
+            type:DataTypes.STRING
         },
         word: {
             type: DataTypes.STRING
@@ -428,14 +378,4 @@ exports.wordCloudBin = con.sequelize.define(
         }
     }
 )
-this.wordCloudBin.belongsTo(this.User,{
-    foreignKey: 'userId',
-    targetKey: 'id',
-    as: 'user1'
-})
-this.wordCloudBin.belongsTo(this.User,{
-    foreignKey: 'friendId',
-    targetKey: 'id',
-    as: 'user2'
-})
 this.wordCloudBin.sync({force: false}).then( r => r)

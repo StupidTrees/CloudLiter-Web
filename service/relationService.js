@@ -2,7 +2,9 @@ const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const convRepository = require('../repository/conversationRepository')
+const wordCloudRepository = require('../repository/wordCloudRepository')
 const textUtils = require('../utils/textUtils')
+const tools = require("../utils/tools");
 
 /**
  * 服务层：关系操作
@@ -149,22 +151,23 @@ exports.friendRemark = async function (id1, id2, remark) {
     ))
 }
 
-/**
- * 删除好友
- * @param id1
- * @param id2
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
- */
-exports.deleteFriend = async function (id1, id2) {
-    let value
-    try {
-        value = await repository.deleteFriend(id1, id2)
-    } catch (e) {
-        console.log(e)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    }
-    if (value === 0) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.relation_not_exists))
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-}
+// /**
+//  * 删除好友
+//  * @param id1
+//  * @param id2
+//  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+//  */
+// exports.deleteFriend = async function (id1, id2) {
+//     let value
+//     try {
+//         value = await repository.deleteFriend(id1, id2)
+//
+//     } catch (e) {
+//         console.log(e)
+//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+//     }
+//     if (value === 0) {
+//         return Promise.reject(jsonUtils.getResponseBody(codes.relation_not_exists))
+//     }
+//     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+// }

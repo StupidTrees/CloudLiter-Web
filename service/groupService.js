@@ -1,12 +1,7 @@
 const groupRepository = require('../repository/groupRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
-const config = require('../config')
-const codesUtils = require('../utils/codes')
-const textUtils = require('../utils/textUtils')
-const tools = require('../utils/tools')
-const fs = require('fs')
-const path = require('path')
+
 
 exports.createGroup = async function(userId,groupName){
     let flag = null

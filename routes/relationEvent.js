@@ -29,20 +29,6 @@ router.post('/event/response',function (req,res){
     })
 })
 
-// /**
-//  * 查询好友请求
-//  */
-// router.get('/event/query_unread',function (req,res){
-//     let queryId = req.query.authId
-//     if(req.query.userId !== undefined){
-//         queryId = req.query.userId
-//     }
-//     service.getUnread(queryId).then(value => {
-//         res.send(value)
-//     }).catch(err=>{
-//         res.send(err)
-//     })
-// })
 
 /**
  * 对未读好友事件计数

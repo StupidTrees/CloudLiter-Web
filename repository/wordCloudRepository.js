@@ -1,4 +1,4 @@
-const { where } = require('sequelize')
+const {where} = require('sequelize')
 const models = require('../database/models')
 const codes = require('../utils/codes').codes
 const Op = models.Op
@@ -9,206 +9,157 @@ const tools = require('../utils/tools')
  */
 
 const UserRelation = models.UserRelation
-const Message = models.Message
-const UserConversation = models.Conversation
 const User = models.User
 const wordCloudSum = models.wordCloudSum
 const wordCloudBin = models.wordCloudBin
 
 /**
  * 在创建账号时调用，创建user的词频总表
- * @param {} userId 
+ * @param {} userId
  */
-exports.createUserSum = function(userId){
-    //let message = await wordCloudSum.findAll({where:{[Op.and]:[{userId:userId},{state:'USER'}]}})
-    
+exports.createUserSum = function (userId) {
+    //let message = await wordCloudSum.findAll({where:{[Op.and]:[{userId:userId},{type:'USER'}]}})
+
     return wordCloudSum.create({
-            userId: userId,
-            state: 'USER',
-            totalWord: 0
+        key: userId.toString(),
+        type: 'USER',
+        totalWord: 0
     })
 }
 
 /**
  * 在创建会话时调用，创建conversation的词频总表
- * @param {*} userId 
- * @param {*} friendId 
+ * @param conversationId
  */
-exports.createConSum = function(userId,friendId)
-{
+exports.createConSum = function (conversationId) {
     return wordCloudSum.create({
-        userId: userId,
-        friendId: friendId,
-        state: 'CONVERSATION',
+        key: conversationId.toString(),
+        type: 'CONVERSATION',
         totalWord: 0
     })
 }
 
 /**
  * 用户个人总词频增加
- * @param {*} userId 
+ * @param {*} userId
  * @param {*} addNum
  */
-exports.addUserSum = function(userId,addNum){
-    /*return wordCloudSum.update(
-        {totalWord: totalWord + addNum},
-        {
-            where:{
-                [Op.and]:[{userId:userId},{state:'USER'}]
-            }
-        }
-    )*/
+exports.addUserSum = function (userId, addNum) {
     return wordCloudSum.findOrCreate({
-        where:{
-            [Op.and]:[{userId:userId},{state:'USER'}]
+        where: {
+            [Op.and]: [{key: userId.toString()}, {type: 'USER'}]
         },
-        defaults:{
-            userId:userId,
-            state:'USER',
-            totalWord:addNum
+        defaults: {
+            key: userId.toString(),
+            type: 'USER',
+            totalWord: addNum
         }
-    }).then(([user,created])=>{
-        if(created === false){
-            return user.update({totalWord:user.totalWord+addNum})
+    }).then(([user, created]) => {
+        if (created === false) {
+            return user.update({totalWord: user.totalWord + addNum})
         }
     })
 }
 
 /**
  * 会话总词频增加
- * @param {*} user1 
- * @param {*} user2 
+ * @param conversationId
  * @param {*} addNum
  */
-exports.addConSum = function(user1,user2,addNum){
-    /*return wordCloudSum.update(
-        {totalWord: totalWord + addNum},
-        {
-            where:{
-                [Op.and]:[
-                    {state: 'CONVERSATION'},
-                    {
-                        [Op.or]:[
-                            {[Op.and]:[{userId:user1},{friendId:user2}]},
-                            {[Op.and]:[{userId:user2},{userId:user1}]}
-                        ]
-                    }
-                ]
-            }
-        }
-    )*/
+exports.addConSum = function (conversationId, addNum) {
     return wordCloudSum.findOrCreate({
-        where:{
-            [Op.and]:[
-                {state: 'CONVERSATION'},
-                {
-                    [Op.or]:[
-                        {[Op.and]:[{userId:user1},{friendId:user2}]},
-                        {[Op.and]:[{userId:user2},{userId:user1}]}
-                    ]
-                }
+        where: {
+            [Op.and]: [
+                {type: 'CONVERSATION'},
+                {key: conversationId}
             ]
         },
-        defaults:{
-            userId:user1,
-            friendId:user2,
-            state:'CONVERSATION',
-            totalWord:addNum
+        defaults: {
+            key: conversationId.toString(),
+            type: 'CONVERSATION',
+            totalWord: addNum
         }
-    }).then(([user,created])=>{
-        if(created === false){
-            return user.update({totalWord:user.totalWord+addNum})
+    }).then(([user, created]) => {
+        if (created === false) {
+            return user.update({totalWord: user.totalWord + addNum})
         }
     })
 }
 
 /**
  * 查找word对应的用户个人词是否存在，没有就新建
- * @param {*} userId 
- * @param {*} word 
+ * @param {*} userId
+ * @param {*} word
  * @param {*} addNum
  */
-exports.findOrCreateUserWord = function(userId,word,addNum){
+exports.findOrCreateUserWord = function (userId, word, addNum) {
     return wordCloudBin.findOrCreate({
-        where:{
-            [Op.and]:[{userId:userId},{word:word},{state:'USER'}]
+        where: {
+            [Op.and]: [{key: userId}, {word: word}, {type: 'USER'}]
         },
-        defaults:{
-            userId:userId,
-            state:'USER',
-            word:word,
-            num:addNum
+        defaults: {
+            key: userId.toString(),
+            type: 'USER',
+            word: word,
+            num: addNum
         }
-    }).then(([user,created])=>{
-        if(created === false){
-            return user.update({num:user.num+addNum})
+    }).then(([user, created]) => {
+        if (created === false) {
+            return user.update({num: user.num + addNum})
         }
     })
 }
 
 /**
  * 查找word对应的会话词是否存在，没有就新建
- * @param {*} user1 
- * @param {*} user2 
- * @param {*} word 
+ * @param conversationId
+ * @param {*} word
  * @param {*} addNum
  */
-exports.findOrCreateConWord = function(user1,user2,word,addNum){
+exports.findOrCreateConWord = function (conversationId, word, addNum) {
     return wordCloudBin.findOrCreate({
-        where:{
-            [Op.and]:[
-                {word:word},
-                {state:'CONVERSATION'},
-                {[Op.or]:[
-                    {[Op.and]:[{userId:user1},{friendId:user2}]},
-                    {[Op.and]:[{userID:user2},{friendId:user1}]}
-                ]}
+        where: {
+            [Op.and]: [
+                {word: word},
+                {type: 'CONVERSATION'},
+                {key: conversationId}
             ]
         },
-        defaults:{
-            userId: user1,
-            friendId: user2,
-            state: 'CONVERSATION',
+        defaults: {
+            key: conversationId,
+            type: 'CONVERSATION',
             word: word,
-            num:addNum
+            num: addNum
         }
-    }).then(([user,created])=>{
-        if(created === false){
-            return user.update({num:user.num + addNum})
+    }).then(([user, created]) => {
+        if (created === false) {
+            return user.update({num: user.num + addNum})
         }
     })
 }
 
 /**
  * 删除会话相关词频
- * @param {*} user1 
- * @param {*} user2 
+ * @param conversationId
  */
-exports.deleteConWord = function(user1,user2){
+exports.deleteConversationWordCloud = function (conversationId) {
     return wordCloudBin.destroy({
-        where:{
-            [Op.or]:[
-                {[Op.and]:[{userId:user1},{friendId:user2},{state:'CONVERSATION'}]},
-                {[Op.and]:[{userId:user2},{friendId:user1},{state:'CONVERSATION'}]}
-            ]
+        where: {
+            [Op.and]: [{key: conversationId}, {type: 'CONVERSATION'}]
         }
     })
 }
 
 /**
  * 删除会话总词频
- * @param {*} user1 
- * @param {*} user2 
+ * @param conversationId
  */
-exports.deleteConSum = function(user1,user2){
+exports.deleteConversationSum = function (conversationId) {
     return wordCloudSum.destroy({
-        where:{
-            [Op.and]:[
-                {state:'CONVERSATION'},
-                {[Op.or]:[
-                    {[Op.and]:[{userId:user1},{friendId:user2}]},
-                    {[Op.and]:[{userId:user2},{friendId:user1}]}
-                ]}
+        where: {
+            [Op.and]: [
+                {type: 'CONVERSATION'},
+                {key: conversationId}
             ]
         }
     })
@@ -218,22 +169,23 @@ exports.deleteConSum = function(user1,user2){
  * 获取用户词频表
  * @param {*} userId
  */
-exports.getUserMessage = function(userId){
+exports.getUserWordCloud = function (userId) {
     return wordCloudBin.findAll({
-        where: {[Op.and]:[{userId: userId},{state:'USER'}]},
-        order: [['num','DESC']]
+        where: {[Op.and]: [{key: userId.toString()}, {type: 'USER'}]},
+        order: [['num', 'DESC']],
+        limit: 10 //最多10条
     })
 }
 
 /**
  * 获取用户sum
- * @param {} userId 
+ * @param {} userId
  */
-exports.getUserSum = function(userId){
+exports.getUserSum = function (userId) {
     return wordCloudSum.findOne({
         where: {
-            [Op.and]:[
-                {userId:userId},{state:'USER'}
+            [Op.and]: [
+                {key: userId.toString()}, {type: 'USER'}
             ]
         }
     })
@@ -241,35 +193,31 @@ exports.getUserSum = function(userId){
 
 /**
  * 获取会话词频表
- * @param {*} user1 
- * @param {*} user2 
+ * @param conversationId
  */
-exports.getConMessage = function(user1,user2){
+exports.getConversationWordCloud = function (conversationId) {
     return wordCloudBin.findAll({
-        where:{
-            [Op.or]:[
-                {[Op.and]:[{userId:user1},{friendId:user2},{state:'CONVERSATION'}]},
-                {[Op.and]:[{userId:user2},{friendId:user1},{state:'CONVERSATION'}]}
+        where: {
+            [Op.and]: [
+                {type: 'CONVERSATION'},
+                {key: conversationId}
             ]
         },
-        order: [['num','DESC']]
+        order: [['num', 'DESC']],
+        limit:10
     })
 }
 
 /**
  * 获取会话sum
- * @param {*} user1 
- * @param {*} user2 
+ * @param conversationId
  */
-exports.getConSum = function(user1,user2){
+exports.getConversationSum = function (conversationId) {
     return wordCloudSum.findOne({
-        where:{
-            [Op.and]:[
-                {state:'CONVERSATION'},
-                {[Op.or]:[
-                    {[Op.and]:[{userId:user1},{friendId:user2}]},
-                    {[Op.and]:[{userId:user2},{friendId:user1}]}
-                ]}
+        where: {
+            [Op.and]: [
+                {type: 'CONVERSATION'},
+                {key: conversationId}
             ]
         }
     })
