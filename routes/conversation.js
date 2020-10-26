@@ -6,6 +6,7 @@ const router = express.Router();
  */
 
 const service = require('../service/conversationService')
+const wordCloudService = require("../service/wordCloudService");
 
 
 /**
@@ -19,6 +20,7 @@ router.get('/get', function (req, res, next) {
     service.getConversations(queryId).then((value)=>{
         res.send(value)
     },(err)=>{
+        console.log(err)
         res.send(err)
     })
 })
@@ -32,6 +34,14 @@ router.get('/query', function (req, res, next) {
         myId = req.query.userId
     }
     service.getConversationById(myId,req.query.friendId).then((value)=>{
+        res.send(value)
+    },(err)=>{
+        res.send(err)
+    })
+})
+
+router.get('/word_cloud',function (req,res){
+    wordCloudService.getConversationWordCloud(req.query.userId,req.query.friendId).then((value)=>{
         res.send(value)
     },(err)=>{
         res.send(err)

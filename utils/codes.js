@@ -95,21 +95,13 @@ exports.codes = {
         code:3016,
         message:'颜色格式不正确！'
     },
-    groupname_exists_error:{
+    group_name_exists_error:{
         code:3017,
         message:'组名已存在！'
     },
-    not_friend_build_group_error:{
+    no_chat_image_file:{
         code:3018,
-        message:'不是好友不能加分组！'
-    },
-    group_not_existed:{
-        code:3019,
-        message:'小组不存在！'
-    },
-    not_have_group:{
-        code:3020,
-        message:'该用户无分组'
+        message:'没有找到聊天图片！'
     },
     other_error:{
         code:5000,

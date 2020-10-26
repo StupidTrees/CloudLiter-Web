@@ -33,26 +33,40 @@ initEmotionAnalyze().then((() => {
     init = true
 }))
 
-exports.analyzeEmotion = function (str) {
+/**
+ * 分析文本情感
+ * @param str 文本
+ */
+exports.segmentAndAnalyzeEmotion = async function (str) {
+    str = str.replace(/\[y[0-9]*\]/g, '') //将表情去除
     return new Promise((resolve, reject) => {
         if (!init) {
             reject()
         } else {
+            let analysis = nodejieba.tag(str)
+            console.log(analysis)
+            let tokens = []
+            let toWordCloud = []
+            analysis.forEach((value) => {
+                tokens.push(value.word)
+                //如果为名词、动词、形容词，则加入词云
+                if (value.tag.startsWith('n') || value.tag === 'v' || value.tag === 'a') {
+                    toWordCloud.push(value.word)
+                }
+            })
+            console.log(tokens)
+            console.log(toWordCloud)
             sentiment.analyze(str, {
                 language: 'cn'
             }, function (str) {
-                let res = nodejieba.cut(str)
-                console.log(res)
-                return {segmentation: res, result: res}
+                return tokens
             }, function (nul, res) {
                 console.log(res)
-                resolve({segmentation:res.segmentation, score:res.result.score})
+                resolve({segmentation: tokens, score: res.score, toWordCloud: toWordCloud})
             })
         }
 
     })
 
 }
-
-
 

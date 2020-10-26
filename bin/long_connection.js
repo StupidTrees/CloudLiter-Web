@@ -4,6 +4,7 @@ const shieldingService = require('../service/shieldingService')
 const emotionService = require('../service/emotionService')
 const tools = require('../utils/tools')
 const textUtils = require('../utils/textUtils')
+const  wordCloudService = require('../service/wordCloudService')
 
 let io
 
@@ -13,8 +14,6 @@ exports.initSocket = function (server) {
 }
 
 
-//在线用户
-const onlineUser = {}
 //记录用户id和socketId转换表
 const id2SocketId = {}
 
@@ -22,7 +21,6 @@ const id2SocketId = {}
 const user2Conversation = {}
 //记录用户正在被期待的对话
 const userExpectedConversation = {}
-let onlineCount = 0
 
 function removeUserFromConversation(userId, convId) {
     if (user2Conversation[userId] === convId) {
@@ -66,47 +64,41 @@ function removeUser(key) {
             io.to(id2SocketId[item]).emit('query_online_result', key, 'OFFLINE')
         })
     }
-    if (onlineUser.hasOwnProperty(key)) {
-        //退出用户信息
-        let obj = onlineUser[key];
+    if (id2SocketId.hasOwnProperty(key)) {
         //删除
-        delete onlineUser[key];
         delete id2SocketId[key]
-        //在线人数-1
-        onlineCount--;
-        console.log(obj.nickname + "退出了");
+        console.log(key+ "退出了");
+    }
+}
+
+function markOnline(socket,userId){
+    if (!id2SocketId.hasOwnProperty(userId)) {
+        id2SocketId[userId] = socket.id
+        console.log(userId + "上线了");
+        console.log("当前在线列表", id2SocketId);
+        //获取未读消息列表
+        messageService.countUnreadMessage(userId).then((value) => {
+            socket.emit('unread_message', JSON.stringify(value))
+        })
+        if (userExpectedConversation.hasOwnProperty(userId)) {
+            //通知正在和他进行对话的好友，他上线了
+            userExpectedConversation[userId].forEach(item => {
+                console.log('通知上线', userId + "->" + id2SocketId[item])
+                io.to(id2SocketId[item]).emit('query_online_result', userId, 'ONLINE')
+            })
+        }
+
     }
 }
 
 function onConnect(socket) {
     console.log('新用户登录');
     //监听新用户加入
-    socket.on('login', function (objStr) {
-        let obj = JSON.parse(objStr)
-        console.log("login", obj)
-        socket.name = obj.id
-        if (!onlineUser.hasOwnProperty(obj.id)) {
-            onlineUser[obj.id] = obj
-            id2SocketId[obj.id] = socket.id
-            //在线人数+1
-            onlineCount++
-            console.log(obj.nickname + "上线了");
-            console.log("当前在线列表", id2SocketId);
-            //获取未读消息列表
-            messageService.countUnreadMessage(obj.id).then((value) => {
-                socket.emit('unread_message', JSON.stringify(value))
-            })
-
-            if (userExpectedConversation.hasOwnProperty(obj.id)) {
-                //通知正在和他进行对话的好友，他上线了
-                userExpectedConversation[obj.id].forEach(item => {
-                    console.log('通知上线', obj.id + "->" + id2SocketId[item])
-                    io.to(id2SocketId[item]).emit('query_online_result', obj.id, 'ONLINE')
-                })
-            }
-
-        }
-
+    socket.on('login', function (userId) {
+      //  let obj = JSON.parse(objStr)
+        console.log("login", userId)
+        socket.name = userId
+        markOnline(socket,userId)
     })
 
     socket.on('logout', function (userId) {
@@ -121,6 +113,7 @@ function onConnect(socket) {
 
     //某用户进入某对话
     socket.on('into_conversation', function (userId, friendId, conversationId) {
+        markOnline(socket,userId) //确保在线
         if (user2Conversation.hasOwnProperty(userId)) {
             //断开用户和原有对话的联系
             removeUserFromConversation(userId, user2Conversation[userId])
@@ -148,7 +141,6 @@ function onConnect(socket) {
     socket.on('left_conversation', function (userId, conversationId) {
         removeUserFromConversation(userId, conversationId)
         console.log("用户退出对话窗口", userExpectedConversation)
-
         //通知正在和他进行对话的好友，他退出某对话
         if (userExpectedConversation.hasOwnProperty(userId)) {
             userExpectedConversation[userId].forEach(item => {
@@ -173,23 +165,28 @@ function onConnect(socket) {
     //监听用户发布聊天内容
     socket.on('message', function (objStr) {
         let obj = JSON.parse(objStr)
+        markOnline(socket,obj.fromId)//保持在线
         console.log('发送消息', obj)
         console.log('对方的socketId为', id2SocketId[obj.toId])
         async function processSentence(text){
             //情感分析
-            let emotionResult =  await emotionService.analyzeEmotion(text)
+            let emotionResult =  await emotionService.segmentAndAnalyzeEmotion(text)
             console.log("情感分析结果",emotionResult)
             let emotionScore = emotionResult.score
             let segmentation = emotionResult.segmentation
             //敏感词检测
             let sensitive = await shieldingService.checkSensitive(text)
+            //如果不敏感，就加入到词云统计
+            if(!sensitive){
+                wordCloudService.addToWordCloud(obj.fromId,obj.conversationId,emotionResult.toWordCloud).then()
+            }
             console.log("敏感判定结果",sensitive)
-            return Promise.resolve({emotion:emotionScore,sensitive:sensitive})
+            return Promise.resolve({emotion:emotionScore,sensitive:sensitive,segmentation:segmentation})
         }
-
         processSentence(obj.content).then((value)=>{
             obj.sensitive = value.sensitive
             obj.emotion = value.emotion
+            obj.extra = value.segmentation
             //更新对话信息
             convService.updateConversation(obj.fromId, obj.toId, value.sensitive?'*敏感信息*':obj.content).then()
             //保存消息，保存成功才能传递给对方
@@ -209,7 +206,8 @@ function onConnect(socket) {
 
     //获取某好友是否在线
     socket.on('query_online', function (userId, friendId) {
-        let mark = onlineUser.hasOwnProperty(friendId) ? 'ONLINE' : 'OFFLINE'
+        markOnline(socket,userId)//保持在线
+        let mark = id2SocketId.hasOwnProperty(friendId) ? 'ONLINE' : 'OFFLINE'
         if (user2Conversation.hasOwnProperty(friendId)) {
             let other = getTheOtherId(friendId, user2Conversation[friendId])
             if (textUtils.equals(other, userId)) {
@@ -223,3 +221,18 @@ function onConnect(socket) {
 
 }
 
+
+//发送图片消息
+exports.sentImageMessage = function(message){
+    console.log('sendImageMessage', id2SocketId)
+    //更新对话信息
+    convService.updateConversation(message.fromId,message.toId, '[图片]').then()
+    if(id2SocketId.hasOwnProperty(message.fromId.toString())){
+        let socket = id2SocketId[message.fromId.toString()]
+        if(id2SocketId.hasOwnProperty(message.toId.toString())){
+            io.to(id2SocketId[message.toId]).emit('message', message);
+        }
+        io.to(socket).emit('message_sent',message)
+        console.log(message.fromId + '对' + message.toId + '说：' + message.content);
+    }
+}

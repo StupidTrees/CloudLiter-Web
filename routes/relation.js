@@ -68,20 +68,20 @@ router.post('/friend_remark',function (req,res){
     })
 })
 
-/**
- * 删除好友
- */
-router.get('/delete_friend',function (req,res){
-    let queryId = req.query.authId
-    if(req.query.id1!==undefined){
-        queryId = req.query.id1
-    }
-    service.deleteFriend(queryId,req.query.id2).then((value )=>{
-       res.send(value)
-    },(err)=>{
-        res.send(err)
-    })
-})
+// /**
+//  * 删除好友
+//  */
+// router.get('/delete_friend',function (req,res){
+//     let queryId = req.query.authId
+//     if(req.query.id1!==undefined){
+//         queryId = req.query.id1
+//     }
+//     service.deleteFriend(queryId,req.query.id2).then((value )=>{
+//        res.send(value)
+//     },(err)=>{
+//         res.send(err)
+//     })
+// })
 
 /**
  * 查询关系对象
@@ -94,6 +94,7 @@ router.get('/query',function(req,res){
     service.queryRelation(queryId,req.query.friendId).then((value )=>{
         res.send(value)
     },(err)=>{
+        console.log(err)
         res.send(err)
     })
 })

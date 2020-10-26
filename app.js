@@ -11,7 +11,6 @@ const messageRouter = require('./routes/message');
 const groupRouter = require('./routes/group');
 const tokenVerifier = require('./middleware/tokenVerify')
 
-
 /**
  * express app的启动流程
  **/
@@ -24,9 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 //加入用于验证token的中间件
-app.use(tokenVerifier)//.use(tokenUtils.tokenVerifierMiddleware)
+app.use(tokenVerifier)
 
 
 //绑定路由

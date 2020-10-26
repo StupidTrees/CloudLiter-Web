@@ -60,7 +60,37 @@ exports.User = con.sequelize.define(
 
 //将定义好的模型同步到吧 数据表，不强制覆盖
 this.User.sync({force: false}).then(r => r)
-
+exports.Group = con.sequelize.define(
+    'group', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        userId: {
+            type: DataTypes.BIGINT
+            // references:'user', //关联表名
+            // referencesKey:'id' //关联表的列名
+        },
+        groupName: {
+            type: DataTypes.STRING,
+            // references:'user', //关联表名
+            // referencesKey:'id' //关联表的列名
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    }
+)
+this.Group.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+this.Group.sync({force: false}).then(r => r)
 
 /**
  * 用户好友关系表
@@ -76,7 +106,7 @@ exports.UserRelation = con.sequelize.define(
             // references:'user', //关联表名
             // referencesKey:'id' //关联表的列名
         },
-        friend: {
+        friendId: {
             type: DataTypes.BIGINT,
             // references:'user', //关联表名
             // referencesKey:'id' //关联表的列名
@@ -85,7 +115,7 @@ exports.UserRelation = con.sequelize.define(
             type: DataTypes.STRING
             //备注
         },
-        group: {
+        groupId: {
             type: DataTypes.BIGINT
         },
         createdAt: {
@@ -108,14 +138,19 @@ this.User.hasMany(this.UserRelation, {
 
 //将关系表的friend字段声明为外键，映射到用户表的id
 this.UserRelation.belongsTo(this.User, {
-    foreignKey: 'friend',
+    foreignKey: 'friendId',
     targetKey: 'id',
     as: 'user'
 })
 
+this.UserRelation.belongsTo(this.Group, {
+    foreignKey: 'groupId',
+    targetKey: 'id',
+    as: 'group'
+})
+
 //将定义好的模型同步到数据表，不强制覆盖
 this.UserRelation.sync({force: false}).then(r => r)
-
 
 /**
  * 会话表
@@ -137,9 +172,6 @@ exports.Conversation = con.sequelize.define(
         },
         relation2Id: {
             type: DataTypes.STRING
-        },
-        historyId: {
-            type: DataTypes.BIGINT
         },
         lastMessage: {
             type: DataTypes.STRING
@@ -263,8 +295,15 @@ exports.Message = con.sequelize.define(
         sensitive: {
             type: DataTypes.BOOLEAN
         },
+        type:{
+            type:DataTypes.ENUM('TXT','IMG'),
+            default: 'TXT'
+        },
         emotion: {
             type: DataTypes.FLOAT
+        },
+        extra:{
+          type:DataTypes.STRING
         },
         createdAt: {
             type: DataTypes.DATE
@@ -305,34 +344,38 @@ this.Message.belongsTo(this.UserRelation, {
 
 this.Message.sync({force: false}).then(r => r)
 
-exports.Group = con.sequelize.define(
-    'group', {
-        id: {
+
+exports.wordCloudSum = con.sequelize.define(
+    'wordCloudSum',{
+        type: {
+            type: DataTypes.ENUM('USER','CONVERSATION')
+        },
+        key: {
+            type: DataTypes.STRING
+        },
+        totalWord: {
             type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        userId: {
-            type: DataTypes.BIGINT
-            // references:'user', //关联表名
-            // referencesKey:'id' //关联表的列名
-        },
-        groupName: {
-            type: DataTypes.STRING,
-            // references:'user', //关联表名
-            // referencesKey:'id' //关联表的列名
-        },
-        createdAt: {
-            type: DataTypes.DATE
-        },
-        updatedAt: {
-            type: DataTypes.DATE
+            default: 0
         }
     }
 )
-this.Group.belongsTo(this.User, {
-    foreignKey: 'userId',
-    targetKey: 'id',
-    as: 'user'
-})
-this.Group.sync({force: false}).then(r => r)
+this.wordCloudSum.sync({force: false}).then(r => r)
+
+
+exports.wordCloudBin = con.sequelize.define(
+    'wordCloudBin',{
+        type: {
+            type: DataTypes.ENUM('USER','CONVERSATION')
+        },
+        key:{
+            type:DataTypes.STRING
+        },
+        word: {
+            type: DataTypes.STRING
+        },
+        num: {
+            type: DataTypes.BIGINT
+        }
+    }
+)
+this.wordCloudBin.sync({force: false}).then( r => r)
