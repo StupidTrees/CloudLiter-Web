@@ -6,64 +6,64 @@ const Group = models.Group
 const Relation = models.UserRelation
 const User = models.User
 
-exports.decideExistingName=function (userId,groupName){
-    return Group.findAll(
+exports.decideExistingName = function (userId, groupName) {
+    return Group.count(
         {
-            where:{
-                [Op.and]:[
-                    {userId:userId},
-                    {groupName:groupName}
-                    ]
+            where: {
+                [Op.and]: [
+                    {userId: userId},
+                    {groupName: groupName}
+                ]
             }
         }
     )
 }
-exports.createNewGroup=function(userId,groupName){
+exports.createNewGroup = function (userId, groupName) {
     return Group.create(
         {
-            userId:userId,
-            groupName:groupName,
+            userId: userId,
+            groupName: groupName,
         }
     )
 }
-exports.changeGroupNum=function(userId,friendId,groupId){
-    let key = tools.getP2PId(userId,friendId)
+exports.changeGroupNum = function (userId, friendId, groupId) {
+    let key = tools.getP2PId(userId, friendId)
     return Relation.update({
-        groupId:groupId
-    },
+            groupId: groupId
+        },
         {
             where: {
-                key:key
+                key: key
             }
         })
 }
-exports.deleteGroup=function(groupId){
+exports.deleteGroup = function (groupId) {
     return Group.destroy(
         {
-            where:{
-                id:groupId
+            where: {
+                id: groupId
             }
         }
-    ).then((value)=>{
+    ).then((value) => {
         return Relation.update(
             {
-                groupId:null
+                groupId: null
             },
             {
                 where:
                     {
-                        groupId:groupId
+                        groupId: groupId
                     }
             }
         )
     })
 
 }
-exports.findAllGroup=function(userId){
+exports.findAllGroup = function (userId) {
     return Group.findAll(
         {
-            where:{
-                userId:userId
+            where: {
+                userId: userId
             }
         }
     )

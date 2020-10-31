@@ -61,8 +61,6 @@ exports.getUserWordCloud = async function (userId) {
     } catch (err) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
-    result.sum = sum.totalWord
-
     try {
         message = await wordCloudRepository.getUserWordCloud(userId)
     } catch (err) {
@@ -71,7 +69,7 @@ exports.getUserWordCloud = async function (userId) {
 
     message.forEach(function (item) {
         let word = item.word
-        result[word] = item.num
+        result[word] = item.num/sum.totalWord
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
 }

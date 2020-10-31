@@ -71,11 +71,12 @@ exports.queryHistoryMessage = async function (conversationId, fromId, pageSize) 
  * 拉取某对话的最新消息
  * @param conversationId 对话id
  * @param afterId
+ * @param includeBound
  */
-exports.pullLatestMessage = async function (conversationId, afterId) {
+exports.getMessagesAfter = async function (conversationId, afterId, includeBound) {
     let value = null
     try {
-        value = await repository.pullLatestMessagesOfConversation(conversationId, afterId)
+        value = await repository.getMessagesAfter(conversationId, afterId, includeBound)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
@@ -84,7 +85,7 @@ exports.pullLatestMessage = async function (conversationId, afterId) {
     }
     let res = []
     value.forEach(function (item) {
-        res.push(item)
+        res.push(item.get())
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
@@ -134,11 +135,11 @@ exports.markRead = async function (messageId) {
  * 某对话全部标记为已读
  * @param toUserId
  * @param conversationId
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ * @param topId
  */
-exports.markAllRead = async function (toUserId, conversationId) {
+exports.markAllRead = async function (toUserId, conversationId, topTime) {
     try {
-        await repository.markAllRead(toUserId, conversationId)
+        await repository.markAllRead(toUserId, conversationId, topTime)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }

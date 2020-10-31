@@ -10,8 +10,10 @@ router.post('/add',function(req,res){
     }
     let queryGroupName = req.body.groupName
     service.createGroup(queryId,queryGroupName).then((value)=>{
+        console.log(value)
         res.send(value)
     }).catch(err=>{
+        console.log(err)
         res.send(err)
     })
 })

@@ -17,7 +17,7 @@ const Message = models.Message
  * 将消息保存
  */
 exports.saveMessage = function (message) {
-    let id = tools.getP2PIdOrdered(message.fromId,message.toId)
+    let id = tools.getP2PIdOrdered(message.fromId, message.toId)
     return Message.create({
         read: false,
         fromId: message.fromId,
@@ -27,8 +27,8 @@ exports.saveMessage = function (message) {
         sensitive: message.sensitive,
         emotion: message.emotion,
         conversationId: id,
-        type:message.type,
-        extra:JSON.stringify(message.extra)
+        type: message.type,
+        extra: JSON.stringify(message.extra)
     })
 }
 
@@ -39,9 +39,10 @@ exports.saveMessage = function (message) {
  * @param pageSize 分页大小
  */
 exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSize) {
-    console.log("fromId",fromId)
-    if (fromId==null) {
-        console.log("fromId===null",fromId)
+    console.log("fromId", fromId)
+
+    if (fromId == null) {
+        console.log("fromId===null", fromId)
         return Message.findAll({
             where: {
                 conversationId: {
@@ -53,7 +54,7 @@ exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSiz
             order: [['id', 'DESC']]
         })
     } else {
-        console.log("fromId!=null",fromId)
+        console.log("fromId!=null", fromId)
         return Message.findAll({
             where: {
                 [Op.and]: [
@@ -62,7 +63,7 @@ exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSiz
                     },
                     {
                         id: {
-                            [Op.lt]: parseInt(fromId)
+                            [Op.lt]: BigInt(fromId)
                         }
                     }
                 ]
@@ -81,11 +82,14 @@ exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSiz
  * 拉取某一对话的最新消息记录
  * @param conversationId 对话id
  * @param afterId 查询某个消息之后的记录
+ * @param includeBound 是否包含afterId
  */
-exports.pullLatestMessagesOfConversation = function (conversationId,afterId) {
+exports.getMessagesAfter = function (conversationId, afterId, includeBound) {
+    console.log('getMessagesAfter', conversationId + "," + afterId + ',' + includeBound)
     if (afterId == null) {
         return Promise.resolve([])
     } else {
+        let op = equals(includeBound,'true') ? Op.gte : Op.gt
         return Message.findAll({
             where: {
                 [Op.and]: [
@@ -94,7 +98,7 @@ exports.pullLatestMessagesOfConversation = function (conversationId,afterId) {
                     },
                     {
                         id: {
-                            [Op.gt]: parseInt(afterId)
+                            [op]: BigInt(afterId)
                         }
                     }
                 ]
@@ -105,8 +109,8 @@ exports.pullLatestMessagesOfConversation = function (conversationId,afterId) {
         })
     }
 
-}
 
+}
 
 
 /**
@@ -134,8 +138,12 @@ exports.getUnreadConversationsOfOneUser = function (userId) {
  * 将某对话下的所有消息标记为已读
  * @param toUserId
  * @param conversationId
+ * @param topId
  */
-exports.markAllRead = function (toUserId, conversationId) {
+exports.markAllRead = function (toUserId, conversationId, topTime) {
+    if (equals(topTime, 'null')) {
+        topTime = 0
+    }
     return Message.update({
         read: true
     }, {
@@ -146,11 +154,18 @@ exports.markAllRead = function (toUserId, conversationId) {
                 },
                 {
                     toId: toUserId
+                },
+                {
+                    createdAt: {
+                        [Op.gte]: topTime
+                    }
                 }
             ]
 
         }
     })
+
+
 }
 
 /**

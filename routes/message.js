@@ -30,10 +30,11 @@ router.get('/get', function (req, res) {
 /**
  * 拉取某一对话的最新消息
  */
-router.get('/pull_latest', function (req, res) {
+router.get('/get_message_after', function (req, res) {
     let afterId = (req.query.afterId === undefined || req.query.afterId == null || equals(req.query.afterId, 'null'))
         ? null : req.query.afterId
-    service.pullLatestMessage(req.query.conversationId, afterId).then((value) => {
+    service.getMessagesAfter(req.query.conversationId, afterId, req.query.includeBound).then((value) => {
+        console.log('getMessagesAfter',value)
         res.send(value)
     }, (err) => {
         console.log('err', err)
