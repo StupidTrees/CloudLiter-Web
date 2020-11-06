@@ -29,6 +29,21 @@ router.post('/event/response',function (req,res){
     })
 })
 
+/**
+ * NFC好友，action:ACCEPT,REJECT
+ */
+router.post('/event/direct_friends',function(req,res){
+    let queryId = req.body.authId
+    if(req.body.id!==undefined){
+        queryId = req.body.userId
+    }
+    service.directFriends(queryId,req.body.friendId,req.body.action).then((value)=>{
+        res.send(value)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
 // /**
 //  * 查询好友请求
 //  */

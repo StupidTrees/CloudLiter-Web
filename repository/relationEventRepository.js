@@ -34,6 +34,14 @@ exports.applyFriend = async function (userId,friendId){
     })
 }
 
+exports.findIfBeFriends = async function(userId,friendId){
+    let message = await UserRelation.findAll({where:{[Op.and]:[{userId:userId},{friend:friendId}]}})
+    if(message.length!=0){
+        return true
+    }
+    else return false
+}
+
 /**
  * 接受好友申请
  * @param eventId
@@ -44,13 +52,59 @@ exports.acceptFriendApply = async function (id){
     result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
         {state:'ACCEPTED'},
-        {where:{
-            [Op.or]:[
-                {[Op.and]:[{id:id},{state:'REQUESTING'}]},
-                {[Op.and]:[{userId:result.friendId},{friendId:result.userId},{state:'REQUESTING'}]}
-                ]}
-        })
+        {where: {
+                [Op.or]: [
+                    {[Op.and]: [{id: id}, {state: 'REQUESTING'}]},
+                    {[Op.and]: [{id: id}, {state: 'DIRECT'}]},
+                    {
+                        [Op.and]: [
+                            {
+                                [Op.or]: [
+                                    {[Op.and]: [{userId: result.userId}, {friendId: result.friendId}]},
+                                    {[Op.and]: [{userId: result.friendId}, {friendId: result.userId}]},
+                                ]
+                            },
+                            {[Op.or]: [{state: 'REQUESTING'}, {state: 'DIRECT'}]}
+                        ]
+                    }
+                ]
+            }})
     return {user1:result.userId,user2:result.friendId}
+}
+
+/**
+ * 寻找NFC好友事件，没有则新建
+ * @param userId
+ * @param friendId
+ * @returns {Promise<[Model<TModelAttributes, TCreationAttributes>, boolean]>}
+ */
+exports.directFind = function(userId,friendId){
+    return RelationEvent.findOrCreate({
+        where:{
+            [Op.or]:[
+                {[Op.and]:[{userId:friendId},{friendId:userId},{state:'DIRECT'}]},
+                {[Op.and]:[{userId:userId},{friendId:friendId},{state:'DIRECT'}]}
+            ]
+        },
+        defaults:{
+            userId:userId,
+            friendId:friendId,
+            state:'DIRECT',
+            read:false
+        }
+    }).then(([user,created])=>{
+        return user
+    })
+}
+
+exports.directReject = function (userId,friendId){
+    return RelationEvent.destroy(
+        {where:{
+                [Op.or]:[
+                    {[Op.and]:[{userId:userId},{friendId:friendId},{state:'DIRECT'}]},
+                    {[Op.and]:[{userId:friendId},{friendId:userId},{state:'DIRECT'}]}]
+            }}
+    )
 }
 
 /**

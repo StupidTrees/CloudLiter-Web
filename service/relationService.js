@@ -5,10 +5,6 @@ const convRepository = require('../repository/conversationRepository')
 const textUtils = require('../utils/textUtils')
 
 /**
- * 服务层：关系操作
- */
-
-/**
  * 获取某用户的所有朋友
  * @param id
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
