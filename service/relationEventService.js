@@ -3,6 +3,7 @@ const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const convRepository = require('../repository/conversationRepository')
+const relationRepository = require('../repository/userRelationRepository')
 const wordCloudRepository = require("../repository/wordCloudRepository");
 const tools = require("../utils/tools");
 const equals = require('../utils/textUtils').equals
@@ -49,13 +50,13 @@ exports.applyFriend = async  function(userId,friendId){
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.directFriends = async  function(userId,friendId,action){
-    let judge = await eventRepository.findIfBeFriends(userId,friendId)
-    if(judge){
+    let count = await relationRepository.isFriend(userId,friendId)
+    if(count>0){
         return Promise.resolve(jsonUtils.getResponseBody(codes.already_friends))
     }
     if(action==='REJECT'){
         try{
-            await eventRepository.directReject(userId,friendId)
+            await eventRepository.rejectDirectRelationEvent(userId,friendId)
         }catch (err){
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
         }
@@ -63,15 +64,14 @@ exports.directFriends = async  function(userId,friendId,action){
     }
     let message
     try{
-        message = await eventRepository.directFind(userId,friendId)
+        message = await eventRepository.findOrCreateDirectRelationEvent(userId,friendId)
     }catch (err){
         return Promise.reject((jsonUtils.getResponseBody(codes.other_error,err)))
     }
     let getUserId = message.userId
     let getId = message.id
-
-    if(getUserId === userId){
-        return Promise.resolve(jsonUtils.getResponseBody(codes.already_apply))
+    if(getUserId === userId){//如果找到的是新建的这条
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }
     try{
         message = await eventRepository.acceptFriendApply(getId)

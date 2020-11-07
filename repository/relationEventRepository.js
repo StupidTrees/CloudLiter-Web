@@ -36,13 +36,6 @@ exports.applyFriend = async function (userId, friendId) {
     })
 }
 
-exports.findIfBeFriends = async function(userId,friendId){
-    let message = await UserRelation.findAll({where:{[Op.and]:[{userId:userId},{friend:friendId}]}})
-    if(message.length!=0){
-        return true
-    }
-    else return false
-}
 
 /**
  * 接受好友申请
@@ -78,9 +71,8 @@ exports.acceptFriendApply = async function (id) {
  * 寻找NFC好友事件，没有则新建
  * @param userId
  * @param friendId
- * @returns {Promise<[Model<TModelAttributes, TCreationAttributes>, boolean]>}
  */
-exports.directFind = function(userId,friendId){
+exports.findOrCreateDirectRelationEvent = function(userId, friendId){
     return RelationEvent.findOrCreate({
         where:{
             [Op.or]:[
@@ -99,7 +91,13 @@ exports.directFind = function(userId,friendId){
     })
 }
 
-exports.directReject = function (userId,friendId){
+/**
+ * 拒绝NFC好友事件
+ * @param userId
+ * @param friendId
+ * @returns {Promise<number>}
+ */
+exports.rejectDirectRelationEvent = function (userId, friendId){
     return RelationEvent.destroy(
         {where:{
                 [Op.or]:[
