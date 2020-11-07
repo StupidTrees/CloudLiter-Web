@@ -16,6 +16,7 @@
     "express-jwt": "^6.0.0",
     "fastscan": "^1.0.6",
     "formidable": "^1.2.2",
+    "hashmap": "^2.4.0",
     "http": "0.0.1-security",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
