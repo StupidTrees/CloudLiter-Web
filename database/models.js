@@ -296,7 +296,7 @@ exports.Message = con.sequelize.define(
             type: DataTypes.BOOLEAN
         },
         type:{
-            type:DataTypes.ENUM('TXT','IMG'),
+            type:DataTypes.ENUM('TXT','IMG','VOICE'),
             default: 'TXT'
         },
         emotion: {

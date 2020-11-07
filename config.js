@@ -14,6 +14,7 @@ module.exports = {
     files:{
         avatarDir:'files/img/avatar/',
         chatImageDir:'files/img/chat/',
+        chatVoiceDir:'files/voice/chat/',
         nsfwModelDir:'service/model/'
     }
 }

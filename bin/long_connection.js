@@ -255,3 +255,18 @@ exports.sentImageMessage = function (message) {
         console.log(message.fromId + '对' + message.toId + '说：' + message.content);
     }
 }
+
+//发送图片消息
+exports.sentVoiceMessage = function (message) {
+    console.log('sendVoiceMessage', id2SocketId)
+    //更新对话信息
+    convService.updateConversation(message.fromId, message.toId, '[语音]').then()
+    if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
+        let socket = id2SocketId[message.fromId.toString()]
+        if (id2SocketId.hasOwnProperty(message.toId.toString())) {
+            io.to(id2SocketId[message.toId]).emit('message', message);
+        }
+        io.to(socket).emit('message_sent', message)
+        console.log(message.fromId + '对' + message.toId + '说：' + message.content);
+    }
+}
