@@ -88,7 +88,7 @@ exports.makeFriends = async function (user1, user2) {
     //不能和自己成为好友
     if (textUtils.equals(user1, user2)) {
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
-    }
+    }del
     //在关系表里插入数据
     try {
         await repository.makeFriends(user1, user2)

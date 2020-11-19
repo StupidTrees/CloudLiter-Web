@@ -2,7 +2,9 @@ const models = require('../database/models')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const Op = models.Op
+const fs = require('fs')
 const tools = require('../utils/tools')
+const config = require("../config");
 /**
  * 仓库层：用户关系数据读写
  */
@@ -46,8 +48,9 @@ exports.acceptFriendApply = async function (id) {
     let result
     result = await RelationEvent.findByPk(id)
     await RelationEvent.update(
-        {state:'ACCEPTED'},
-        {where: {
+        {state: 'ACCEPTED'},
+        {
+            where: {
                 [Op.or]: [
                     {[Op.and]: [{id: id}, {state: 'REQUESTING'}]},
                     {[Op.and]: [{id: id}, {state: 'DIRECT'}]},
@@ -63,8 +66,9 @@ exports.acceptFriendApply = async function (id) {
                         ]
                     }
                 ]
-            }})
-    return {user1:result.userId,user2:result.friendId}
+            }
+        })
+    return {user1: result.userId, user2: result.friendId}
 }
 
 /**
@@ -72,21 +76,21 @@ exports.acceptFriendApply = async function (id) {
  * @param userId
  * @param friendId
  */
-exports.findOrCreateDirectRelationEvent = function(userId, friendId){
+exports.findOrCreateDirectRelationEvent = function (userId, friendId) {
     return RelationEvent.findOrCreate({
-        where:{
-            [Op.or]:[
-                {[Op.and]:[{userId:friendId},{friendId:userId},{state:'DIRECT'}]},
-                {[Op.and]:[{userId:userId},{friendId:friendId},{state:'DIRECT'}]}
+        where: {
+            [Op.or]: [
+                {[Op.and]: [{userId: friendId}, {friendId: userId}, {state: 'DIRECT'}]},
+                {[Op.and]: [{userId: userId}, {friendId: friendId}, {state: 'DIRECT'}]}
             ]
         },
-        defaults:{
-            userId:userId,
-            friendId:friendId,
-            state:'DIRECT',
-            read:false
+        defaults: {
+            userId: userId,
+            friendId: friendId,
+            state: 'DIRECT',
+            read: false
         }
-    }).then(([user,created])=>{
+    }).then(([user, created]) => {
         return user
     })
 }
@@ -97,13 +101,15 @@ exports.findOrCreateDirectRelationEvent = function(userId, friendId){
  * @param friendId
  * @returns {Promise<number>}
  */
-exports.rejectDirectRelationEvent = function (userId, friendId){
+exports.rejectDirectRelationEvent = function (userId, friendId) {
     return RelationEvent.destroy(
-        {where:{
-                [Op.or]:[
-                    {[Op.and]:[{userId:userId},{friendId:friendId},{state:'DIRECT'}]},
-                    {[Op.and]:[{userId:friendId},{friendId:userId},{state:'DIRECT'}]}]
-            }}
+        {
+            where: {
+                [Op.or]: [
+                    {[Op.and]: [{userId: userId}, {friendId: friendId}, {state: 'DIRECT'}]},
+                    {[Op.and]: [{userId: friendId}, {friendId: userId}, {state: 'DIRECT'}]}]
+            }
+        }
     )
 }
 
@@ -202,11 +208,38 @@ exports.getMine = function (userId) {
  */
 exports.deleteFriend = function (userId, friendId) {
     let id = tools.getP2PIdOrdered(userId, friendId)
-    return Message.destroy({
+    return Message.findAll({
         where: {
-            conversationId: id
+            [Op.and]: [
+                {conversationId: id},
+                {
+                    [Op.or]: [
+                        {type: 'IMG'},
+                        {type: 'VOICE'}
+                    ]
+                }
+            ]
         }
     }).then((value) => {
+            let voicePath = path.join(__dirname, '../') + config.files.chatVoiceDir
+            let imagePath = path.join(__dirname, '../') + config.files.chatImageDir
+            value.forEach(function (item, index) {
+                let fn = ""
+                if (item.get().type === 'VOICE') {//语音消息
+                    fn = path.join(voicePath, item.get().content)
+                } else if (item.get().type === 'IMG') {
+                    fn = path.join(imagePath, item.get().content)
+                }
+                console.log("删除文件：" + fn)
+                fs.unlinkSync(fn)
+            })
+            return Message.destroy({
+                where: {
+                    conversationId: id
+                }
+            })
+        }
+    ).then((value) => {
         return UserConversation.destroy({
             where: {
                 key: id
