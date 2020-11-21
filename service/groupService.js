@@ -4,18 +4,16 @@ const codes = require('../utils/codes').codes
 
 
 exports.createGroup = async function(userId,groupName){
-    let flag = null
-    flag = await groupRepository.decideExistingName(userId,groupName)
-    if(flag.length === 0){
-        let value = null
+    let flag = await groupRepository.decideExistingName(userId,groupName)
+    if(flag === 0){
         try {
-            value = await groupRepository.createNewGroup(userId,groupName)
+            await groupRepository.createNewGroup(userId,groupName)
         } catch (e) {
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
         }
         return Promise.resolve(jsonUtils.getResponseBody(codes.success))
     }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.groupname_exists_error))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.group_name_exists_error))
 }
 exports.setGroupNum = async function(userId,friendId,groupId){
     let value = null

@@ -16,8 +16,10 @@ router.get('/friends', function (req, res, next) {
         queryId = req.query.id
     }
     service.getFriends(queryId).then((value)=>{
+        console.log(value)
         res.send(value)
     },(err)=>{
+        console.log(err)
         res.send(err)
     })
 })

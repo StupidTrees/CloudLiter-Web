@@ -7,10 +7,6 @@ const textUtils = require('../utils/textUtils')
 const tools = require("../utils/tools");
 
 /**
- * 服务层：关系操作
- */
-
-/**
  * 获取某用户的所有朋友
  * @param id
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
@@ -92,7 +88,7 @@ exports.makeFriends = async function (user1, user2) {
     //不能和自己成为好友
     if (textUtils.equals(user1, user2)) {
         return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
-    }
+    }del
     //在关系表里插入数据
     try {
         await repository.makeFriends(user1, user2)

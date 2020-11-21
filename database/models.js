@@ -31,7 +31,7 @@ exports.User = con.sequelize.define(
         },
         color: {
             type: DataTypes.ENUM('RED', 'ORANGE', 'YELLOW', 'GREEN', 'CYAN', 'BLUE', 'PURPLE'),
-            allowNull: false,
+            allowNull: true,
             default: 'BLUE'
         },
         nickname: {
@@ -228,7 +228,7 @@ exports.RelationEvent = con.sequelize.define(
             type: DataTypes.BIGINT
         },
         state: {
-            type: DataTypes.ENUM('REQUESTING', 'ACCEPTED', 'REJECTED', 'DELETE'),
+            type: DataTypes.ENUM('REQUESTING', 'ACCEPTED', 'REJECTED', 'DELETE','DIRECT'),
             allowNull: false
         },
         read: {
@@ -296,7 +296,7 @@ exports.Message = con.sequelize.define(
             type: DataTypes.BOOLEAN
         },
         type:{
-            type:DataTypes.ENUM('TXT','IMG'),
+            type:DataTypes.ENUM('TXT','IMG','VOICE'),
             default: 'TXT'
         },
         emotion: {

@@ -1,7 +1,7 @@
 const tokenUtils = require('../utils/tokenUtils')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
-const excludedUrl = ['/user/login','/user/sign_up','/user/profile/query_avatar','/user/profile/avatar','/message/image']
+const excludedUrl = ['/user/login','/user/sign_up','/user/profile/query_avatar','/user/profile/avatar','/message/image','/message/voice']
 const tools = require('../utils/tools')
 
 /**

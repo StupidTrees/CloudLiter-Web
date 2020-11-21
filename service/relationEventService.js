@@ -3,6 +3,7 @@ const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const convRepository = require('../repository/conversationRepository')
+const relationRepository = require('../repository/userRelationRepository')
 const wordCloudRepository = require("../repository/wordCloudRepository");
 const tools = require("../utils/tools");
 const equals = require('../utils/textUtils').equals
@@ -40,6 +41,71 @@ exports.applyFriend = async  function(userId,friendId){
     }
     return  Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
+
+/**
+ * NFC交友
+ * @param userId
+ * @param friendId
+ * @param action
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.directFriends = async  function(userId,friendId,action){
+    let count = await relationRepository.isFriend(userId,friendId)
+    if(count>0){
+        return Promise.resolve(jsonUtils.getResponseBody(codes.already_friends))
+    }
+    if(action==='REJECT'){
+        try{
+            await eventRepository.rejectDirectRelationEvent(userId,friendId)
+        }catch (err){
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    }
+    let message
+    try{
+        message = await eventRepository.findOrCreateDirectRelationEvent(userId,friendId)
+    }catch (err){
+        return Promise.reject((jsonUtils.getResponseBody(codes.other_error,err)))
+    }
+    let getUserId = message.userId
+    let getId = message.id
+    if(getUserId === userId){//如果找到的是新建的这条
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    }
+    try{
+        message = await eventRepository.acceptFriendApply(getId)
+    }catch (err){
+        if(message === undefined){
+            return Promise.reject(jsonUtils.getResponseBody(codes.apply_not_exists))
+        }
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
+    //在关系表里插入数据
+    try{
+        await repository.makeFriends(userId,friendId)
+    }catch (err){
+        console.log('关系表插入失败',err)
+        if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已经是好友
+            return Promise.reject(jsonUtils.getResponseBody(codes.already_friends))
+        }else if(err.original.code==='ER_NO_REFERENCED_ROW_2'){ //外键不存在，即有一个用户id是假的
+            return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_ghost))
+        }
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    //在对话表里直接开启一个对话
+    try {
+        await convRepository.newConversation(userId, friendId)
+    } catch (err) {
+        console.log('对话表插入失败',err)
+        if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已有对话
+            return Promise.reject(jsonUtils.getResponseBody(codes.conversation_exists))
+        }
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    return  Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}
+
 
 /**
  * 处理好友申请

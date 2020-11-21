@@ -30,10 +30,11 @@ router.get('/get', function (req, res) {
 /**
  * 拉取某一对话的最新消息
  */
-router.get('/pull_latest', function (req, res) {
+router.get('/get_message_after', function (req, res) {
     let afterId = (req.query.afterId === undefined || req.query.afterId == null || equals(req.query.afterId, 'null'))
         ? null : req.query.afterId
-    service.pullLatestMessage(req.query.conversationId, afterId).then((value) => {
+    service.getMessagesAfter(req.query.conversationId, afterId, req.query.includeBound).then((value) => {
+        console.log('getMessagesAfter',value)
         res.send(value)
     }, (err) => {
         console.log('err', err)
@@ -60,7 +61,6 @@ router.post('/send_image', function (req, res) {
     let userId = req.body.authId
     let toId = req.query.toId
     let uuid = req.query.uuid
-    console.log("request", req.query)
     //从请求头中读取前端传来的文件files
     form.parse(req, function (err, fields, files) {
         if (err) {
@@ -77,6 +77,47 @@ router.post('/send_image', function (req, res) {
     })
 })
 
+
+/**
+ * 发送语音消息
+ * toId在Param中
+ */
+router.post('/send_voice', function (req, res) {
+    const form = new formidable.IncomingForm()
+    //设置文件保存的目标路径
+    let targetPath = path.join(__dirname, '../') + config.files.chatVoiceDir
+    // 如果目录不存在则创建
+    if (!fs.existsSync(targetPath)) fs.mkdirSync(targetPath, {
+        recursive: true
+    })
+    //设置文件目标路径
+    form.uploadDir = targetPath
+    // 上传文件大小限制
+    form.maxFieldsSize = 20 * 1024 * 1024
+    let userId = req.body.authId
+    let toId = req.query.toId
+    let uuid = req.query.uuid
+    let extra = req.query.seconds
+    console.log('extra',extra)
+    //从请求头中读取前端传来的文件files
+    form.parse(req, function (err, fields, files) {
+        if (err) {
+            res.send(jsonUtils.getResponseBody(codes.other_error, err))
+        } else {
+            service.sendVoiceMessage(userId, toId, files,uuid,extra).then(
+                (value) => {
+                    res.send(value)
+                }, (err) => {
+                    res.send(err)
+                }
+            )
+        }
+    })
+})
+
+
+
+
 /**
  * 按文件名直接获取聊天文件
  */
@@ -89,6 +130,21 @@ router.get('/image',function (req,res){
         res.send(err)
     })
 })
+
+/**
+ * 按文件名直接获取语音文件
+ */
+router.get('/voice',function (req,res){
+    service.getChatVoiceMessage(req.query.path).then(r => {
+        res.writeHead(200, "Ok");
+        res.write(r,"binary"); //格式必须为 binary，否则会出错
+        res.end();
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
+
 const formidable = require("formidable");
 const jsonUtils = require("../utils/jsonUtils");
 const config = require("../config");

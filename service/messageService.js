@@ -71,11 +71,12 @@ exports.queryHistoryMessage = async function (conversationId, fromId, pageSize) 
  * 拉取某对话的最新消息
  * @param conversationId 对话id
  * @param afterId
+ * @param includeBound
  */
-exports.pullLatestMessage = async function (conversationId, afterId) {
+exports.getMessagesAfter = async function (conversationId, afterId, includeBound) {
     let value = null
     try {
-        value = await repository.pullLatestMessagesOfConversation(conversationId, afterId)
+        value = await repository.getMessagesAfter(conversationId, afterId, includeBound)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
@@ -84,7 +85,7 @@ exports.pullLatestMessage = async function (conversationId, afterId) {
     }
     let res = []
     value.forEach(function (item) {
-        res.push(item)
+        res.push(item.get())
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
@@ -134,11 +135,11 @@ exports.markRead = async function (messageId) {
  * 某对话全部标记为已读
  * @param toUserId
  * @param conversationId
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ * @param topId
  */
-exports.markAllRead = async function (toUserId, conversationId) {
+exports.markAllRead = async function (toUserId, conversationId, topTime) {
     try {
-        await repository.markAllRead(toUserId, conversationId)
+        await repository.markAllRead(toUserId, conversationId, topTime)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
@@ -226,6 +227,67 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
     }
 }
 
+/**
+ * 发送图片消息
+ * @param fromId
+ * @param toId
+ * @param files 图片文件
+ * @param uuid
+ * @param extra
+ */
+exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
+    // 手动给文件加后缀, formidable默认保存的文件是无后缀的
+    let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
+    let newPath = path.dirname(files.upload.path) + '/' + fileName
+    await fs.renameSync(files.upload.path, newPath)
+    let message = {
+        fromId: fromId,
+        toId: toId,
+        conversationId: tools.getP2PIdOrdered(fromId, toId),
+        relationId: tools.getP2PId(fromId, toId),
+        content: fileName,
+        type: 'VOICE',
+        sensitive:false,
+        extra:extra.toString()
+    }
+    let value
+    try {
+        value = await repository.saveMessage(message)
+    } catch (e) {
+        console.log(e)
+        fs.unlinkSync(newPath) //清除文件
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    // 数据库更新成功
+    if (value) {
+       let data = value.get()
+        data.uuid = uuid
+        console.log("保存音频文件", data)
+        //获取备注信息
+        try {
+            let rel = await relationRepository.queryRemarkWithId(toId, fromId)
+            data.friendRemark = rel[0].get().remark
+            let userData = rel[0].get().user
+            if (textUtils.isEmpty(rel[0].get().remark)) {
+                data.friendRemark = userData.get().nickname
+            }
+            data.friendAvatar = userData.get().avatar
+            console.log('data', data)
+        } catch (e) {
+            console.log('err', e)
+        }
+        long_connection.sentVoiceMessage(data)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+    } else {
+        // 说明该用户id查找不到任何用户
+        fs.unlinkSync(newPath) //清除文件
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+    }
+}
+
+
+
+
 
 /**
  * 根据聊天文件名，返回聊天图片
@@ -242,6 +304,40 @@ exports.getChatImage = async function (fileName) {
                         reject(err)
                     } else if (file === null) {
                         reject(jsonUtils.getResponseBody(codes.no_chat_image_file))
+                    } else {
+                        //读取成功
+                        resolve(file)
+                    }
+                })
+            }
+        ).then((file) => {
+            return file
+        });
+        return Promise.resolve(file)
+
+    } catch
+        (e) {
+        //console.log("error", e)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+}
+
+
+/**
+ * 根据聊天文件名，返回聊天语音
+ * @param fileName
+ */
+exports.getChatVoiceMessage = async function (fileName) {
+    try {
+        let file = await new Promise((resolve, reject) => {
+                //直接生成路径
+                let target = path.join(__dirname, '../') + config.files.chatVoiceDir + '/' + fileName
+                //读取文件
+                fs.readFile(target, 'binary', function (err, file) {
+                    if (err) {
+                        reject(err)
+                    } else if (file === null) {
+                        reject(jsonUtils.getResponseBody(codes.no_chat_voice_file))
                     } else {
                         //读取成功
                         resolve(file)

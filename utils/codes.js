@@ -103,6 +103,10 @@ exports.codes = {
         code:3018,
         message:'没有找到聊天图片！'
     },
+    no_chat_voice_file:{
+        code:3019,
+        message:'没有找到聊天语音！'
+    },
     other_error:{
         code:5000,
         message:'其他错误'
