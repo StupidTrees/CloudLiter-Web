@@ -180,7 +180,7 @@ router.get('/profile/query_avatar',function (req,res){
  * 获取用户词云
  */
 router.get('/profile/word_cloud',function (req,res){
-    wordCloudService.getUserWordCloud(req.query.userId).then(r=>{
+    wordCloudService.getWordCloud('USER',req.query.userId,req.query.userId).then(r=>{
         res.send(r)
     }).catch((err)=>{
         res.send(err)

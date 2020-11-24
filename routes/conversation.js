@@ -41,7 +41,7 @@ router.get('/query', function (req, res, next) {
 })
 
 router.get('/word_cloud',function (req,res){
-    wordCloudService.getConversationWordCloud(req.query.userId,req.query.friendId).then((value)=>{
+    wordCloudService.getWordCloud('CONV',req.query.userId,req.query.friendId).then((value)=>{
         res.send(value)
     },(err)=>{
         res.send(err)

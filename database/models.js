@@ -379,3 +379,49 @@ exports.wordCloudBin = con.sequelize.define(
     }
 )
 this.wordCloudBin.sync({force: false}).then( r => r)
+
+exports.wordTop10 = con.sequelize.define(
+    'wordTop10',{
+        type:{
+            type:DataTypes.ENUM('CONV','USER')
+        },
+        cloudId:{
+            type:DataTypes.STRING,
+            primaryKey: true
+        },
+        Top1:{
+            type:DataTypes.STRING
+        },
+        Top2:{
+            type:DataTypes.STRING
+        },
+        Top3:{
+            type:DataTypes.STRING
+        },
+        Top4:{
+            type:DataTypes.STRING
+        },
+        Top5:{
+            type:DataTypes.STRING
+        },
+        Top6:{
+            type:DataTypes.STRING
+        },
+        Top7:{
+            type:DataTypes.STRING
+        },
+        Top8:{
+            type:DataTypes.STRING
+        },
+        Top9:{
+            type:DataTypes.STRING
+        },
+        Top10:{
+            type:DataTypes.STRING
+        },
+        flag:{
+            type:DataTypes.INTEGER
+        }
+    }
+)
+this.wordTop10.sync({force: false}).then( r => r)
