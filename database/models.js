@@ -345,23 +345,6 @@ this.Message.belongsTo(this.UserRelation, {
 this.Message.sync({force: false}).then(r => r)
 
 
-exports.wordCloudSum = con.sequelize.define(
-    'wordCloudSum',{
-        type: {
-            type: DataTypes.ENUM('USER','CONVERSATION')
-        },
-        key: {
-            type: DataTypes.STRING
-        },
-        totalWord: {
-            type: DataTypes.BIGINT,
-            default: 0
-        }
-    }
-)
-this.wordCloudSum.sync({force: false}).then(r => r)
-
-
 exports.wordCloudBin = con.sequelize.define(
     'wordCloudBin',{
         type: {
