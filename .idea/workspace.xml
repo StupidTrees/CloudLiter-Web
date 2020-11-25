@@ -30,8 +30,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="删除好友后将聊天记录及所有文件删除">
+      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/tokenUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tokenUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +80,12 @@
     <property name="javascript.nodejs.core.library.configured.version" value="12.18.4" />
     <property name="javascript.nodejs.core.library.typings.version" value="12.12.67" />
     <property name="last_opened_file_path" value="C:/projects/CloudLiter-Web-master" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
@@ -412,19 +421,21 @@
     <option name="LAST_COMMIT_MESSAGE" value="删除好友后将聊天记录及所有文件删除" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="277" y="95" key="#Deployment" timestamp="1602996393900">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="299" y="90" key="#Deployment" timestamp="1606301595677">
+      <screen x="0" y="0" width="1475" height="829" />
     </state>
     <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1602996393900" />
+    <state x="299" y="90" key="#Deployment/0.0.1475.829@0.0.1475.829" timestamp="1606301595677" />
     <state x="311" y="90" key="#Deployment/0.0.1536.824@0.0.1536.824" timestamp="1602586667044" />
     <state x="651" y="274" key="#Notifications" timestamp="1602582030627">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="651" y="274" key="#Notifications/0.0.1536.824@0.0.1536.824" timestamp="1602582030627" />
-    <state x="262" y="83" key="#SSH_Configurations" timestamp="1602680804236">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="282" y="79" key="#SSH_Configurations" timestamp="1606301570959">
+      <screen x="0" y="0" width="1475" height="829" />
     </state>
     <state x="262" y="83" key="#SSH_Configurations/0.0.1368.872@0.0.1368.872" timestamp="1602680804236" />
+    <state x="282" y="79" key="#SSH_Configurations/0.0.1475.829@0.0.1475.829" timestamp="1606301570959" />
     <state x="294" y="78" key="#SSH_Configurations/0.0.1536.824@0.0.1536.824" timestamp="1602586666135" />
     <state x="480" y="303" key="#Usage_Scope" timestamp="1600789031314">
       <screen x="0" y="0" width="1368" height="872" />
@@ -462,10 +473,11 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="93" y="93" width="1181" height="685" key="DirDiffDialog/0.0.1368.872@0.0.1368.872" timestamp="1601008840131" />
-    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1603334292428">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="502" y="183" key="FileChooserDialogImpl" timestamp="1606301565575">
+      <screen x="0" y="0" width="1475" height="829" />
     </state>
     <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1603334292428" />
+    <state x="502" y="183" key="FileChooserDialogImpl/0.0.1475.829@0.0.1475.829" timestamp="1606301565575" />
     <state x="523" y="182" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1602586665089" />
     <state x="536" y="336" key="Gitee.ShareDialog" timestamp="1602845510089">
       <screen x="0" y="0" width="1368" height="872" />
@@ -598,9 +610,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="347" y="204" key="run.anything.popup/0.0.1368.872@0.0.1368.872" timestamp="1603279049533" />
-    <state x="357" y="194" width="672" height="678" key="search.everywhere.popup" timestamp="1602992841556">
-      <screen x="0" y="0" width="1368" height="872" />
+    <state x="385" y="184" width="725" height="645" key="search.everywhere.popup" timestamp="1606304890223">
+      <screen x="0" y="0" width="1475" height="829" />
     </state>
     <state x="357" y="194" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1602992841556" />
+    <state x="385" y="184" width="725" height="645" key="search.everywhere.popup/0.0.1475.829@0.0.1475.829" timestamp="1606304890223" />
   </component>
 </project>

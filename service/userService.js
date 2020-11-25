@@ -345,3 +345,59 @@ exports.getAvatar = async function (fileName) {
     }
 }
 
+/**
+ * 根据用户词云搜索
+ * @param word
+ * @returns {Promise<void>}
+ */
+exports.searchUserByWordCloud = async function(Id,word){
+    console.log("word:"+word)
+    let value
+    let user
+    let result = []
+    try {
+        value = await repository.searchUserIdByWordCloud(word)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    //console.log(value.length)
+    let arr = []
+
+    let reg = new RegExp(word)
+    for(let i = 1;i<=10;i++) {
+        value.forEach(function (v) {
+            //console.log("for")
+            if(v['Top'+i].match(reg)){
+                //console.log("if")
+                arr.push(v['cloudId'])
+            }
+        })
+    }
+    console.log('arr'+arr)
+    for(let j=0;j<arr.length;j++){
+        //Id相同为查询者
+        if(arr[j]==Id){
+            continue
+        }
+        try {
+            user = await repository.getUserById(arr[j])
+        } catch (e) {
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+        }
+        //如果读出的长度为0，说明用户不存在
+        if (user.length === 0) {
+            continue
+        }
+
+        let message = user[0].get()
+        result.push({
+            avatarUrl:message.avatar,
+            userName:message.username,
+            gender:message.gender,
+            nickname:message.nickname
+        })
+    }
+
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
+
+}

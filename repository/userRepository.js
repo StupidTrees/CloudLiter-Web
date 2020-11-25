@@ -6,7 +6,7 @@ const Op = models.Op
  */
 
 const User = models.User
-
+const wordTop10 = models.wordTop10
 /**
  * 根据用户id获取用户
  * @param id
@@ -169,4 +169,23 @@ exports.getAvatarPathById = function (id){
     },
         attributes:['avatar']
     })
+}
+
+exports.searchUserIdByWordCloud = function(word){
+
+            return wordTop10.findAll({
+                where:{[Op.and]:[{type:'USER'},
+                        {[Op.or]:[{Top1:{[Op.like]:'%'+word+'%'}},
+                                {Top2:{[Op.like]:'%'+word+'%'}},
+                                {Top3:{[Op.like]:'%'+word+'%'}},
+                                {Top4:{[Op.like]:'%'+word+'%'}},
+                                {Top5:{[Op.like]:'%'+word+'%'}},
+                                {Top6:{[Op.like]:'%'+word+'%'}},
+                                {Top7:{[Op.like]:'%'+word+'%'}},
+                                {Top8:{[Op.like]:'%'+word+'%'}},
+                                {Top9:{[Op.like]:'%'+word+'%'}},
+                                {Top10:{[Op.like]:'%'+word+'%'}}
+                            ]}]}
+            })
+
 }

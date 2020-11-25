@@ -200,4 +200,17 @@ router.get('/profile/avatar',function (req,res){
         res.send(err)
     })
 })
+
+/**
+ * 按词云查找用户
+ */
+router.get('/search/word_cloud',function (req,res){
+    let queryId = req.query.authId
+    service.searchUserByWordCloud(queryId,req.query.word).then(r => {
+        res.send(r)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
 module.exports = router;
