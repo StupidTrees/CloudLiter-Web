@@ -188,6 +188,14 @@ router.get('/profile/word_cloud',function (req,res){
 })
 
 
+router.get('/profile/get_uer_from_word',function(req,res){
+    wordCloudService.getUserFromWord('USER',req.query.word).then(r=>{
+        res.send(r)
+    }).catch((err)=>{
+        res.send(err)
+    })
+})
+
 /**
  * 按文件名直接获取头像
  */

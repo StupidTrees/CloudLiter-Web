@@ -62,7 +62,6 @@ exports.findOrCreateUserWord = function (userId, word, addNum) {
 }
 
 
-
 exports.updateTop10 = function (type, id, word, num) {
     wordTop10.findOrCreate({
             where: {
@@ -144,8 +143,6 @@ exports.updateTop10 = function (type, id, word, num) {
 }
 
 
-
-
 /**
  * 查找word对应的会话词是否存在，没有就新建
  * @param conversationId
@@ -219,7 +216,7 @@ exports.getConversationWordCloud = function (conversationId) {
     })
 }
 
-exports.getTop10 = function(type,id){
+exports.getTop10 = function (type, id) {
     return wordTop10.findOrCreate({
             where: {
                 cloudId: id
@@ -246,6 +243,38 @@ exports.getTop10 = function(type,id){
                 }
             }
             arr.push(obj)
+        }
+        return arr
+    })
+}
+
+exports.getUserFromWord(type, word)
+{
+    wordTop10.findAll(
+        {
+            where: {
+                [Op.and]: [{
+                    type: type,
+                    [Op.or]: [
+                        {Top1: word},
+                        {Top2: word},
+                        {Top3: word},
+                        {Top4: word},
+                        {Top5: word},
+                        {Top6: word},
+                        {Top7: word},
+                        {Top8: word},
+                        {Top9: word},
+                        {Top10: word}
+                    ]
+                }]
+            }
+        }
+    ).then(value => {
+        let arr = []
+        for (item in value) {
+            data = item.get()
+            arr.push(data.cloudId)
         }
         return arr
     })
