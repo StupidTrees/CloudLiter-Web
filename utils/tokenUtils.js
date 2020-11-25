@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
 
 const PRIVATE_KEY = 'this_is_a_key'
-const EXPIRE_IN = '1day'
+const EXPIRE_IN = '1year'
 const ENCODE_ALGORITHM = 'HS256'
 
 //
