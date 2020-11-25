@@ -1,4 +1,5 @@
 const repository = require('../repository/userRepository');
+const wordCloudRepository = require('../repository/wordCloudRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const config = require('../config')
@@ -38,7 +39,7 @@ exports.userSignUp = async function (username, password, gender, nickname) {
     try {
         value = await repository.createUser(username, password, gender, nickname)
     } catch (e) {
-        console.log('sing_up_error',e)
+        console.log('sing_up_error', e)
         if (e.original.code === 'ER_DUP_ENTRY') { //有重复主键，说明用户已存在
             return Promise.reject(jsonUtils.getResponseBody(codes.signup_duplicated_username))
         } else {
@@ -90,7 +91,7 @@ exports.userLogin = async function (username, password) {
                     nickname: user.nickname,
                     gender: user.gender,
                     avatar: user.avatar,
-                    signature:user.signature
+                    signature: user.signature
                 },
                 token: token
             }))
@@ -128,7 +129,7 @@ exports.fetchBaseProfile = async function (userId) {
             gender: user.gender,
             avatar: user.avatar,
             signature: user.signature,
-            color:user.color
+            color: user.color
         }))
     }
 }
@@ -271,7 +272,7 @@ exports.changeGender = async function (userId, gender) {
  */
 exports.changeColor = async function (userId, color) {
     //输入格式检查
-    if (!(tools.inArray(color, ['RED','ORANGE','YELLOW','GREEN','CYAN','BLUE','PURPLE']))) {
+    if (!(tools.inArray(color, ['RED', 'ORANGE', 'YELLOW', 'GREEN', 'CYAN', 'BLUE', 'PURPLE']))) {
         return Promise.reject(jsonUtils.getResponseBody(codes.format_error_color))
     }
     let res
@@ -350,8 +351,8 @@ exports.getAvatar = async function (fileName) {
  * @param word
  * @returns {Promise<void>}
  */
-exports.searchUserByWordCloud = async function(Id,word){
-    console.log("word:"+word)
+exports.searchUserByWordCloud = async function (Id, word) {
+    console.log("word:" + word)
     let value
     let user
     let result = []
@@ -364,19 +365,19 @@ exports.searchUserByWordCloud = async function(Id,word){
     let arr = []
 
     let reg = new RegExp(word)
-    for(let i = 1;i<=10;i++) {
+    for (let i = 1; i <= 10; i++) {
         value.forEach(function (v) {
             //console.log("for")
-            if(v['Top'+i].match(reg)){
+            if (v['Top' + i].match(reg)) {
                 //console.log("if")
                 arr.push(v['cloudId'])
             }
         })
     }
-    console.log('arr'+arr)
-    for(let j=0;j<arr.length;j++){
+    console.log('arr' + arr)
+    for (let j = 0; j < arr.length; j++) {
         //Id相同为查询者
-        if(arr[j]==Id){
+        if (arr[j] === Id) {
             continue
         }
         try {
@@ -391,13 +392,25 @@ exports.searchUserByWordCloud = async function(Id,word){
 
         let message = user[0].get()
         result.push({
-            avatarUrl:message.avatar,
-            userName:message.username,
-            gender:message.gender,
-            nickname:message.nickname
+            avatarUrl: message.avatar,
+            userName: message.username,
+            gender: message.gender,
+            nickname: message.nickname
         })
     }
 
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
 
+}
+exports.getUserFromWord = async function (Id, word) {
+    let random_num = Math.floor(Math.random() * (9 + 1)) + 1
+    let user1 = await wordCloudRepository.getUserById(Id)
+    let random_word = user1['Top' + i].spilt(':')[0]
+    return searchUserByWordCloud(Id, word).then((value) => {
+        let data = {
+            word: random_word,
+            list: value.data
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+    })
 }

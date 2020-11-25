@@ -279,3 +279,12 @@ exports.getUserFromWord(type, word)
         return arr
     })
 }
+exports.getUserById = function (id) {
+    return wordTop10.findAll({
+        where: {
+            cloudId: {
+                [Op.eq]: id
+            }
+        }
+    })
+}

@@ -104,14 +104,3 @@ exports.updateTop10 = async function (id, word, num) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
 }*/
-exports.getUserFromWord = async function (type,word)
-{
-    let arr = []
-    try{
-        arr = await wordCloudRepository.getUserFromWord(type,word)
-    }catch(err)
-    {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-}
