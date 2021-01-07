@@ -29,10 +29,10 @@ exports.User = con.sequelize.define(
             type: DataTypes.ENUM('MALE', 'FEMALE'),
             allowNull: false
         },
-        color: {
-            type: DataTypes.ENUM('RED', 'ORANGE', 'YELLOW', 'GREEN', 'CYAN', 'BLUE', 'PURPLE'),
-            allowNull: true,
-            default: 'BLUE'
+        accessibility: {
+            type: DataTypes.ENUM('NO','YES_PUBLIC','YES_PRIVATE'),
+            allowNull: false,
+            default: 'NO'
         },
         nickname: {
             type: DataTypes.STRING,
@@ -404,6 +404,10 @@ exports.wordTop10 = con.sequelize.define(
         },
         flag:{
             type:DataTypes.INTEGER
+        },
+        private:{
+            type:DataTypes.BOOLEAN,
+            default:false
         }
     }
 )

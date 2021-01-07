@@ -34,6 +34,7 @@ exports.saveMessage = async function (message) {
             data.friendRemark = userData.get().nickname
         }
         data.friendAvatar = userData.get().avatar
+        data.friendAccessibility = userData.get().accessibility==='YES_PRIVATE'?'NO':userData.get().accessibility
         console.log('data', data)
     } catch (e) {
         console.log('err', e)
@@ -212,6 +213,9 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
             if (textUtils.isEmpty(rel[0].get().remark)) {
                 data.friendRemark = userData.get().nickname
             }
+            if(userData.accessibility==='YES_PRIVATE'){
+                userData.accessibility = 'NO'
+            }
             data.friendAvatar = userData.get().avatar
             console.log('data', data)
         } catch (e) {
@@ -270,6 +274,9 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
             let userData = rel[0].get().user
             if (textUtils.isEmpty(rel[0].get().remark)) {
                 data.friendRemark = userData.get().nickname
+            }
+            if(userData.accessibility==='YES_PRIVATE'){
+                userData.accessibility = 'NO'
             }
             data.friendAvatar = userData.get().avatar
             console.log('data', data)

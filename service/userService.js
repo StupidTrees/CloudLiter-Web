@@ -1,4 +1,5 @@
 const repository = require('../repository/userRepository');
+const wordTop10Repository = require('../repository/wordCloudRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const config = require('../config')
@@ -54,7 +55,8 @@ exports.userSignUp = async function (username, password, gender, nickname) {
             username: username,
             id: value.id.toString(),
             nickname: nickname,
-            gender: gender
+            gender: gender,
+            accessibility: value.accessibility.toString()
         }
     }))
 }
@@ -90,7 +92,8 @@ exports.userLogin = async function (username, password) {
                     nickname: user.nickname,
                     gender: user.gender,
                     avatar: user.avatar,
-                    signature:user.signature
+                    signature:user.signature,
+                    accessibility: user.accessibility
                 },
                 token: token
             }))
@@ -113,6 +116,13 @@ exports.fetchBaseProfile = async function (userId) {
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
+    let isPrivate
+    try{
+        isPrivate = await wordTop10Repository.isPrivate(userId).get().private
+    }catch (e){
+        isPrivate = false;
+    }
+
     //如果读出的长度为0，说明用户不存在
     if (value.length === 0) {
         return Promise.reject(
@@ -128,7 +138,9 @@ exports.fetchBaseProfile = async function (userId) {
             gender: user.gender,
             avatar: user.avatar,
             signature: user.signature,
-            color:user.color
+            color:user.color,
+            wordCloudPrivate:isPrivate,
+            accessibility:user.accessibility
         }))
     }
 }
@@ -265,18 +277,13 @@ exports.changeGender = async function (userId, gender) {
 
 
 /**
- * 更改颜色
+ * 设置是否为无障碍用户
  * @param userId
- * @param color 颜色：RED/ORANGE/YELLOW/GREEN/CYAN/BLUE/PURPLE
  */
-exports.changeColor = async function (userId, color) {
-    //输入格式检查
-    if (!(tools.inArray(color, ['RED','ORANGE','YELLOW','GREEN','CYAN','BLUE','PURPLE']))) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.format_error_color))
-    }
+exports.changeAccessibilityType= async function (userId, accessibility) {
     let res
     try {
-        res = await repository.changeColor(userId, color)
+        res = await repository.changeAccessibilityType(userId,accessibility)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
@@ -286,6 +293,24 @@ exports.changeColor = async function (userId, color) {
     } else {
         return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_username))
     }
+}
+
+/**
+ * 修改词云可访问性
+ * @param userId
+ * @param isPrivate
+ */
+exports.changeWordCloudAccessibility = async function (userId, isPrivate) {
+    let value
+    try{
+        value = await wordTop10Repository.changeAccessibility(userId,isPrivate)
+    }catch (e){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+    }
+    if(value<1){
+        return Promise.reject(jsonUtils.getResponseBody(codes.no_such_word_cloud))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
 
@@ -347,11 +372,10 @@ exports.getAvatar = async function (fileName) {
 
 /**
  * 根据用户词云搜索
+ * @param Id
  * @param word
- * @returns {Promise<void>}
  */
 exports.searchUserByWordCloud = async function(Id,word){
-    console.log("word:"+word)
     let value
     let user
     let result = []
@@ -360,23 +384,20 @@ exports.searchUserByWordCloud = async function(Id,word){
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    //console.log(value.length)
     let arr = []
-
     let reg = new RegExp(word)
     for(let i = 1;i<=10;i++) {
         value.forEach(function (v) {
             //console.log("for")
             if(v['Top'+i].match(reg)){
                 //console.log("if")
-                arr.push(v['cloudId'])
+               if(arr.indexOf(v.cloudId)<0) arr.push(v.cloudId)
             }
         })
     }
-    console.log('arr'+arr)
     for(let j=0;j<arr.length;j++){
         //Id相同为查询者
-        if(arr[j]==Id){
+        if(arr[j].toString()===Id.toString()){
             continue
         }
         try {
@@ -388,13 +409,14 @@ exports.searchUserByWordCloud = async function(Id,word){
         if (user.length === 0) {
             continue
         }
-
-        let message = user[0].get()
+        let item = user[0].get()
         result.push({
-            avatarUrl:message.avatar,
-            userName:message.username,
-            gender:message.gender,
-            nickname:message.nickname
+            username: item.username,
+            nickname: item.nickname,
+            avatar: item.avatar,
+            id: item.id,
+            gender: item.gender,
+            color: item.color
         })
     }
 

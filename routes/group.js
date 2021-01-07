@@ -38,6 +38,15 @@ router.post('/delete',function(req,res){
         res.send(err)
     })
 })
+
+router.post('/rename',function(req,res){
+    let queryGroupId = req.body.groupId
+    service.renameGroup(queryGroupId,req.body.name).then((value)=>{
+        res.send(value)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
 router.get('/get',function(req,res){
     let queryUserId = req.body.authId
     if(req.body.userId!==undefined){

@@ -31,6 +31,7 @@ exports.getConversations = async function (userId) {
             relData = item.get()['relation2'].get()
             friendData = item.get()['user1'].get()
         }
+        if(friendData.accessibility==='YES_PRIVATE') friendData.accessibility = 'NO'
         let rawData = item.get()
         let data = {
             id: rawData.key,
@@ -40,6 +41,7 @@ exports.getConversations = async function (userId) {
             friendAvatar: friendData.avatar,
             friendNickname: friendData.nickname,
             friendRemark: relData.remark,
+            friendAccessibility:friendData.accessibility,
             group: relData.groupId,
             relationId: relData.key,
             createdAt: rawData.createdAt,
@@ -70,9 +72,9 @@ exports.getConversationById = async function (userId, friendId) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
     let rawData = value[0].get()
-    //console.log("rawData",rawData)
     let relationData = rawData.hasOwnProperty('relation1') ? rawData['relation1'] : rawData['relation2']
     let userData = rawData.hasOwnProperty('user1') ? rawData['user1'] : rawData['user2']
+    if(userData.accessibility==='YES_PRIVATE') userData.accessibility = 'NO'
     let data = {
         id: rawData.key,
         historyId: rawData.historyId,
@@ -81,6 +83,7 @@ exports.getConversationById = async function (userId, friendId) {
         relationId: relationData.key,
         friendId: relationData.friendId,
         friendAvatar: userData.avatar,
+        friendAccessibility:userData.accessibility,
         friendNickname : userData.nickname,
         friendRemark : relationData.remark,
         createdAt: rawData.createdAt,

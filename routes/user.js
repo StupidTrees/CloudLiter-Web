@@ -42,13 +42,19 @@ router.post('/login', function (req, res) {
  * 用户基本信息获取
  */
 router.get('/profile/get', (req, res) => {
+
     let queryId = req.query.authId
     if(req.query.id!==undefined){
         queryId = req.query.id
     }
+    console.log("fetch_profile",queryId)
     service.fetchBaseProfile(queryId).then((value) => {
+        console.log(value)
         res.send(value)
+    },error => {
+        console.log(error)
     }).catch((err) => {
+        console.log(err)
         res.send(err)
     })
 })
@@ -114,20 +120,35 @@ router.post('/profile/change_gender',function(req,res){
 
 
 /**
- * 更改颜色
+ * 更改无障碍用户类型
  */
-router.post('/profile/change_color',function(req,res){
+router.post('/profile/change_accessibility',function(req,res){
     let queryId = req.body.authId
     if(req.body.id!==undefined){
         queryId = req.body.id
     }
-    service.changeColor(queryId,req.body.color).then((value)=>{
+    service.changeAccessibilityType(queryId,req.body.accessibility).then((value)=>{
         res.send(value)
     }).catch(err=>{
         res.send(err)
     })
 })
 
+/**
+ * 修改词云可访问性
+ */
+router.post('/profile/word_cloud_private',function(req,res){
+    let queryId = req.body.authId
+    if(req.body.id!==undefined){
+        queryId = req.body.id
+    }
+    service.changeWordCloudAccessibility(queryId,req.body.private).then((value)=>{
+        res.send(value)
+    }).catch(err=>{
+        console.log(err)
+        res.send(err)
+    })
+})
 
 
 /**
@@ -180,7 +201,8 @@ router.get('/profile/query_avatar',function (req,res){
  * 获取用户词云
  */
 router.get('/profile/word_cloud',function (req,res){
-    wordCloudService.getWordCloud('USER',req.query.userId,req.query.userId).then(r=>{
+    let queryId = req.query.authId
+    wordCloudService.getWordCloud('USER',queryId,req.query.userId).then(r=>{
         res.send(r)
     }).catch((err)=>{
         res.send(err)

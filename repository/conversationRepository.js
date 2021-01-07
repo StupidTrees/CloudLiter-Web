@@ -91,8 +91,7 @@ exports.getConversationById = function (userId,friendId){
         where:{
             key:id
         },
-        include: [{ //把relation1Id字段的用户对象也查出来
-            //attributes:[],
+        include: [{
             foreignKey:relationForeignKey,
             as: relationAs,
             model: Relation

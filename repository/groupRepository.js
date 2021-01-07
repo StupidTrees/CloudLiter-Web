@@ -37,6 +37,20 @@ exports.changeGroupNum = function (userId, friendId, groupId) {
             }
         })
 }
+
+exports.renameGroup = function (groupId,newName) {
+    return Group.update(
+        {
+            groupName: newName
+        },
+        {
+            where:{
+                id:groupId
+            }
+        }
+    )
+}
+
 exports.deleteGroup = function (groupId) {
     return Group.destroy(
         {

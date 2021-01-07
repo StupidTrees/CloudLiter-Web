@@ -43,52 +43,33 @@ exports.addToWordCloud = async function (userId,conversationId, list) {
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
-// /**
-//  * 获取用户词云信息
-//  * @param {*} userId
-//  */
-// exports.getUserWordCloud = async function (userId) {
-//     let sum
-//     let message
-//     let result = {}
-//     try {
-//         sum = await wordCloudRepository.getUserSum(userId)
-//     } catch (err) {
-//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-//     }
-//     try {
-//         message = await wordCloudRepository.getUserWordCloud(userId)
-//     } catch (err) {
-//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-//     }
-//
-//     message.forEach(function (item) {
-//         let word = item.word
-//         result[word] = item.num/sum.totalWord
-//     })
-//     return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
-// }
+
 
 /**
- * 获取对话词云信息
+ * 获取词云信息
  * @param type
  * @param userId
  * @param friendId
  */
 exports.getWordCloud = async function (type,userId,friendId) {
     let id = type==='CONV'?tools.getP2PIdOrdered(userId,friendId):friendId
-    let message
+    let data
     let result = {}
     try{
-        message = await wordCloudRepository.getTop10(type,id)
+        data = await wordCloudRepository.getTop10(type,id)
     }catch (err){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     }
+    //不是用户自己的，且不可见
+    if(userId.toString()!==friendId.toString() && data.private){
+        return Promise.reject(jsonUtils.getResponseBody(codes.word_cloud_private))
+    }
+    let list = data.list
     let sum = 0
-    message.forEach(function (item){
+    list.forEach(function (item){
         sum += item.freq
     })
-    message.forEach(function (item){
+    list.forEach(function (item){
         if(item.freq>0){
             result[item.name] = item.freq/sum;
         }
@@ -96,11 +77,3 @@ exports.getWordCloud = async function (type,userId,friendId) {
 
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
 }
-/*
-exports.updateTop10 = async function (id, word, num) {
-    try {
-        await wordCloudRepository.updateTop10(id, word, num)
-    } catch (err) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    }
-}*/
