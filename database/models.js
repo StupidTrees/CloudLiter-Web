@@ -46,6 +46,18 @@ exports.User = con.sequelize.define(
             type: DataTypes.STRING,
             allowNull: true
         },
+        type: {
+            type: DataTypes.BIGINT,
+            allowNull: true
+        },
+        subType: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        typePermission: {
+            type: DataTypes.ENUM('PRIVATE','PUBLIC','PROTECTED'),
+            allowNull: true
+        },
         createdAt: {
             type: DataTypes.DATE
         },

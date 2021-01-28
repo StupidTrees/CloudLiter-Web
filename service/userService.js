@@ -128,7 +128,10 @@ exports.fetchBaseProfile = async function (userId) {
             gender: user.gender,
             avatar: user.avatar,
             signature: user.signature,
-            color:user.color
+            color:user.color,
+            type:user.type,
+            subType:user.subType,
+            typePermission:user.typePermission
         }))
     }
 }
@@ -400,4 +403,22 @@ exports.searchUserByWordCloud = async function(Id,word){
 
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
 
+}
+
+/**
+ * 用户类型修改
+ * @param Id
+ * @param type
+ * @param subType
+ * @param typePermission
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.changUserType = async function(Id,type,subType,typePermission){
+    let res
+    try {
+        res = await repository.changeType(Id, type,subType,typePermission)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    return  Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }

@@ -213,4 +213,16 @@ router.get('/search/word_cloud',function (req,res){
     })
 })
 
+/**
+ * 用户类型修改
+ */
+router.post('/profile/change_type',function (req,res){
+    let queryId = req.body.authId
+    service.changUserType(queryId,req.body.type,req.body.subType,req.body.typePermission).then(r => {
+        res.send(r)
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
 module.exports = router;
