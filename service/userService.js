@@ -55,8 +55,7 @@ exports.userSignUp = async function (username, password, gender, nickname) {
             username: username,
             id: value.id.toString(),
             nickname: nickname,
-            gender: gender,
-            accessibility: value.accessibility.toString()
+            gender: gender
         }
     }))
 }
@@ -92,8 +91,7 @@ exports.userLogin = async function (username, password) {
                     nickname: user.nickname,
                     gender: user.gender,
                     avatar: user.avatar,
-                    signature:user.signature,
-                    accessibility: user.accessibility
+                    signature:user.signature
                 },
                 token: token
             }))
@@ -116,13 +114,6 @@ exports.fetchBaseProfile = async function (userId) {
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    let isPrivate
-    try{
-        isPrivate = await wordTop10Repository.isPrivate(userId).get().private
-    }catch (e){
-        isPrivate = false;
-    }
-
     //如果读出的长度为0，说明用户不存在
     if (value.length === 0) {
         return Promise.reject(
@@ -139,8 +130,9 @@ exports.fetchBaseProfile = async function (userId) {
             avatar: user.avatar,
             signature: user.signature,
             color:user.color,
-            wordCloudPrivate:isPrivate,
-            accessibility:user.accessibility
+            type:user.type,
+            subType:user.subType,
+            typePermission:user.typePermission
         }))
     }
 }
@@ -277,13 +269,18 @@ exports.changeGender = async function (userId, gender) {
 
 
 /**
- * 设置是否为无障碍用户
+ * 更改颜色
  * @param userId
+ * @param color 颜色：RED/ORANGE/YELLOW/GREEN/CYAN/BLUE/PURPLE
  */
-exports.changeAccessibilityType= async function (userId, accessibility) {
+exports.changeColor = async function (userId, color) {
+    //输入格式检查
+    if (!(tools.inArray(color, ['RED','ORANGE','YELLOW','GREEN','CYAN','BLUE','PURPLE']))) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.format_error_color))
+    }
     let res
     try {
-        res = await repository.changeAccessibilityType(userId,accessibility)
+        res = await repository.changeColor(userId, color)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
@@ -372,8 +369,8 @@ exports.getAvatar = async function (fileName) {
 
 /**
  * 根据用户词云搜索
- * @param Id
  * @param word
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.searchUserByWordCloud = async function(Id,word){
     let value
@@ -391,7 +388,7 @@ exports.searchUserByWordCloud = async function(Id,word){
             //console.log("for")
             if(v['Top'+i].match(reg)){
                 //console.log("if")
-               if(arr.indexOf(v.cloudId)<0) arr.push(v.cloudId)
+               arr.push(v.cloudId)
             }
         })
     }
@@ -409,17 +406,34 @@ exports.searchUserByWordCloud = async function(Id,word){
         if (user.length === 0) {
             continue
         }
-        let item = user[0].get()
+
+        let message = user[0].get()
         result.push({
-            username: item.username,
-            nickname: item.nickname,
-            avatar: item.avatar,
-            id: item.id,
-            gender: item.gender,
-            color: item.color
+            avatarUrl:message.avatar,
+            userName:message.username,
+            gender:message.gender,
+            nickname:message.nickname
         })
     }
 
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,result))
 
+}
+
+/**
+ * 用户类型修改
+ * @param Id
+ * @param type
+ * @param subType
+ * @param typePermission
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.changUserType = async function(Id,type,subType,typePermission){
+    let res
+    try {
+        res = await repository.changeType(Id, type,subType,typePermission)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    return  Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }

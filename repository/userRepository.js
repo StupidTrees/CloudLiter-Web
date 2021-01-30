@@ -190,3 +190,13 @@ exports.searchUserIdByWordCloud = function(word){
             })
 
 }
+
+exports.changeType = function(id,type,subType,typePermission){
+    return User.update({
+        type: type,
+        subType: subType,
+        typePermission: typePermission
+    },{
+        where:{id:id}
+    })
+}
