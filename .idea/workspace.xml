@@ -32,9 +32,7 @@
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +190,10 @@
       <workItem from="1611716295625" duration="238000" />
       <workItem from="1611716805398" duration="25000" />
       <workItem from="1611721095235" duration="2378000" />
-      <workItem from="1611849883540" duration="1427000" />
+      <workItem from="1611849883540" duration="1669000" />
+      <workItem from="1611909745366" duration="5153000" />
+      <workItem from="1611996490119" duration="1215000" />
+      <workItem from="1612159046006" duration="3894000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -376,7 +377,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606310633301</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="user数据结构新增type,subType,typePermission,增加修改用户类型功能">
+      <created>1611851461578</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1611851461578</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -407,7 +415,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="新增 用户头像上传" />
     <MESSAGE value="小修改" />
     <MESSAGE value="Service层的异步函数内部统一改用同步写法" />
     <MESSAGE value="新增 对话实体" />
@@ -432,6 +439,7 @@
     <MESSAGE value="修改细节" />
     <MESSAGE value="删除好友后将聊天记录及所有文件删除" />
     <MESSAGE value="词云查用户" />
-    <option name="LAST_COMMIT_MESSAGE" value="词云查用户" />
+    <MESSAGE value="user数据结构新增type,subType,typePermission,增加修改用户类型功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="user数据结构新增type,subType,typePermission,增加修改用户类型功能" />
   </component>
 </project>
