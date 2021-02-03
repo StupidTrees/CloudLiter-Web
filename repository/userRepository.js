@@ -37,7 +37,7 @@ exports.createUser = function (username, password, gender, nickname) {
             password: password,
             gender: gender,
             nickname: nickname,
-            color:'BLUE'
+            accessibility:'NO'
         }
     )
 }
@@ -113,11 +113,11 @@ exports.changeNickname = function(id,nickname){
 /**
  * 修改某用户的颜色
  * @param id
- * @param color 颜色
+ * @param accessibility
  */
-exports.changeColor = function(id,color){
+exports.changeAccessibilityType = function(id,accessibility){
     return User.update({
-        color:color
+        accessibility:accessibility
     },{
         where:{
             id:id
@@ -172,9 +172,10 @@ exports.getAvatarPathById = function (id){
 }
 
 exports.searchUserIdByWordCloud = function(word){
-
             return wordTop10.findAll({
-                where:{[Op.and]:[{type:'USER'},
+                where:{[Op.and]:[
+                    {private:false},
+                    {type:'USER'},
                         {[Op.or]:[{Top1:{[Op.like]:'%'+word+'%'}},
                                 {Top2:{[Op.like]:'%'+word+'%'}},
                                 {Top3:{[Op.like]:'%'+word+'%'}},

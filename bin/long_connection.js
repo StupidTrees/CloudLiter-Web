@@ -139,6 +139,7 @@ function onConnect(socket) {
 
     //某用户退出某对话
     socket.on('left_conversation', function (userId, conversationId) {
+
         removeUserFromConversation(userId, conversationId)
         console.log("用户退出对话窗口", userExpectedConversation)
         //通知正在和他进行对话的好友，他退出某对话
@@ -153,6 +154,7 @@ function onConnect(socket) {
     //标记某对话下的消息全部已读
     socket.on('mark_all_read', function (userId, convId, topTime) {
         console.log('标记全部已读', userId + "," + convId + "," + topTime)
+        markOnline(socket, userId)//保持在线
         if(userId==null||convId==null||topTime==null){
             return ;
         }
@@ -166,6 +168,7 @@ function onConnect(socket) {
 
     //标记某消息已读
     socket.on('mark_read', function (userId, convId, messageId) {
+        markOnline(socket, userId)//保持在线
         console.log('标记已读',userId + "," + convId + "," + messageId)
         if(userId==null||convId==null||messageId==null){
             return ;
@@ -243,7 +246,7 @@ function onConnect(socket) {
 
 //发送图片消息
 exports.sentImageMessage = function (message) {
-    console.log('sendImageMessage', id2SocketId)
+    //console.log('sendImageMessage', id2SocketId)
     //更新对话信息
     convService.updateConversation(message.fromId, message.toId, '[图片]').then()
     if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
@@ -252,13 +255,13 @@ exports.sentImageMessage = function (message) {
             io.to(id2SocketId[message.toId]).emit('message', message);
         }
         io.to(socket).emit('message_sent', message)
-        console.log(message.fromId + '对' + message.toId + '说：' + message.content);
+       // console.log(message.fromId + '对' + message.toId + '说：' + message.content);
     }
 }
 
 //发送图片消息
 exports.sentVoiceMessage = function (message) {
-    console.log('sendVoiceMessage', id2SocketId)
+  //  console.log('sendVoiceMessage', id2SocketId)
     //更新对话信息
     convService.updateConversation(message.fromId, message.toId, '[语音]').then()
     if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
@@ -267,6 +270,15 @@ exports.sentVoiceMessage = function (message) {
             io.to(id2SocketId[message.toId]).emit('message', message);
         }
         io.to(socket).emit('message_sent', message)
-        console.log(message.fromId + '对' + message.toId + '说：' + message.content);
+       // console.log(message.fromId + '对' + message.toId + '说：' + message.content);
+    }
+}
+
+exports.notifyRelationEvent = function(targetUserId){
+    console.log('通知好友事件')
+    if (id2SocketId.hasOwnProperty(targetUserId.toString())) {
+        let socket = id2SocketId[targetUserId.toString()]
+        io.to(socket).emit('relation_event')
+        // console.log(message.fromId + '对' + message.toId + '说：' + message.content);
     }
 }

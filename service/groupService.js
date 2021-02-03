@@ -26,9 +26,16 @@ exports.setGroupNum = async function(userId,friendId,groupId){
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 exports.deleteGroup = async function(groupId){
-    let value = null
     try {
-        value = await groupRepository.deleteGroup(groupId)
+        await groupRepository.deleteGroup(groupId)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}
+exports.renameGroup = async function(groupId,newName){
+    try {
+        await groupRepository.renameGroup(groupId,newName)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }

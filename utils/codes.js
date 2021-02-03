@@ -107,6 +107,14 @@ exports.codes = {
         code:3019,
         message:'没有找到聊天语音！'
     },
+    no_such_word_cloud:{
+        code:3020,
+        message:'词云不存在！'
+    },
+    word_cloud_private:{
+        code:3021,
+        message:'词云被隐藏'
+    },
     other_error:{
         code:5000,
         message:'其他错误'

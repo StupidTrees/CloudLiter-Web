@@ -1,4 +1,5 @@
 const repository = require('../repository/userRepository');
+const wordTop10Repository = require('../repository/wordCloudRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const config = require('../config')
@@ -291,6 +292,24 @@ exports.changeColor = async function (userId, color) {
     }
 }
 
+/**
+ * 修改词云可访问性
+ * @param userId
+ * @param isPrivate
+ */
+exports.changeWordCloudAccessibility = async function (userId, isPrivate) {
+    let value
+    try{
+        value = await wordTop10Repository.changeAccessibility(userId,isPrivate)
+    }catch (e){
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,e))
+    }
+    if(value<1){
+        return Promise.reject(jsonUtils.getResponseBody(codes.no_such_word_cloud))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}
+
 
 /**
  * 根据用户id，查询头像文件名
@@ -351,10 +370,9 @@ exports.getAvatar = async function (fileName) {
 /**
  * 根据用户词云搜索
  * @param word
- * @returns {Promise<void>}
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.searchUserByWordCloud = async function(Id,word){
-    console.log("word:"+word)
     let value
     let user
     let result = []
@@ -363,23 +381,20 @@ exports.searchUserByWordCloud = async function(Id,word){
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    //console.log(value.length)
     let arr = []
-
     let reg = new RegExp(word)
     for(let i = 1;i<=10;i++) {
         value.forEach(function (v) {
             //console.log("for")
             if(v['Top'+i].match(reg)){
                 //console.log("if")
-                arr.push(v['cloudId'])
+               arr.push(v.cloudId)
             }
         })
     }
-    console.log('arr'+arr)
     for(let j=0;j<arr.length;j++){
         //Id相同为查询者
-        if(arr[j]==Id){
+        if(arr[j].toString()===Id.toString()){
             continue
         }
         try {

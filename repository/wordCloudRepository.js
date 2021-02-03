@@ -189,33 +189,55 @@ exports.deleteConversationWordCloud = function (conversationId) {
     })
 }
 
+// /**
+//  * 获取用户词频表
+//  * @param {*} userId
+//  */
+// exports.getUserWordCloud = function (userId) {
+//     return wordCloudBin.findAll({
+//         where: {[Op.and]: [{key: userId.toString()}, {type: 'USER'}]},
+//         order: [['num', 'DESC']],
+//         limit: 10 //最多10条
+//     })
+// }
+
+
+// /**
+//  * 获取会话词频表
+//  * @param conversationId
+//  */
+// exports.getConversationWordCloud = function (conversationId) {
+//     return wordCloudBin.findAll({
+//         where: {
+//             [Op.and]: [
+//                 {type: 'CONVERSATION'},
+//                 {key: conversationId}
+//             ]
+//         },
+//         order: [['num', 'DESC']],
+//         limit: 10
+//     })
+// }
+
 /**
- * 获取用户词频表
- * @param {*} userId
+ * 改变词云可见性
+ * @param userId
+ * @param private
  */
-exports.getUserWordCloud = function (userId) {
-    return wordCloudBin.findAll({
-        where: {[Op.and]: [{key: userId.toString()}, {type: 'USER'}]},
-        order: [['num', 'DESC']],
-        limit: 10 //最多10条
+exports.changeAccessibility = function (userId,private){
+    return wordTop10.update({
+        private:private
+    },{
+        where:{
+            cloudId:userId.toString()
+        }
     })
 }
 
 
-/**
- * 获取会话词频表
- * @param conversationId
- */
-exports.getConversationWordCloud = function (conversationId) {
-    return wordCloudBin.findAll({
-        where: {
-            [Op.and]: [
-                {type: 'CONVERSATION'},
-                {key: conversationId}
-            ]
-        },
-        order: [['num', 'DESC']],
-        limit: 10
+exports.isPrivate = function (userId){
+    return wordTop10.findByPk(userId,{
+        attributes:['private']
     })
 }
 
@@ -247,6 +269,9 @@ exports.getTop10 = function(type,id){
             }
             arr.push(obj)
         }
-        return arr
+        return {
+            list:arr,
+            private:data.private
+        }
     })
 }
