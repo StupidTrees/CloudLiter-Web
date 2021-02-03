@@ -45,7 +45,7 @@ exports.getConversations = async function (userId) {
             createdAt: rawData.createdAt,
             updatedAt: rawData.updatedAt
         }
-        if(friendData.typePermission.equals('PRIVATE')){
+        if(friendData.typePermission==='PRIVATE'){
             data.type = friendData.type
             data.subType = friendData.subType
         } else {
@@ -93,7 +93,7 @@ exports.getConversationById = async function (userId, friendId) {
         createdAt: rawData.createdAt,
         updatedAt: rawData.updatedAt
     }
-    if(userData.typePermission.equals('PRIVATE')){
+    if(userData.typePermission==='PRIVATE'){
         data.type = userData.type
         data.subType = userData.subType
     } else {
