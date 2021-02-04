@@ -47,6 +47,13 @@ exports.getConversations = async function (userId) {
             createdAt: rawData.createdAt,
             updatedAt: rawData.updatedAt
         }
+        if(friendData.typePermission==='PRIVATE'){
+            data.type = friendData.type
+            data.subType = friendData.subType
+        } else {
+            data.type = 'normal'
+            data.subType = 'normal'
+        }
         res.push(data)
         // console.log('item',data)
     })
@@ -88,6 +95,13 @@ exports.getConversationById = async function (userId, friendId) {
         friendRemark : relationData.remark,
         createdAt: rawData.createdAt,
         updatedAt: rawData.updatedAt
+    }
+    if(userData.typePermission==='PRIVATE'){
+        data.type = userData.type
+        data.subType = userData.subType
+    } else {
+        data.type = 'normal'
+        data.subType = 'normal'
     }
     //console.log('data', data)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))

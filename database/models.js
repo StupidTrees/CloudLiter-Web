@@ -47,7 +47,7 @@ exports.User = con.sequelize.define(
             allowNull: true
         },
         type: {
-            type: DataTypes.BIGINT,
+            type: DataTypes.BIGINT,//
             allowNull: true
         },
         subType: {
