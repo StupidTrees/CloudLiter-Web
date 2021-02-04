@@ -3,6 +3,7 @@
 # by Bolei Zhou
 # last modified by Bolei Zhou, Dec.27, 2017 with latest pytorch and torchvision (upgrade your torchvision please if there is trn.Resize error)
 from flask import Flask,render_template,url_for,request
+from flask import jsonify
 import torch
 from torch.autograd import Variable as V
 import torchvision.models as models
@@ -80,7 +81,8 @@ def predict():
     json_str=json.dumps(resullt_dict)
     print(json_str)
     
-    return render_template('result.html',prediction = [probs[0], classes[idx[0]]])
+    #return render_template('result.html',prediction = [probs[0], classes[idx[0]]])
+    return jsonify(json_str)
 # output the prediction
 #for i in range(0, 5):
  #   print('{:.3f} -> {}'.format(probs[i], classes[idx[i]]))
