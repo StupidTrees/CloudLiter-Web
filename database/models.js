@@ -29,11 +29,6 @@ exports.User = con.sequelize.define(
             type: DataTypes.ENUM('MALE', 'FEMALE'),
             allowNull: false
         },
-        accessibility: {
-            type: DataTypes.ENUM('NO','YES_PUBLIC','YES_PRIVATE'),
-            allowNull: false,
-            default: 'NO'
-        },
         nickname: {
             type: DataTypes.STRING,
             allowNull: true
@@ -47,8 +42,9 @@ exports.User = con.sequelize.define(
             allowNull: true
         },
         type: {
-            type: DataTypes.BIGINT,//
-            allowNull: true
+            type: DataTypes.INTEGER,//
+            allowNull: false,
+            default:0
         },
         subType: {
             type: DataTypes.STRING,
@@ -56,7 +52,8 @@ exports.User = con.sequelize.define(
         },
         typePermission: {
             type: DataTypes.ENUM('PRIVATE','PUBLIC','PROTECTED'),
-            allowNull: true
+            allowNull: false,
+            default:'PUBLIC'
         },
         createdAt: {
             type: DataTypes.DATE

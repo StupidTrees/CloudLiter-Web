@@ -36,8 +36,7 @@ exports.createUser = function (username, password, gender, nickname) {
             username: username,
             password: password,
             gender: gender,
-            nickname: nickname,
-            accessibility:'NO'
+            nickname: nickname
         }
     )
 }
@@ -103,21 +102,6 @@ exports.updateUserAvatar = function (id, avatarPath) {
 exports.changeNickname = function(id,nickname){
     return User.update({
         nickname:nickname
-    },{
-        where:{
-            id:id
-        }
-    })
-}
-
-/**
- * 修改某用户的颜色
- * @param id
- * @param accessibility
- */
-exports.changeAccessibilityType = function(id,accessibility){
-    return User.update({
-        accessibility:accessibility
     },{
         where:{
             id:id

@@ -30,27 +30,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="删除好友后将聊天记录及所有文件删除">
-      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/long_connection.js" beforeDir="false" afterPath="$PROJECT_DIR$/bin/long_connection.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/conversationRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/conversationRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/groupRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/groupRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/wordCloudRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/wordCloudRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/group.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/group.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/relationEvent.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/relationEvent.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/dictionary/汉语情感词极值表.txt" beforeDir="false" afterPath="$PROJECT_DIR$/service/dictionary/汉语情感词极值表.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/groupService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/groupService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/messageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/relationEventService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/relationEventService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/wordCloudService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/wordCloudService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/codes.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/codes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/开发任务书/TOP10.md" beforeDir="false" afterPath="$PROJECT_DIR$/开发任务书/阶段4/TOP10.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/接口表.md" beforeDir="false" afterPath="$PROJECT_DIR$/接口表.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +61,12 @@
         <option value="https://github.com/StupidTrees/Hichat-web" />
       </set>
     </option>
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
   </component>
   <component name="ProjectId" id="1hrygNBbsaavCI6AK7qXaHo8jeB" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -450,37 +441,11 @@
     </state>
     <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1606362106626" />
     <state x="299" y="90" key="#Deployment/0.0.1475.829@0.0.1475.829" timestamp="1606301595677" />
-    <state x="311" y="90" key="#Deployment/0.0.1536.824@0.0.1536.824" timestamp="1602586667044" />
-    <state x="651" y="274" key="#Notifications" timestamp="1602582030627">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="651" y="274" key="#Notifications/0.0.1536.824@0.0.1536.824" timestamp="1602582030627" />
     <state x="262" y="83" key="#SSH_Configurations" timestamp="1606362105290">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="262" y="83" key="#SSH_Configurations/0.0.1368.872@0.0.1368.872" timestamp="1606362105290" />
     <state x="282" y="79" key="#SSH_Configurations/0.0.1475.829@0.0.1475.829" timestamp="1606301570959" />
-    <state x="294" y="78" key="#SSH_Configurations/0.0.1536.824@0.0.1536.824" timestamp="1602586666135" />
-    <state x="480" y="303" key="#Usage_Scope" timestamp="1600789031314">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="480" y="303" key="#Usage_Scope/0.0.1368.872@0.0.1368.872" timestamp="1600789031314" />
-    <state x="465" y="68" key="#bin\www" timestamp="1602259772727">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="465" y="68" key="#bin\www/0.0.1536.824@0.0.1536.824" timestamp="1602259772727" />
-    <state x="223" y="67" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602260032419">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="223" y="67" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1602260032419" />
-    <state x="420" y="237" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1602996208101">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="420" y="237" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1368.872@0.0.1368.872" timestamp="1602996208101" />
-    <state x="415" y="183" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1600850007021">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="415" y="183" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1368.872@0.0.1368.872" timestamp="1600850007021" />
     <state x="186" y="151" key="DBNavigator.DatasetFilterDialog" timestamp="1604755611859">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -489,100 +454,27 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="216" y="92" key="DBNavigator.ProjectSettingsDialog/0.0.1368.872@0.0.1368.872" timestamp="1604071047951" />
-    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog" timestamp="1603383795721">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog/0.0.1368.872@0.0.1368.872" timestamp="1603383795721" />
-    <state x="93" y="93" width="1181" height="685" key="DirDiffDialog" timestamp="1601008840131">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="93" y="93" width="1181" height="685" key="DirDiffDialog/0.0.1368.872@0.0.1368.872" timestamp="1601008840131" />
     <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1606362104117">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1606362104117" />
     <state x="502" y="183" key="FileChooserDialogImpl/0.0.1475.829@0.0.1475.829" timestamp="1606301565575" />
-    <state x="523" y="182" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1602586665089" />
-    <state x="536" y="336" key="Gitee.ShareDialog" timestamp="1602845510089">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="536" y="336" key="Gitee.ShareDialog/0.0.1368.872@0.0.1368.872" timestamp="1602845510089" />
-    <state x="558" y="334" key="Github.ShareDialog" timestamp="1600867111588">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="558" y="334" key="Github.ShareDialog/0.0.1368.872@0.0.1368.872" timestamp="1600867111588" />
-    <state x="539" y="134" key="Github.UntrackedFilesDialog" timestamp="1600867604575">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="539" y="134" key="Github.UntrackedFilesDialog/0.0.1368.872@0.0.1368.872" timestamp="1600867604575" />
     <state width="780" height="106" key="GridCell.Tab.0.bottom" timestamp="1606370851308">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="780" height="106" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="1493" height="312" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
     <state width="780" height="106" key="GridCell.Tab.0.center" timestamp="1606370851308">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="780" height="106" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="1493" height="312" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
     <state width="780" height="106" key="GridCell.Tab.0.left" timestamp="1606370851308">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="780" height="106" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="1493" height="312" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
     <state width="780" height="106" key="GridCell.Tab.0.right" timestamp="1606370851308">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="780" height="106" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="1493" height="312" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1602586450410" />
-    <state width="1326" height="281" key="GridCell.Tab.1.bottom" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.1.bottom/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.1.center" timestamp="1602568838753">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.1.center/0.0.1368.872@0.0.1368.872" timestamp="1602568838753" />
-    <state width="1326" height="281" key="GridCell.Tab.1.left" timestamp="1602568838753">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.1.left/0.0.1368.872@0.0.1368.872" timestamp="1602568838753" />
-    <state width="1326" height="281" key="GridCell.Tab.1.right" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.1.right/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.2.bottom" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.2.bottom/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.2.center" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.2.center/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.2.left" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.2.left/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.2.right" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.2.right/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.3.bottom" timestamp="1602568838755">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.3.bottom/0.0.1368.872@0.0.1368.872" timestamp="1602568838755" />
-    <state width="1326" height="281" key="GridCell.Tab.3.center" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.3.center/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.3.left" timestamp="1602568838754">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.3.left/0.0.1368.872@0.0.1368.872" timestamp="1602568838754" />
-    <state width="1326" height="281" key="GridCell.Tab.3.right" timestamp="1602568838755">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="1326" height="281" key="GridCell.Tab.3.right/0.0.1368.872@0.0.1368.872" timestamp="1602568838755" />
     <state x="131" y="71" key="MergeDialog" timestamp="1604754389388">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -595,41 +487,14 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="202" y="64" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1604162681035" />
-    <state x="99" y="74" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1602586489740" />
-    <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1601819373910">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="378" y="196" key="Vcs.Multiple.Commit.Info.Dialog.Key/0.0.1368.872@0.0.1368.872" timestamp="1601819373910" />
     <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1606313723338">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1606313723338" />
-    <state x="311" y="160" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1602502942665" />
-    <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601444352854">
+    <state x="609" y="336" width="596" height="536" key="find.popup" timestamp="1612449397496">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="492" y="350" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1368.872@0.0.1368.872" timestamp="1601444352854" />
-    <state x="386" y="33" width="594" height="804" key="find.popup" timestamp="1603281452079">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="386" y="33" width="594" height="804" key="find.popup/0.0.1368.872@0.0.1368.872" timestamp="1603281452079" />
-    <state x="447" y="199" key="git4idea.merge.GitPullDialog" timestamp="1602502866450">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="447" y="199" key="git4idea.merge.GitPullDialog/0.0.1536.824@0.0.1536.824" timestamp="1602502866450" />
-    <state x="451" y="336" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1602844862980">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="451" y="336" key="git4idea.remote.GitConfigureRemotesDialog/0.0.1368.872@0.0.1368.872" timestamp="1602844862980" />
-    <state x="485" y="220" key="jetbrains.nodejs.interpreters-dialog" timestamp="1602259769779">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="485" y="220" key="jetbrains.nodejs.interpreters-dialog/0.0.1536.824@0.0.1536.824" timestamp="1602259769779" />
-    <state x="563" y="303" key="publish.login" timestamp="1602566412876">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="563" y="303" key="publish.login/0.0.1368.872@0.0.1368.872" timestamp="1602566412876" />
-    <state x="632" y="286" key="publish.login/0.0.1536.824@0.0.1536.824" timestamp="1602258570377" />
+    <state x="609" y="336" width="596" height="536" key="find.popup/0.0.1368.872@0.0.1368.872" timestamp="1612449397496" />
     <state x="348" y="205" key="run.anything.popup" timestamp="1606585652987">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -637,7 +502,6 @@
     <state x="385" y="184" width="725" height="645" key="search.everywhere.popup" timestamp="1606304890223">
       <screen x="0" y="0" width="1475" height="829" />
     </state>
-    <state x="357" y="194" width="672" height="678" key="search.everywhere.popup/0.0.1368.872@0.0.1368.872" timestamp="1602992841556" />
     <state x="385" y="184" width="725" height="645" key="search.everywhere.popup/0.0.1475.829@0.0.1475.829" timestamp="1606304890223" />
   </component>
 </project>
