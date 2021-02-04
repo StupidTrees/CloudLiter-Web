@@ -62,7 +62,6 @@ exports.findOrCreateUserWord = function (userId, word, addNum) {
 }
 
 
-
 exports.updateTop10 = function (type, id, word, num) {
     wordTop10.findOrCreate({
             where: {
@@ -142,8 +141,6 @@ exports.updateTop10 = function (type, id, word, num) {
     })
 
 }
-
-
 
 
 /**
@@ -241,7 +238,7 @@ exports.isPrivate = function (userId){
     })
 }
 
-exports.getTop10 = function(type,id){
+exports.getTop10 = function (type, id) {
     return wordTop10.findOrCreate({
             where: {
                 cloudId: id
@@ -272,6 +269,47 @@ exports.getTop10 = function(type,id){
         return {
             list:arr,
             private:data.private
+        }
+    })
+}
+
+exports.getUserFromWord(type, word)
+{
+    wordTop10.findAll(
+        {
+            where: {
+                [Op.and]: [{
+                    type: type,
+                    [Op.or]: [
+                        {Top1: word},
+                        {Top2: word},
+                        {Top3: word},
+                        {Top4: word},
+                        {Top5: word},
+                        {Top6: word},
+                        {Top7: word},
+                        {Top8: word},
+                        {Top9: word},
+                        {Top10: word}
+                    ]
+                }]
+            }
+        }
+    ).then(value => {
+        let arr = []
+        for (item in value) {
+            data = item.get()
+            arr.push(data.cloudId)
+        }
+        return arr
+    })
+}
+exports.getUserById = function (id) {
+    return wordTop10.findAll({
+        where: {
+            cloudId: {
+                [Op.eq]: id
+            }
         }
     })
 }

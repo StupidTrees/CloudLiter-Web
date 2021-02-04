@@ -1,0 +1,5 @@
+static templates app.py 是我写的
+其他都是原来ai项目的
+测试方法：先python app.py 启动程序，然后访问home网页（控制台打印的网址），输入图片名称，点predict，然后就会出来结果，
+json在python里已经写好了，还不知道要怎么返回，在控制台打印出来了
+app.py 是run_placesCNN_basic的魔改版
