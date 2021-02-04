@@ -31,7 +31,6 @@ exports.getConversations = async function (userId) {
             relData = item.get()['relation2'].get()
             friendData = item.get()['user1'].get()
         }
-        if(friendData.accessibility==='YES_PRIVATE') friendData.accessibility = 'NO'
         let rawData = item.get()
         let data = {
             id: rawData.key,
@@ -41,18 +40,17 @@ exports.getConversations = async function (userId) {
             friendAvatar: friendData.avatar,
             friendNickname: friendData.nickname,
             friendRemark: relData.remark,
-            friendAccessibility:friendData.accessibility,
             group: relData.groupId,
             relationId: relData.key,
             createdAt: rawData.createdAt,
             updatedAt: rawData.updatedAt
         }
         if(friendData.typePermission==='PRIVATE'){
-            data.type = friendData.type
-            data.subType = friendData.subType
+            data.friendType = friendData.type
+            data.firendSubType = friendData.subType
         } else {
-            data.type = 'normal'
-            data.subType = 'normal'
+            data.friendType = 0
+            data.friendSubType = 'normal'
         }
         res.push(data)
         // console.log('item',data)
@@ -81,7 +79,6 @@ exports.getConversationById = async function (userId, friendId) {
     let rawData = value[0].get()
     let relationData = rawData.hasOwnProperty('relation1') ? rawData['relation1'] : rawData['relation2']
     let userData = rawData.hasOwnProperty('user1') ? rawData['user1'] : rawData['user2']
-    if(userData.accessibility==='YES_PRIVATE') userData.accessibility = 'NO'
     let data = {
         id: rawData.key,
         historyId: rawData.historyId,
@@ -90,18 +87,17 @@ exports.getConversationById = async function (userId, friendId) {
         relationId: relationData.key,
         friendId: relationData.friendId,
         friendAvatar: userData.avatar,
-        friendAccessibility:userData.accessibility,
         friendNickname : userData.nickname,
         friendRemark : relationData.remark,
         createdAt: rawData.createdAt,
         updatedAt: rawData.updatedAt
     }
     if(userData.typePermission==='PRIVATE'){
-        data.type = userData.type
-        data.subType = userData.subType
+        data.friendType = userData.type
+        data.friendSubType = userData.subType
     } else {
-        data.type = 'normal'
-        data.subType = 'normal'
+        data.friendType = 0
+        data.friendSubType = 'normal'
     }
     //console.log('data', data)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))

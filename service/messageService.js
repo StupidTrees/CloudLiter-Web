@@ -34,7 +34,9 @@ exports.saveMessage = async function (message) {
             data.friendRemark = userData.get().nickname
         }
         data.friendAvatar = userData.get().avatar
-        data.friendAccessibility = userData.get().accessibility==='YES_PRIVATE'?'NO':userData.get().accessibility
+        let perm = userData.get().typePermission
+        data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
+        data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
         console.log('data', data)
     } catch (e) {
         console.log('err', e)
@@ -170,7 +172,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
         fs.unlinkSync(newPath) //清除文件
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    console.log("敏感识别",res)
+    console.log("敏感识别", res)
     if (res == null) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, '敏感词判定结果为空'))
     }
@@ -178,7 +180,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
     let sensitive = res['Hentai'] > 0.6 || res['Porn'] > 0.6 || res['Sexy'] > 0.6 ||
         res['Hentai'] + res['Porn'] + res['Sexy'] > 0.7
 
-    console.log("敏感图判断",sensitive)
+    console.log("敏感图判断", sensitive)
     let message = {
         fromId: fromId,
         toId: toId,
@@ -187,7 +189,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
         content: fileName,
         type: 'IMG',
         extra: res,
-        sensitive:sensitive
+        sensitive: sensitive
     }
     let value
     try {
@@ -213,10 +215,10 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
             if (textUtils.isEmpty(rel[0].get().remark)) {
                 data.friendRemark = userData.get().nickname
             }
-            if(userData.accessibility==='YES_PRIVATE'){
-                userData.accessibility = 'NO'
-            }
             data.friendAvatar = userData.get().avatar
+            let perm = userData.get().typePermission
+            data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
+            data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
             console.log('data', data)
         } catch (e) {
             console.log('err', e)
@@ -239,7 +241,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
  * @param uuid
  * @param extra
  */
-exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
+exports.sendVoiceMessage = async function (fromId, toId, files, uuid, extra) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
     let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
@@ -251,8 +253,8 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
         relationId: tools.getP2PId(fromId, toId),
         content: fileName,
         type: 'VOICE',
-        sensitive:false,
-        extra:extra.toString()
+        sensitive: false,
+        extra: extra.toString()
     }
     let value
     try {
@@ -264,7 +266,7 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
     }
     // 数据库更新成功
     if (value) {
-       let data = value.get()
+        let data = value.get()
         data.uuid = uuid
         console.log("保存音频文件", data)
         //获取备注信息
@@ -275,10 +277,10 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
             if (textUtils.isEmpty(rel[0].get().remark)) {
                 data.friendRemark = userData.get().nickname
             }
-            if(userData.accessibility==='YES_PRIVATE'){
-                userData.accessibility = 'NO'
-            }
             data.friendAvatar = userData.get().avatar
+            let perm = userData.get().typePermission
+            data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
+            data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
             console.log('data', data)
         } catch (e) {
             console.log('err', e)
@@ -291,7 +293,6 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid,extra) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
 }
-
 
 
 

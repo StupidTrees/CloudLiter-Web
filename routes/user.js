@@ -119,20 +119,7 @@ router.post('/profile/change_gender',function(req,res){
 })
 
 
-/**
- * 更改无障碍用户类型
- */
-router.post('/profile/change_accessibility',function(req,res){
-    let queryId = req.body.authId
-    if(req.body.id!==undefined){
-        queryId = req.body.id
-    }
-    service.changeAccessibilityType(queryId,req.body.accessibility).then((value)=>{
-        res.send(value)
-    }).catch(err=>{
-        res.send(err)
-    })
-})
+
 
 /**
  * 修改词云可访问性
