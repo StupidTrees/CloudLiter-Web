@@ -77,7 +77,7 @@ def predict():
 
     print('{} prediction on {}'.format(arch,img_name))
     print([probs[0], classes[idx[0]]])
-    resullt_dict={'first':[str(probs[0]), classes[idx[0]]],'second':[str(probs[1]), classes[idx[1]]],'third':[str(probs[2]), classes[idx[2]]],'forth':[str(probs[3]), classes[idx[3]]],'fifth':[str(probs[4]), classes[idx[4]]]}
+    resullt_dict={'first':[float(probs[0]), classes[idx[0]]],'second':[float(probs[1]), classes[idx[1]]],'third':[float(probs[2]), classes[idx[2]]],'fourth':[float(probs[3]), classes[idx[3]]],'fifth':[float(probs[4]), classes[idx[4]]]}
     json_str=json.dumps(resullt_dict)
     print(json_str)
     
