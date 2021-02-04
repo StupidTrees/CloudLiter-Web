@@ -82,7 +82,7 @@ def predict():
     print(json_str)
     
     #return render_template('result.html',prediction = [probs[0], classes[idx[0]]])
-    return jsonify(json_str)
+    return jsonify(resullt_dict)
 # output the prediction
 #for i in range(0, 5):
  #   print('{:.3f} -> {}'.format(probs[i], classes[idx[i]]))
