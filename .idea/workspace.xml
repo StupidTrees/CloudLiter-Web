@@ -30,12 +30,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="删除好友后将聊天记录及所有文件删除">
+      <change afterPath="$PROJECT_DIR$/repository/aiRepository.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/ai.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service/aiService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/webServers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webServers.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/models.js" beforeDir="false" afterPath="$PROJECT_DIR$/database/models.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/conversationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/conversationService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/messageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/messageService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/wordCloudRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/wordCloudRepository.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,11 +52,16 @@
       </list>
     </option>
   </component>
-  <component name="Git.Pull.Settings">
-    <option name="BRANCH" value="Yuki" />
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="GithubPullRequestsUISettings">
     <option name="hiddenUrls">
@@ -85,7 +93,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="12.18.4" />
-    <property name="javascript.nodejs.core.library.typings.version" value="12.12.67" />
+    <property name="javascript.nodejs.core.library.typings.version" value="12.19.16" />
     <property name="last_opened_file_path" value="C:/projects/CloudLiter-Web-master" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -95,9 +103,9 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
     <property name="show.migrate.to.gradle.popup" value="false" />
-    <property name="ts.external.directory.path" value="E:\softwares\WebStorm 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="ts.external.directory.path" value="D:\WebStorm 2020.3.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -201,6 +209,11 @@
       <workItem from="1609004363270" duration="4603000" />
       <workItem from="1609495832310" duration="353000" />
       <workItem from="1610019839602" duration="9502000" />
+      <workItem from="1612587004361" duration="22504000" />
+      <workItem from="1612620986620" duration="2637000" />
+      <workItem from="1612697742879" duration="8208000" />
+      <workItem from="1612762420606" duration="2211000" />
+      <workItem from="1612773973210" duration="2017000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -386,15 +399,23 @@
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
-        <entry key="MAIN">
+        <entry key="1">
           <value>
             <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/Yuki" />
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="roots">
+                    <value>
+                      <list>
+                        <option value="$PROJECT_DIR$" />
                       </list>
                     </value>
                   </entry>
@@ -403,6 +424,28 @@
             </State>
           </value>
         </entry>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="Yuki" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="1" value="TOOL_WINDOW" />
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
@@ -435,73 +478,8 @@
     <MESSAGE value="删除好友后将聊天记录及所有文件删除" />
     <option name="LAST_COMMIT_MESSAGE" value="删除好友后将聊天记录及所有文件删除" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="277" y="95" key="#Deployment" timestamp="1606362106626">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1606362106626" />
-    <state x="299" y="90" key="#Deployment/0.0.1475.829@0.0.1475.829" timestamp="1606301595677" />
-    <state x="262" y="83" key="#SSH_Configurations" timestamp="1606362105290">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="262" y="83" key="#SSH_Configurations/0.0.1368.872@0.0.1368.872" timestamp="1606362105290" />
-    <state x="282" y="79" key="#SSH_Configurations/0.0.1475.829@0.0.1475.829" timestamp="1606301570959" />
-    <state x="186" y="151" key="DBNavigator.DatasetFilterDialog" timestamp="1604755611859">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="186" y="151" key="DBNavigator.DatasetFilterDialog/0.0.1368.872@0.0.1368.872" timestamp="1604755611859" />
-    <state x="216" y="92" key="DBNavigator.ProjectSettingsDialog" timestamp="1604071047951">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="216" y="92" key="DBNavigator.ProjectSettingsDialog/0.0.1368.872@0.0.1368.872" timestamp="1604071047951" />
-    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1606362104117">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1606362104117" />
-    <state x="502" y="183" key="FileChooserDialogImpl/0.0.1475.829@0.0.1475.829" timestamp="1606301565575" />
-    <state width="780" height="106" key="GridCell.Tab.0.bottom" timestamp="1606370851308">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="780" height="106" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="780" height="106" key="GridCell.Tab.0.center" timestamp="1606370851308">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="780" height="106" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="780" height="106" key="GridCell.Tab.0.left" timestamp="1606370851308">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="780" height="106" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state width="780" height="106" key="GridCell.Tab.0.right" timestamp="1606370851308">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state width="780" height="106" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1606370851308" />
-    <state x="131" y="71" key="MergeDialog" timestamp="1604754389388">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="131" y="71" key="MergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1604754389388" />
-    <state x="320" y="197" key="MultipleFileMergeDialog" timestamp="1604754393000">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="320" y="197" key="MultipleFileMergeDialog/0.0.1368.872@0.0.1368.872" timestamp="1604754393000" />
-    <state x="202" y="64" key="SettingsEditor" timestamp="1604162681035">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="202" y="64" key="SettingsEditor/0.0.1368.872@0.0.1368.872" timestamp="1604162681035" />
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1606313723338">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1606313723338" />
-    <state x="609" y="336" width="596" height="536" key="find.popup" timestamp="1612449397496">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="609" y="336" width="596" height="536" key="find.popup/0.0.1368.872@0.0.1368.872" timestamp="1612449397496" />
-    <state x="348" y="205" key="run.anything.popup" timestamp="1606585652987">
-      <screen x="0" y="0" width="1368" height="872" />
-    </state>
-    <state x="348" y="205" key="run.anything.popup/0.0.1368.872@0.0.1368.872" timestamp="1606585652987" />
-    <state x="385" y="184" width="725" height="645" key="search.everywhere.popup" timestamp="1606304890223">
-      <screen x="0" y="0" width="1475" height="829" />
-    </state>
-    <state x="385" y="184" width="725" height="645" key="search.everywhere.popup/0.0.1475.829@0.0.1475.829" timestamp="1606304890223" />
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

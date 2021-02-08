@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const aiRouter = require('./routes/ai');
 const usersRouter = require('./routes/user');
 const relationRouter = require('./routes/relation');
 const relationEventRouter = require('./routes/relationEvent')
@@ -33,7 +34,8 @@ app.use('/relation', relationRouter);
 app.use('/relation', relationEventRouter)
 app.use('/conversation', conversationRouter);
 app.use('/message', messageRouter);
-app.use('/group', groupRouter)
+app.use('/group', groupRouter);
+app.use('/ai',aiRouter)
 
 
 // catch 404 and forward to error handler

@@ -273,7 +273,7 @@ exports.getTop10 = function (type, id) {
     })
 }
 
-exports.getUserFromWord(type, word)
+exports.getUserFromWord = function (type, word)
 {
     wordTop10.findAll(
         {
