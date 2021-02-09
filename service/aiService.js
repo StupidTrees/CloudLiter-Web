@@ -22,8 +22,11 @@ exports.aiClassify = async function (userId,  files) {
     // })
     return repository.aiPost(params).then(function (result){
         console.log('value'+result)
+        let jsonResult = eval('('+result+')')
+        //let res = result[first]
+        //console.log('res:'+res.first[0])
         fs.unlinkSync(newPath)
-        return Promise.resolve(result)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,{class:jsonResult.first[1]}))
     })
 
 }

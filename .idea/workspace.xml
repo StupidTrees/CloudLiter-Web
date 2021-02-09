@@ -30,15 +30,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="删除好友后将聊天记录及所有文件删除">
-      <change afterPath="$PROJECT_DIR$/repository/aiRepository.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/ai.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/aiService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/webServers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webServers.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/wordCloudRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/wordCloudRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/aiRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/aiRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/aiService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/aiService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -214,6 +208,8 @@
       <workItem from="1612697742879" duration="8208000" />
       <workItem from="1612762420606" duration="2211000" />
       <workItem from="1612773973210" duration="2017000" />
+      <workItem from="1612848409814" duration="1588000" />
+      <workItem from="1612880927733" duration="3162000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
