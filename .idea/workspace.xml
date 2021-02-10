@@ -29,8 +29,13 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="">
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="删除好友后将聊天记录及所有文件删除">
+      <change afterPath="$PROJECT_DIR$/AI/places365-master/categories_places365_cn.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/places365-master/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/places365-master/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/aiRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/aiRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/ai.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/ai.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/aiService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/aiService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,6 +49,9 @@
         <option value="JavaScript File" />
       </list>
     </option>
+  </component>
+  <component name="Git.Pull.Settings">
+    <option name="BRANCH" value="Yuki" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -98,7 +106,7 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="settings.nodejs" />
     <property name="show.migrate.to.gradle.popup" value="false" />
-    <property name="ts.external.directory.path" value="D:\WebStorm 2020.3.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="ts.external.directory.path" value="E:\softwares\WebStorm 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -211,6 +219,7 @@
       <workItem from="1612880927733" duration="3453000" />
       <workItem from="1612887604809" duration="257000" />
       <workItem from="1612887940630" duration="596000" />
+      <workItem from="1612961902108" duration="3894000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -436,7 +445,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Yuki" />
+                        <option value="origin/Yuki" />
                       </list>
                     </value>
                   </entry>
@@ -481,6 +490,44 @@
     <MESSAGE value="删除好友后将聊天记录及所有文件删除" />
     <MESSAGE value="AI识别接口" />
     <option name="LAST_COMMIT_MESSAGE" value="AI识别接口" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="277" y="95" key="#Deployment" timestamp="1612940440725">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="277" y="95" key="#Deployment/0.0.1368.872@0.0.1368.872" timestamp="1612940440725" />
+    <state x="262" y="83" key="#SSH_Configurations" timestamp="1612940439228">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="262" y="83" key="#SSH_Configurations/0.0.1368.872@0.0.1368.872" timestamp="1612940439228" />
+    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog" timestamp="1612962750456">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog/0.0.1368.872@0.0.1368.872" timestamp="1612962750456" />
+    <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1612940437762">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="466" y="193" key="FileChooserDialogImpl/0.0.1368.872@0.0.1368.872" timestamp="1612940437762" />
+    <state width="1326" height="247" key="GridCell.Tab.0.bottom" timestamp="1612947436877">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state width="1326" height="247" key="GridCell.Tab.0.bottom/0.0.1368.872@0.0.1368.872" timestamp="1612947436877" />
+    <state width="1326" height="247" key="GridCell.Tab.0.center" timestamp="1612947436876">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state width="1326" height="247" key="GridCell.Tab.0.center/0.0.1368.872@0.0.1368.872" timestamp="1612947436876" />
+    <state width="1326" height="247" key="GridCell.Tab.0.left" timestamp="1612947436876">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state width="1326" height="247" key="GridCell.Tab.0.left/0.0.1368.872@0.0.1368.872" timestamp="1612947436876" />
+    <state width="1326" height="247" key="GridCell.Tab.0.right" timestamp="1612947436876">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state width="1326" height="247" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1612947436876" />
+    <state x="545" y="138" key="RollbackChangesDialog" timestamp="1612962752706">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="545" y="138" key="RollbackChangesDialog/0.0.1368.872@0.0.1368.872" timestamp="1612962752706" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

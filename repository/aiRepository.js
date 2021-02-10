@@ -14,10 +14,8 @@ exports.aiPost = function(params){
             path: '/predict',
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                //token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoic3R1cGlkdHJlZSIsImlhdCI6MTYxMjYwMzAxOSwiZXhwIjoxNjQ0MTYwNjE5fQ.b-HfcIvQVh-LNEOzKXNe1s5OrOuWQVKt24WqEMC8ILk'
-            },
-
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
         }
 
         let req = http.request(options, function (res) {
@@ -38,22 +36,5 @@ exports.aiPost = function(params){
         req.write(content);
         req.end();
     })
-    // let temp = document.createElement('form')
-    // temp.action = URL
-    // temp.method = 'post'
-    // temp.style.display = 'none'
-    // console.log('flag')
-    // for(var x in PARAMS){
-    //     let opt = document.createElement('textarea')
-    //     opt.name = x
-    //     opt.value = PARAMS[x]
-    //     temp.appendChild(opt)
-    // }
-    // document.body.appendChild(temp)
-    //
-    // console.log(temp)
-    // temp.submit()
-    //
-    // return temp
 
 }

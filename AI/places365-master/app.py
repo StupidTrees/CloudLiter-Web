@@ -2,7 +2,7 @@
 #
 # by Bolei Zhou
 # last modified by Bolei Zhou, Dec.27, 2017 with latest pytorch and torchvision (upgrade your torchvision please if there is trn.Resize error)
-from flask import Flask,render_template,url_for,request
+from flask import Flask, render_template, url_for, request
 from flask import jsonify
 import torch
 from torch.autograd import Variable as V
@@ -15,16 +15,18 @@ import json
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
 
-@app.route('/predict',methods=['POST'])
+
+@app.route('/predict', methods=['POST'])
 def predict():
-# th architecture to use
+    # th architecture to use
     arch = 'resnet18'
 
-# load the pre-trained weights
+    # load the pre-trained weights
     model_file = '%s_places365.pth.tar' % arch
     if not os.access(model_file, os.W_OK):
         weight_url = 'http://places2.csail.mit.edu/models_places365/' + model_file
@@ -32,37 +34,39 @@ def predict():
 
     model = models.__dict__[arch](num_classes=365)
     checkpoint = torch.load(model_file, map_location=lambda storage, loc: storage)
-    state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
+    state_dict = {str.replace(k, 'module.', ''): v for k, v in checkpoint['state_dict'].items()}
     model.load_state_dict(state_dict)
     model.eval()
 
-
-# load the image transformer
+    # load the image transformer
     centre_crop = trn.Compose([
-            trn.Resize((256,256)),
-            trn.CenterCrop(224),
-            trn.ToTensor(),
-            trn.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        trn.Resize((256, 256)),
+        trn.CenterCrop(224),
+        trn.ToTensor(),
+        trn.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-# load the class label
+    # load the class label
     file_name = 'categories_places365.txt'
-    if not os.access(file_name, os.W_OK):
-        synset_url = 'https://raw.githubusercontent.com/csailvision/places365/master/categories_places365.txt'
-        os.system('wget ' + synset_url)
+    cn_file_name = 'categories_places365_cn.txt'
     classes = list()
+    classes_cn = list()
     with open(file_name) as class_file:
         for line in class_file:
             classes.append(line.strip().split(' ')[0][3:])
+    with open(cn_file_name) as class_file_cn:
+        for line in class_file_cn:
+            classes_cn.append(line.strip())
     classes = tuple(classes)
-    
+    classes_cn = tuple(classes_cn)
+
     if request.method == 'POST':
         imageplace = request.form['message']
         print(imageplace)
-# load the test image
+    # load the test image
     img_name = imageplace
-    if len(img_name)==0:
-        return render_template('result.html',prediction = "empty input")
+    if len(img_name) == 0:
+        return render_template('result.html', prediction="empty input")
     if not os.access(img_name, os.W_OK):
         img_url = 'http://places.csail.mit.edu/demo/' + img_name
         os.system('wget ' + img_url)
@@ -70,21 +74,27 @@ def predict():
     img = Image.open(img_name)
     input_img = V(centre_crop(img).unsqueeze(0))
 
-# forward pass
+    # forward pass
     logit = model.forward(input_img)
     h_x = F.softmax(logit, 1).data.squeeze()
     probs, idx = h_x.sort(0, True)
 
-    print('{} prediction on {}'.format(arch,img_name))
-    print([probs[0], classes[idx[0]]])
-    resullt_dict={'first':[float(probs[0]), classes[idx[0]]],'second':[float(probs[1]), classes[idx[1]]],'third':[float(probs[2]), classes[idx[2]]],'fourth':[float(probs[3]), classes[idx[3]]],'fifth':[float(probs[4]), classes[idx[4]]]}
-    json_str=json.dumps(resullt_dict)
-    print(json_str)
-    
-    #return render_template('result.html',prediction = [probs[0], classes[idx[0]]])
+    # print('{} prediction on {}'.format(arch,img_name))
+    # print([probs[0], classes[idx[0]]])
+    resullt_dict = {'first': [float(probs[0]), classes[idx[0]], classes_cn[idx[0]]],
+                    'second': [float(probs[1]), classes[idx[1]], classes_cn[idx[1]]],
+                    'third': [float(probs[2]), classes[idx[2]], classes_cn[idx[2]]],
+                    'fourth': [float(probs[3]), classes[idx[3]], classes_cn[idx[3]]],
+                    'fifth': [float(probs[4]), classes[idx[4]], classes_cn[idx[4]]]}
+    # json_str = json.dumps(resullt_dict)
+    # print(json_str)
+    #
+    # return render_template('result.html',prediction = [probs[0], classes[idx[0]]])
     return jsonify(resullt_dict)
+
+
 # output the prediction
-#for i in range(0, 5):
- #   print('{:.3f} -> {}'.format(probs[i], classes[idx[i]]))
+# for i in range(0, 5):
+#   print('{:.3f} -> {}'.format(probs[i], classes[idx[i]]))
 if __name__ == '__main__':
     app.run(debug=True)
