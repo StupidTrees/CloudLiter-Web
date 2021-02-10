@@ -20,7 +20,7 @@ router.post('/image/classify', function (req, res) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.aiClassify(files).then(
+            service.imageClassify(files).then(
                 (value) => {
                     console.log("success",value)
                     res.send(value)

@@ -1,10 +1,8 @@
 const http = require('http')
 const querystring = require('querystring')
-const util = require('util')
-const request = require('request')
-//const jsdom = require('jsdom')
-exports.aiPost = function(params){
-    return new Promise((resolve,reject)=> {
+
+exports.imageClassify = function (params) {
+    return new Promise((resolve, reject) => {
         let post_data = params
         console.log('aiPost')
         let content = querystring.stringify(post_data)
@@ -26,7 +24,7 @@ exports.aiPost = function(params){
                 body += chunk
             })
             res.on('end', function () {
-                console.log('body '+body)
+                console.log('body ' + body)
                 resolve(body)
             })
         })
