@@ -20,13 +20,18 @@ exports.aiClassify = async function (userId,  files) {
     //     fs.unlinkSync(newPath)
     //     return Promise.resolve({newPath:newPath,result:result})
     // })
-    return repository.aiPost(params).then(function (result){
-        console.log('value'+result)
-        let jsonResult = eval('('+result+')')
-        //let res = result[first]
-        //console.log('res:'+res.first[0])
+    try {
+        return repository.aiPost(params).then(function (result) {
+            console.log('value' + result)
+            let jsonResult = eval('(' + result + ')')
+            //let res = result[first]
+            //console.log('res:'+res.first[0])
+            fs.unlinkSync(newPath)
+            return Promise.resolve(jsonUtils.getResponseBody(codes.success, {class: jsonResult.first[1]}))
+        })
+    }catch(err) {
         fs.unlinkSync(newPath)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,{class:jsonResult.first[1]}))
-    })
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
 
 }
