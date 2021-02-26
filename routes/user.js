@@ -47,7 +47,6 @@ router.get('/profile/get', (req, res) => {
     if(req.query.id!==undefined){
         queryId = req.query.id
     }
-    console.log("fetch_profile",queryId)
     service.fetchBaseProfile(queryId).then((value) => {
         console.log(value)
         res.send(value)
@@ -190,15 +189,6 @@ router.get('/profile/query_avatar',function (req,res){
 router.get('/profile/word_cloud',function (req,res){
     let queryId = req.query.authId
     wordCloudService.getWordCloud('USER',queryId,req.query.userId).then(r=>{
-        res.send(r)
-    }).catch((err)=>{
-        res.send(err)
-    })
-})
-
-
-router.get('/profile/get_uer_from_word',function(req,res){
-    wordCloudService.getUserFromWord('USER',req.query.word).then(r=>{
         res.send(r)
     }).catch((err)=>{
         res.send(err)

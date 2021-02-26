@@ -122,6 +122,15 @@ exports.fetchBaseProfile = async function (userId) {
     } else {
         //用户存在，那么将其基本信息打包，返回
         let user = value[0].get()
+        let wordCloudPrivate = null
+        try {
+            let val = await wordCloudRepository.isPrivate(userId)
+            wordCloudPrivate = val.get().private
+        } catch (e) {
+            return Promise.reject(
+                jsonUtils.getResponseBody(codes.other_error, e)
+            )
+        }
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
             id: user.id,
             username: user.username,
@@ -129,7 +138,10 @@ exports.fetchBaseProfile = async function (userId) {
             gender: user.gender,
             avatar: user.avatar,
             signature: user.signature,
-            color: user.color
+            type: user.type,
+            subType: user.subType,
+            typePermission: user.typePermission,
+            wordCloudPrivate: wordCloudPrivate
         }))
     }
 }
@@ -156,8 +168,7 @@ exports.searchUser = async function (text) {
             nickname: item.nickname,
             avatar: item.avatar,
             id: item.id,
-            gender: item.gender,
-            color: item.color
+            gender: item.gender
         })
     })
     //console.log("result", res)
@@ -266,31 +277,6 @@ exports.changeGender = async function (userId, gender) {
 
 
 /**
- * 更改颜色
- * @param userId
- * @param color 颜色：RED/ORANGE/YELLOW/GREEN/CYAN/BLUE/PURPLE
- */
-exports.changeColor = async function (userId, color) {
-    //输入格式检查
-    if (!(tools.inArray(color, ['RED', 'ORANGE', 'YELLOW', 'GREEN', 'CYAN', 'BLUE', 'PURPLE']))) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.format_error_color))
-    }
-    let res
-    try {
-        res = await repository.changeColor(userId, color)
-    } catch (e) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    }
-    //判断是否成功变更了某一行
-    if (res[0] > 0) {
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-    } else {
-        return Promise.reject(jsonUtils.getResponseBody(codes.login_wrong_username))
-    }
-}
-
-
-/**
  * 根据用户id，查询头像文件名
  * @param userId
  */
@@ -352,7 +338,6 @@ exports.getAvatar = async function (fileName) {
  * @returns {Promise<void>}
  */
 exports.searchUserByWordCloud = async function (Id, word) {
-    console.log("word:" + word)
     let value
     let user
     let result = []
@@ -361,23 +346,19 @@ exports.searchUserByWordCloud = async function (Id, word) {
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    //console.log(value.length)
     let arr = []
 
     let reg = new RegExp(word)
     for (let i = 1; i <= 10; i++) {
         value.forEach(function (v) {
-            //console.log("for")
             if (v['Top' + i].match(reg)) {
-                //console.log("if")
                 arr.push(v['cloudId'])
             }
         })
     }
-    console.log('arr' + arr)
     for (let j = 0; j < arr.length; j++) {
         //Id相同为查询者
-        if (arr[j] === Id) {
+        if (arr[j].toString() === Id.toString()) {
             continue
         }
         try {
@@ -389,13 +370,13 @@ exports.searchUserByWordCloud = async function (Id, word) {
         if (user.length === 0) {
             continue
         }
-
-        let message = user[0].get()
+        let item = user[0].get()
         result.push({
-            avatarUrl: message.avatar,
-            userName: message.username,
-            gender: message.gender,
-            nickname: message.nickname
+            username: item.username,
+            nickname: item.nickname,
+            avatar: item.avatar,
+            id: item.id,
+            gender: item.gender
         })
     }
 
@@ -413,4 +394,41 @@ exports.getUserFromWord = async function (Id, word) {
         }
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
     })
+}
+
+
+/**
+ * 用户类型修改
+ * @param Id
+ * @param type
+ * @param subType
+ * @param typePermission
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.changUserType = async function (Id, type, subType, typePermission) {
+    let res
+    try {
+        res = await repository.changeType(Id, type, subType, typePermission)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}
+
+/**
+ * 修改词云可访问性
+ * @param userId
+ * @param isPrivate
+ */
+exports.changeWordCloudAccessibility = async function (userId, isPrivate) {
+    let value
+    try {
+        value = await wordCloudRepository.changeAccessibility(userId, isPrivate)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    if (value < 1) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.no_such_word_cloud))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }

@@ -22,21 +22,18 @@
     <select>
       <path>
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="BRANCH:origin/Yuki" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:master" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="删除好友后将聊天记录及所有文件删除">
-      <change afterPath="$PROJECT_DIR$/AI/places365-master/categories_places365_cn.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
+    <list default="true" id="097f2cf1-d8a8-4345-9dc3-033f9635f112" name="Default Changelist" comment="修正函数名">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AI/places365-master/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/places365-master/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/aiRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/aiRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/ai.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/ai.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/aiService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/aiService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/userRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/userRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/wordCloudRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/repository/wordCloudRepository.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/service/userService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +216,10 @@
       <workItem from="1612880927733" duration="3453000" />
       <workItem from="1612887604809" duration="257000" />
       <workItem from="1612887940630" duration="596000" />
-      <workItem from="1612961902108" duration="3894000" />
+      <workItem from="1612961902108" duration="4714000" />
+      <workItem from="1613707666682" duration="1949000" />
+      <workItem from="1613738291680" duration="57000" />
+      <workItem from="1614343295198" duration="4068000" />
     </task>
     <task id="LOCAL-00001" summary="加入注释 接口表">
       <created>1600996889557</created>
@@ -403,11 +403,35 @@
       <option name="project" value="LOCAL" />
       <updated>1612884138452</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="场景检测联调完成，AI部分加入中文标签">
+      <created>1612966418030</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1612966418031</updated>
+    </task>
+    <task id="LOCAL-00028" summary="修正函数名">
+      <created>1612966940316</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1612966940316</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -445,7 +469,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/Yuki" />
+                        <option value="master" />
                       </list>
                     </value>
                   </entry>
@@ -456,16 +480,9 @@
         </entry>
       </map>
     </option>
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="1" value="TOOL_WINDOW" />
-      </map>
-    </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="新增 用户头像上传" />
-    <MESSAGE value="小修改" />
     <MESSAGE value="Service层的异步函数内部统一改用同步写法" />
     <MESSAGE value="新增 对话实体" />
     <MESSAGE value="实现聊天&#10;在线则实时聊天&#10;不在线则加入信箱" />
@@ -489,7 +506,9 @@
     <MESSAGE value="修改细节" />
     <MESSAGE value="删除好友后将聊天记录及所有文件删除" />
     <MESSAGE value="AI识别接口" />
-    <option name="LAST_COMMIT_MESSAGE" value="AI识别接口" />
+    <MESSAGE value="场景检测联调完成，AI部分加入中文标签" />
+    <MESSAGE value="修正函数名" />
+    <option name="LAST_COMMIT_MESSAGE" value="修正函数名" />
   </component>
   <component name="WindowStateProjectService">
     <state x="277" y="95" key="#Deployment" timestamp="1612940440725">
@@ -500,10 +519,10 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state x="262" y="83" key="#SSH_Configurations/0.0.1368.872@0.0.1368.872" timestamp="1612940439228" />
-    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog" timestamp="1612962750456">
+    <state x="-356" y="187" width="1181" height="685" key="DiffContextDialog" timestamp="1614344759997">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="93" y="93" width="1181" height="685" key="DiffContextDialog/0.0.1368.872@0.0.1368.872" timestamp="1612962750456" />
+    <state x="-356" y="187" width="1181" height="685" key="DiffContextDialog/0.0.1368.872@0.0.1368.872" timestamp="1614344759997" />
     <state x="466" y="193" key="FileChooserDialogImpl" timestamp="1612940437762">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
@@ -524,10 +543,18 @@
       <screen x="0" y="0" width="1368" height="872" />
     </state>
     <state width="1326" height="247" key="GridCell.Tab.0.right/0.0.1368.872@0.0.1368.872" timestamp="1612947436876" />
-    <state x="545" y="138" key="RollbackChangesDialog" timestamp="1612962752706">
+    <state x="545" y="138" key="RollbackChangesDialog" timestamp="1614344760794">
       <screen x="0" y="0" width="1368" height="872" />
     </state>
-    <state x="545" y="138" key="RollbackChangesDialog/0.0.1368.872@0.0.1368.872" timestamp="1612962752706" />
+    <state x="545" y="138" key="RollbackChangesDialog/0.0.1368.872@0.0.1368.872" timestamp="1614344760794" />
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2" timestamp="1612966946926">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="277" y="169" key="Vcs.Push.Dialog.v2/0.0.1368.872@0.0.1368.872" timestamp="1612966946926" />
+    <state x="343" y="200" key="run.anything.popup" timestamp="1614343946385">
+      <screen x="0" y="0" width="1368" height="872" />
+    </state>
+    <state x="343" y="200" key="run.anything.popup/0.0.1368.872@0.0.1368.872" timestamp="1614343946385" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

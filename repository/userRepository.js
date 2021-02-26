@@ -36,7 +36,9 @@ exports.createUser = function (username, password, gender, nickname) {
             username: username,
             password: password,
             gender: gender,
-            nickname: nickname
+            nickname: nickname,
+            type:0,
+            typePermission:'PUBLIC'
         }
     )
 }

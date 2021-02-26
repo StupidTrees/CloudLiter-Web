@@ -219,22 +219,22 @@ exports.deleteConversationWordCloud = function (conversationId) {
 /**
  * 改变词云可见性
  * @param userId
- * @param private
+ * @param isPrivate
  */
-exports.changeAccessibility = function (userId,private){
+exports.changeAccessibility = function (userId, isPrivate) {
     return wordTop10.update({
-        private:private
-    },{
-        where:{
-            cloudId:userId.toString()
+        private: isPrivate
+    }, {
+        where: {
+            cloudId: userId.toString()
         }
     })
 }
 
 
-exports.isPrivate = function (userId){
-    return wordTop10.findByPk(userId,{
-        attributes:['private']
+exports.isPrivate = function (userId) {
+    return wordTop10.findByPk(userId, {
+        attributes: ['private']
     })
 }
 
@@ -267,14 +267,13 @@ exports.getTop10 = function (type, id) {
             arr.push(obj)
         }
         return {
-            list:arr,
-            private:data.private
+            list: arr,
+            private: data.private
         }
     })
 }
 
-exports.getUserFromWord = function (type, word)
-{
+exports.getUserFromWord = function (type, word) {
     wordTop10.findAll(
         {
             where: {
