@@ -46,11 +46,12 @@ exports.getConversations = async function (userId) {
             updatedAt: rawData.updatedAt
         }
         if(friendData.typePermission==='PRIVATE'){
-            data.friendType = friendData.type
-            data.firendSubType = friendData.subType
-        } else {
             data.friendType = 0
             data.friendSubType = 'normal'
+        } else {
+            data.friendType = friendData.type
+            data.firendSubType = friendData.subType
+
         }
         res.push(data)
         // console.log('item',data)
@@ -93,11 +94,12 @@ exports.getConversationById = async function (userId, friendId) {
         updatedAt: rawData.updatedAt
     }
     if(userData.typePermission==='PRIVATE'){
-        data.friendType = userData.type
-        data.friendSubType = userData.subType
-    } else {
         data.friendType = 0
         data.friendSubType = 'normal'
+    } else {
+        data.friendType = userData.type
+        data.friendSubType = userData.subType
+
     }
     //console.log('data', data)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
