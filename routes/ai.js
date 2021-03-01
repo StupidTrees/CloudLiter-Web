@@ -47,11 +47,10 @@ router.post('/voice/dirtts', function (req, res) {
  */
 router.post('/voice/tts',function (req,res){
     service.voiceToWords(req.body.id).then(value => {
-        console.log("code:"+value.code+"  data:"+value.data.result+"  message:"+value.message)
-        console.log('value:'+value)
         res.send(value)
     },error => {
-        console.log("error:"+error)
+        console.table(error)
+        console.log("error:"+error.toString())
         res.send(error)
     })
 })

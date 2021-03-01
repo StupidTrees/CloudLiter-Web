@@ -22,33 +22,33 @@ const shieldingService = require('./shieldingService')
  * @param files
  * @returns {Promise<unknown>}
  */
-exports.dirTTS = async function(files){
+exports.dirTTS = async function (files) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
-    let fileName = 'temporary'+UUID.v1() + path.extname(files.upload.name)
+    let fileName = 'temporary' + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
     await fs.renameSync(files.upload.path, newPath)
     let catchPath = newPath + 'voice.wav'
-    return new Promise((resolve,reject)=>{
-        let client = new AipSpeech(APP_ID,API_KEY,SECRET_KEY);
+    return new Promise((resolve, reject) => {
+        let client = new AipSpeech(APP_ID, API_KEY, SECRET_KEY);
         ffmpeg(newPath)
-            .on('end', function() {
+            .on('end', function () {
                 //console.log('file has been converted succesfully');
                 let voice = fs.readFileSync(catchPath);
                 let voiceBuffer = new Buffer(voice);
-                client.recognize(voiceBuffer,'wav',16000).then(function (result) {
+                client.recognize(voiceBuffer, 'wav', 16000).then(function (result) {
                     //console.log(': ' + JSON.stringify(result));
                     fs.unlinkSync(catchPath)
                     fs.unlinkSync(newPath)
-                    resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
-                },function (err) {
-                    //console.log(err);
+                    resolve(jsonUtils.getResponseBody(codes.success, {result: result.result[0]}))
+                }, function (err) {
+                    console.log(err);
                     fs.unlinkSync(catchPath)
                     fs.unlinkSync(newPath)
-                    reject(jsonUtils.getResponseBody(codes.other_error,err))
+                    reject(jsonUtils.getResponseBody(codes.other_error, err))
                 });
             })
-            .on('error', function(err) {
-                //console.log('an error happened: ' + err.message);
+            .on('error', function (err) {
+                console.log('an error happened: ' + err.message);
                 fs.unlinkSync(catchPath)
                 fs.unlinkSync(newPath)
                 reject(err)
@@ -62,7 +62,7 @@ exports.dirTTS = async function(files){
  * @param id 记录id
  * @returns {Promise<unknown>}
  */
-exports.voiceToWords = async function(id){
+exports.voiceToWords = async function (id) {
     let value = null
     try {
         value = await repositoryMessage.getMessageById(id)
@@ -77,44 +77,48 @@ exports.voiceToWords = async function(id){
     }
     if (value[0].get().ttsResult !== null) {
         console.log('from database')
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,{result:value[0].get().ttsResult}))
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, value[0].get()))
     }
 
     let filename = value[0].get().content
     let targetPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename
     let catchPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename + 'voice.wav'
-    return new Promise((resolve,reject)=>{
-        let client = new AipSpeech(APP_ID,API_KEY,SECRET_KEY);
+    return new Promise((resolve, reject) => {
+        let client = new AipSpeech(APP_ID, API_KEY, SECRET_KEY);
         ffmpeg(targetPath)
-            .on('end', function() {
-                //console.log('file has been converted succesfully');
+            .on('end', function () {
                 let voice = fs.readFileSync(catchPath);
                 let voiceBuffer = new Buffer(voice);
-                client.recognize(voiceBuffer,'wav',16000).then(function (result) {
-                    //console.log(': ' + JSON.stringify(result));
-
+                client.recognize(voiceBuffer, 'wav', 16000).then(function (result) {
                     fs.unlinkSync(catchPath)
-                    return emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(value=>{
+                    emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(emotion => {
                         //console.log('value:'+value.score)
-                        return shieldingService.checkSensitive(result.result[0]).then(sensitive => {
+                        shieldingService.checkSensitive(result.result[0]).then(sensitive => {
                             //console.log('vv:'+value.score)
-                            repositoryMessage.setTTSResult(id,result.result[0],value.score,sensitive)
-                            resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
-
-                        }).catch(err=>{
-                            reject(jsonUtils.getResponseBody(codes.other_error,err))
+                            console.log('e0')
+                            let res = value[0].get()
+                            console.log(res)
+                            res.ttsResult = result.result[0]
+                            res.sensitive = sensitive
+                            res.emotion = emotion.score
+                            repositoryMessage.setTTSResult(id, result.result[0], emotion.score, sensitive)
+                            resolve(jsonUtils.getResponseBody(codes.success, res))
+                        }).catch(err => {
+                            console.table(err)
+                            console.log("e1");
+                            reject(jsonUtils.getResponseBody(codes.other_error, err))
                         })
-                    }).catch(err=>{
-                        reject(jsonUtils.getResponseBody(codes.other_error,err))
+                    }).catch(err => {
+                        reject(jsonUtils.getResponseBody(codes.other_error, err))
                     })
 
-                },function (err) {
+                }, function (err) {
                     //console.log(err);
                     fs.unlinkSync(catchPath)
-                    reject(jsonUtils.getResponseBody(codes.other_error,err))
+                    reject(jsonUtils.getResponseBody(codes.other_error, err))
                 });
             })
-            .on('error', function(err) {
+            .on('error', function (err) {
                 //console.log('an error happened: ' + err.message);
                 fs.unlinkSync(catchPath)
                 reject(err)
