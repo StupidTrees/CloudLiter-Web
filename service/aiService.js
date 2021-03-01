@@ -74,6 +74,11 @@ exports.voiceToWords = async function(id){
     if (value.length === 0) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
+    if (value[0].get().ttsResult !== null) {
+        console.log('from database')
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,value[0].get().ttsResult))
+    }
+
     let filename = value[0].get().content
     let targetPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename
     let catchPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename + 'voice.wav'
@@ -87,6 +92,11 @@ exports.voiceToWords = async function(id){
                 client.recognize(voiceBuffer,'wav',16000).then(function (result) {
                     //console.log(': ' + JSON.stringify(result));
                     fs.unlinkSync(catchPath)
+                    try{
+                        repositoryMessage.addVoiceMessage(id,result.result[0])
+                    } catch (e){
+                        reject(jsonUtils.getResponseBody(codes.other_error,e))
+                    }
                     resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
                 },function (err) {
                     //console.log(err);

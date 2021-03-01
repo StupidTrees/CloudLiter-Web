@@ -164,8 +164,6 @@ exports.markAllRead = function (toUserId, conversationId, topTime) {
 
         }
     })
-
-
 }
 
 /**
@@ -190,5 +188,19 @@ exports.markRead = function (messageId) {
 exports.getMessageById = function (id){
     return Message.findAll({
         where:{id:id}
+    })
+}
+
+/**
+ * 将相应的语音识别结果记录到message中
+ * @param id 消息id
+ * @param text 语音识别的结果
+ * @returns {Promise<[number, Model[]]>}
+ */
+exports.addVoiceMessage = function (id,text) {
+    return Message.update({
+        ttsResult: text
+    }, {
+        where: {id:id}
     })
 }

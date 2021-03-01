@@ -314,6 +314,9 @@ exports.Message = con.sequelize.define(
         extra:{
           type:DataTypes.STRING
         },
+        ttsResult:{
+            type:DataTypes.STRING
+        },
         createdAt: {
             type: DataTypes.DATE
         },
