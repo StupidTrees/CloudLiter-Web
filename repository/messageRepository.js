@@ -182,4 +182,13 @@ exports.markRead = function (messageId) {
     })
 }
 
-
+/**
+ * 根据id获取消息
+ * @param id
+ * @returns {Promise<Model[]>}
+ */
+exports.getMessageById = function (id){
+    return Message.findAll({
+        where:{id:id}
+    })
+}

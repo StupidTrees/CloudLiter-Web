@@ -6,6 +6,14 @@ const jsonUtils = require("../utils/jsonUtils");
 const {codes} = require("../utils/codes");
 const formidable = require("formidable");
 
+router.post('/voice/tts',function (req,res){
+    service.voiceToWords(req.body.id).then(value => {
+        res.send(value)
+    },error => {
+        res.send(error)
+    })
+})
+
 router.post('/image/classify', function (req, res) {
     const form = new formidable.IncomingForm()
     //设置文件保存的目标路径
