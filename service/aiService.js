@@ -76,7 +76,7 @@ exports.voiceToWords = async function(id){
     }
     let filename = value[0].get().content
     let targetPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename
-    let catchPath = path.join(__dirname, '../') + config.files.chatVoiceDir + 'voice.wav'
+    let catchPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename + 'voice.wav'
     return new Promise((resolve,reject)=>{
         let client = new AipSpeech(APP_ID,API_KEY,SECRET_KEY);
         ffmpeg(targetPath)
