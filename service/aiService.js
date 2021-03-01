@@ -5,6 +5,7 @@ const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const repository = require('../repository/aiRepository');
 const repositoryMessage = require('../repository/messageRepository')
+const relationRepository = require('../repository/userRelationRepository')
 const config = require('../config')
 const AipSpeech = require("baidu-aip-sdk").speech;
 // 设置APPID/AK/SK
@@ -12,7 +13,54 @@ const APP_ID = "23720221";
 const API_KEY = "xQemIBbMnIGGiS6aKuYIKDMy";
 const SECRET_KEY = "iPEecYnESGkK99S6MheGGaemEKs4RX5c";
 const ffmpeg = require('fluent-ffmpeg');
+const textUtils = require("../utils/textUtils");
+const long_connection = require("../bin/long_connection");
 
+/**
+ * 语音直接转文字（不保存文件）
+ * @param files
+ * @returns {Promise<unknown>}
+ */
+exports.dirTTS = async function(files){
+    // 手动给文件加后缀, formidable默认保存的文件是无后缀的
+    let fileName = 'temporary'+UUID.v1() + path.extname(files.upload.name)
+    let newPath = path.dirname(files.upload.path) + '/' + fileName
+    await fs.renameSync(files.upload.path, newPath)
+    let catchPath = newPath + 'voice.wav'
+    return new Promise((resolve,reject)=>{
+        let client = new AipSpeech(APP_ID,API_KEY,SECRET_KEY);
+        ffmpeg(newPath)
+            .on('end', function() {
+                //console.log('file has been converted succesfully');
+                let voice = fs.readFileSync(catchPath);
+                let voiceBuffer = new Buffer(voice);
+                client.recognize(voiceBuffer,'wav',16000).then(function (result) {
+                    //console.log(': ' + JSON.stringify(result));
+                    fs.unlinkSync(catchPath)
+                    fs.unlinkSync(newPath)
+                    resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
+                },function (err) {
+                    //console.log(err);
+                    fs.unlinkSync(catchPath)
+                    fs.unlinkSync(newPath)
+                    reject(jsonUtils.getResponseBody(codes.other_error,err))
+                });
+            })
+            .on('error', function(err) {
+                //console.log('an error happened: ' + err.message);
+                fs.unlinkSync(catchPath)
+                fs.unlinkSync(newPath)
+                reject(err)
+            })
+            .save(catchPath);
+    })
+}
+
+/**
+ * 语音记录转文字
+ * @param id 记录id
+ * @returns {Promise<unknown>}
+ */
 exports.voiceToWords = async function(id){
     let value = null
     try {
@@ -33,21 +81,21 @@ exports.voiceToWords = async function(id){
         let client = new AipSpeech(APP_ID,API_KEY,SECRET_KEY);
         ffmpeg(targetPath)
             .on('end', function() {
-                console.log('file has been converted succesfully');
-                let voice = fs.readFileSync('/home/webapp/hichat/routes/test2.wav');
+                //console.log('file has been converted succesfully');
+                let voice = fs.readFileSync(catchPath);
                 let voiceBuffer = new Buffer(voice);
                 client.recognize(voiceBuffer,'wav',16000).then(function (result) {
-                    console.log(': ' + JSON.stringify(result));
+                    //console.log(': ' + JSON.stringify(result));
                     fs.unlinkSync(catchPath)
-                    resolve(jsonUtils.getResponseBody(codes.success,{result:result.result}))
+                    resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
                 },function (err) {
-                    console.log(err);
+                    //console.log(err);
                     fs.unlinkSync(catchPath)
                     reject(jsonUtils.getResponseBody(codes.other_error,err))
                 });
             })
             .on('error', function(err) {
-                console.log('an error happened: ' + err.message);
+                //console.log('an error happened: ' + err.message);
                 fs.unlinkSync(catchPath)
                 reject(err)
             })
