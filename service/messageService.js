@@ -138,7 +138,7 @@ exports.markRead = async function (messageId) {
  * 某对话全部标记为已读
  * @param toUserId
  * @param conversationId
- * @param topId
+ * @param topTime
  */
 exports.markAllRead = async function (toUserId, conversationId, topTime) {
     try {
