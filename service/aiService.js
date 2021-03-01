@@ -15,7 +15,8 @@ const SECRET_KEY = "iPEecYnESGkK99S6MheGGaemEKs4RX5c";
 const ffmpeg = require('fluent-ffmpeg');
 const textUtils = require("../utils/textUtils");
 const long_connection = require("../bin/long_connection");
-
+const emotionService = require('./emotionService')
+const shieldingService = require('./shieldingService')
 /**
  * 语音直接转文字（不保存文件）
  * @param files
@@ -76,7 +77,7 @@ exports.voiceToWords = async function(id){
     }
     if (value[0].get().ttsResult !== null) {
         console.log('from database')
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,value[0].get().ttsResult))
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,{result:value[0].get().ttsResult}))
     }
 
     let filename = value[0].get().content
@@ -91,13 +92,22 @@ exports.voiceToWords = async function(id){
                 let voiceBuffer = new Buffer(voice);
                 client.recognize(voiceBuffer,'wav',16000).then(function (result) {
                     //console.log(': ' + JSON.stringify(result));
+
                     fs.unlinkSync(catchPath)
-                    try{
-                        repositoryMessage.addVoiceMessage(id,result.result[0])
-                    } catch (e){
-                        reject(jsonUtils.getResponseBody(codes.other_error,e))
-                    }
-                    resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
+                    return emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(value=>{
+                        //console.log('value:'+value.score)
+                        return shieldingService.checkSensitive(result.result[0]).then(sensitive => {
+                            //console.log('vv:'+value.score)
+                            repositoryMessage.setTTSResult(id,result.result[0],value.score,sensitive)
+                            resolve(jsonUtils.getResponseBody(codes.success,{result:result.result[0]}))
+
+                        }).catch(err=>{
+                            reject(jsonUtils.getResponseBody(codes.other_error,err))
+                        })
+                    }).catch(err=>{
+                        reject(jsonUtils.getResponseBody(codes.other_error,err))
+                    })
+
                 },function (err) {
                     //console.log(err);
                     fs.unlinkSync(catchPath)

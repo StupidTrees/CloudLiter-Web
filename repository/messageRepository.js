@@ -197,9 +197,11 @@ exports.getMessageById = function (id){
  * @param text 语音识别的结果
  * @returns {Promise<[number, Model[]]>}
  */
-exports.addVoiceMessage = function (id,text) {
+exports.setTTSResult = function (id,text,score,sensitive) {
     return Message.update({
-        ttsResult: text
+        ttsResult: text,
+        emotion:score,
+        sensitive:sensitive
     }, {
         where: {id:id}
     })
