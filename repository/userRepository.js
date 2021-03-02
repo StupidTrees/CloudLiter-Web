@@ -10,7 +10,6 @@ const wordTop10 = models.wordTop10
 /**
  * 根据用户id获取用户
  * @param id
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
 exports.getUserById = function (id) {
     return User.findAll({

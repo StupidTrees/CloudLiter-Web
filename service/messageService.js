@@ -1,4 +1,5 @@
 const repository = require('../repository/messageRepository');
+const imageRepo = require('../repository/imageRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const textUtils = require('../utils/textUtils')
@@ -9,6 +10,10 @@ const fs = require('fs')
 const config = require("../config");
 const long_connection = require("../bin/long_connection");
 const shieldingService = require('../service/shieldingService')
+const emotionService = require("./emotionService");
+const wordCloudService = require("./wordCloudService");
+const convRepo = require("../repository/conversationRepository");
+
 /**
  * 更新会话信息
  * @param message
@@ -24,19 +29,8 @@ exports.saveMessage = async function (message) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
     let data = value.get()
-    //console.log("value",value.get())
-    //获取备注信息
     try {
-        let res = await relationRepository.queryRemarkWithId(message.toId, message.fromId)
-        data.friendRemark = res[0].get().remark
-        let userData = res[0].get().user
-        if (textUtils.isEmpty(res[0].get().remark)) {
-            data.friendRemark = userData.get().nickname
-        }
-        data.friendAvatar = userData.get().avatar
-        let perm = userData.get().typePermission
-        data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
-        data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
+        await fillExtraMessageData(message.toId, message.fromId, message)
         console.log('data', data)
     } catch (e) {
         console.log('err', e)
@@ -149,6 +143,66 @@ exports.markAllRead = async function (toUserId, conversationId, topTime) {
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
+async function fillExtraMessageData(fromId, toId, data) {
+    let rel = await relationRepository.queryRemarkWithId(toId, fromId)
+    data.friendRemark = rel[0].get().remark
+    let userData = rel[0].get().user
+    if (textUtils.isEmpty(rel[0].get().remark)) {
+        data.friendRemark = userData.get().nickname
+    }
+    data.friendAvatar = userData.get().avatar
+    let perm = userData.get().typePermission
+    data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
+    data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
+}
+
+/**
+ * 发送文字消息
+ * @param fromId
+ * @param toId
+ * @param content
+ * @param uuid
+ */
+exports.sendTextMessage = async function (fromId, toId, content, uuid) {
+    let obj = {
+        fromId: fromId,
+        toId: toId,
+        content: content,
+        type: 'TXT'
+    }
+    let text = obj.content
+    //情感分析
+    let emotionResult = await emotionService.segmentAndAnalyzeEmotion(text)
+    let emotionScore = emotionResult.score
+    let segmentation = emotionResult.segmentation
+    //敏感词检测
+    let sensitive = await shieldingService.checkSensitive(text)
+    //如果不敏感，就加入到词云统计
+    if (!sensitive) {
+        wordCloudService.addToWordCloud(obj.fromId, obj.conversationId, emotionResult.toWordCloud).then()
+    }
+    obj.sensitive = sensitive
+    obj.emotion = emotionScore
+    obj.extra = segmentation
+    let value
+    try {
+        value = await repository.saveMessage(obj)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    // 数据库更新成功
+    if (value) {
+        //更新对话信息
+        convRepo.updateConversation(obj.fromId, obj.toId, sensitive ? '*敏感信息*' : obj.content).then()
+        let data = value.get()
+        data.uuid = uuid
+        await fillExtraMessageData(fromId, toId, data)
+        long_connection.broadcastMessageSent(data)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+    } else {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+    }
+}
 
 /**
  * 发送图片消息
@@ -162,24 +216,21 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
     let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
     await fs.renameSync(files.upload.path, newPath)
-
-    let res = null
+    let sensitiveDetail = null
     try {
         let img = fs.readFileSync(newPath);
-        res = await shieldingService.checkSensitiveImg(img)
+        sensitiveDetail = await shieldingService.checkSensitiveImg(img)
     } catch (e) {
         console.log(e)
         fs.unlinkSync(newPath) //清除文件
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    console.log("敏感识别", res)
-    if (res == null) {
+    console.log("敏感识别", sensitiveDetail)
+    if (sensitiveDetail == null) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, '敏感词判定结果为空'))
     }
-
-    let sensitive = res['Hentai'] > 0.6 || res['Porn'] > 0.6 || res['Sexy'] > 0.6 ||
-        res['Hentai'] + res['Porn'] + res['Sexy'] > 0.7
-
+    let sensitive = sensitiveDetail['Hentai'] > 0.6 || sensitiveDetail['Porn'] > 0.6 || sensitiveDetail['Sexy'] > 0.6 ||
+        sensitiveDetail['Hentai'] + sensitiveDetail['Porn'] + sensitiveDetail['Sexy'] > 0.7
     console.log("敏感图判断", sensitive)
     let message = {
         fromId: fromId,
@@ -188,7 +239,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
         relationId: tools.getP2PId(fromId, toId),
         content: fileName,
         type: 'IMG',
-        extra: res,
+        extra: sensitiveDetail,
         sensitive: sensitive
     }
     let value
@@ -199,33 +250,27 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
         fs.unlinkSync(newPath) //清除文件
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-
     // 数据库更新成功
     if (value) {
-        //更换头像成功，通知长连接发送消息，同时将头像文件名返回
-        let data = value.get()
-        data.uuid = uuid
-        console.log("保存图片文件", data)
-
-        //获取备注信息
+        let messageData = value.get()
+        let imageData
         try {
-            let rel = await relationRepository.queryRemarkWithId(toId, fromId)
-            data.friendRemark = rel[0].get().remark
-            let userData = rel[0].get().user
-            if (textUtils.isEmpty(rel[0].get().remark)) {
-                data.friendRemark = userData.get().nickname
-            }
-            data.friendAvatar = userData.get().avatar
-            let perm = userData.get().typePermission
-            data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
-            data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
-            console.log('data', data)
+            let data = await imageRepo.saveImage(messageData.id, messageData.fromId, messageData.toId, fileName, JSON.stringify(sensitiveDetail))
+            imageData = data.get()
+            messageData.image = imageData.id
+            await repository.setImageData(messageData.id, imageData.id)
         } catch (e) {
-            console.log('err', e)
+            console.log(e)
+            fs.unlinkSync(newPath) //清除文件
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
         }
-
-        long_connection.sentImageMessage(data)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+        //更换头像成功，通知长连接发送消息，同时将头像文件名返回
+        messageData.uuid = uuid
+        console.log("保存图片文件", messageData)
+        await fillExtraMessageData(fromId, toId, messageData)
+        convRepo.updateConversation(message.fromId, message.toId, '[图片]').then()
+        long_connection.broadcastMessageSent(messageData)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, messageData))
     } else {
         // 说明该用户id查找不到任何用户
         fs.unlinkSync(newPath) //清除文件
@@ -233,11 +278,13 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
     }
 }
 
+
+
 /**
- * 发送图片消息
+ * 发送语音消息
  * @param fromId
  * @param toId
- * @param files 图片文件
+ * @param files 语音文件
  * @param uuid
  * @param extra
  */
@@ -268,24 +315,9 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid, extra) {
     if (value) {
         let data = value.get()
         data.uuid = uuid
-        console.log("保存音频文件", data)
-        //获取备注信息
-        try {
-            let rel = await relationRepository.queryRemarkWithId(toId, fromId)
-            data.friendRemark = rel[0].get().remark
-            let userData = rel[0].get().user
-            if (textUtils.isEmpty(rel[0].get().remark)) {
-                data.friendRemark = userData.get().nickname
-            }
-            data.friendAvatar = userData.get().avatar
-            let perm = userData.get().typePermission
-            data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
-            data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
-            console.log('data', data)
-        } catch (e) {
-            console.log('err', e)
-        }
-        long_connection.sentVoiceMessage(data)
+        convRepo.updateConversation(message.fromId, message.toId, '[语音]').then()
+        await fillExtraMessageData(fromId, toId, data)
+        long_connection.broadcastMessageSent(data)
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
     } else {
         // 说明该用户id查找不到任何用户
@@ -294,20 +326,16 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid, extra) {
     }
 }
 
-
-
-
 /**
- * 根据聊天文件名，返回聊天图片
- * @param fileName
+ * 读取某文件作为response返回
+ * @param path
  */
-exports.getChatImage = async function (fileName) {
+async function getFileToResponse(path) {
     try {
         let file = await new Promise((resolve, reject) => {
                 //直接生成路径
-                let target = path.join(__dirname, '../') + config.files.chatImageDir + '/' + fileName
                 //读取文件
-                fs.readFile(target, 'binary', function (err, file) {
+                fs.readFile(path, 'binary', function (err, file) {
                     if (err) {
                         reject(err)
                     } else if (file === null) {
@@ -332,34 +360,18 @@ exports.getChatImage = async function (fileName) {
 
 
 /**
+ * 根据聊天文件名，返回聊天图片
+ * @param fileName
+ */
+exports.getChatImage = async function (fileName) {
+    return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + fileName)
+}
+
+
+/**
  * 根据聊天文件名，返回聊天语音
  * @param fileName
  */
 exports.getChatVoiceMessage = async function (fileName) {
-    try {
-        let file = await new Promise((resolve, reject) => {
-                //直接生成路径
-                let target = path.join(__dirname, '../') + config.files.chatVoiceDir + '/' + fileName
-                //读取文件
-                fs.readFile(target, 'binary', function (err, file) {
-                    if (err) {
-                        reject(err)
-                    } else if (file === null) {
-                        reject(jsonUtils.getResponseBody(codes.no_chat_voice_file))
-                    } else {
-                        //读取成功
-                        resolve(file)
-                    }
-                })
-            }
-        ).then((file) => {
-            return file
-        });
-        return Promise.resolve(file)
-
-    } catch
-        (e) {
-        //console.log("error", e)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    }
+    return getFileToResponse(path.join(__dirname, '../') + config.files.chatVoiceDir + '/' + fileName)
 }

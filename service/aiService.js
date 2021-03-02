@@ -5,22 +5,43 @@ const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const repository = require('../repository/aiRepository');
 const repositoryMessage = require('../repository/messageRepository')
-const relationRepository = require('../repository/userRelationRepository')
 const config = require('../config')
 const AipSpeech = require("baidu-aip-sdk").speech;
 // 设置APPID/AK/SK
+const ffmpeg = require('fluent-ffmpeg');
+const emotionService = require('./emotionService')
+const shieldingService = require('./shieldingService')
+
 const APP_ID = "23720221";
 const API_KEY = "xQemIBbMnIGGiS6aKuYIKDMy";
 const SECRET_KEY = "iPEecYnESGkK99S6MheGGaemEKs4RX5c";
-const ffmpeg = require('fluent-ffmpeg');
-const textUtils = require("../utils/textUtils");
-const long_connection = require("../bin/long_connection");
-const emotionService = require('./emotionService')
-const shieldingService = require('./shieldingService')
+
+
+//将图片路径发往ai分类进程
+function sendImageDirToClassifyService(fileAbsolutePath, unlinkAfterSuccess = true) {
+    let params = {message: fileAbsolutePath}
+    return repository.imageClassify(params).then(result => {
+        let jsonResult = eval('(' + result + ')')
+        if (unlinkAfterSuccess) {
+            fs.unlinkSync(fileAbsolutePath)
+        }
+
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
+            class: jsonResult.first[1],
+            class_cn: jsonResult.first[2]
+        }))
+    }).catch(err => {
+        if (unlinkAfterSuccess) {
+            fs.unlinkSync(fileAbsolutePath)
+        }
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    })
+}
+
+
 /**
  * 语音直接转文字（不保存文件）
  * @param files
- * @returns {Promise<unknown>}
  */
 exports.dirTTS = async function (files) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
@@ -60,7 +81,6 @@ exports.dirTTS = async function (files) {
 /**
  * 语音记录转文字
  * @param id 记录id
- * @returns {Promise<unknown>}
  */
 exports.voiceToWords = async function (id) {
     let value = null
@@ -90,12 +110,15 @@ exports.voiceToWords = async function (id) {
                 let voice = fs.readFileSync(catchPath);
                 let voiceBuffer = new Buffer(voice);
                 client.recognize(voiceBuffer, 'wav', 16000).then(function (result) {
+                    if (result.result === undefined || result.result === null || result.result.length === 0) {
+                        reject(jsonUtils.getResponseBody(codes.other_error))
+                        return
+                    }
                     fs.unlinkSync(catchPath)
                     emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(emotion => {
                         //console.log('value:'+value.score)
                         shieldingService.checkSensitive(result.result[0]).then(sensitive => {
                             //console.log('vv:'+value.score)
-                            console.log('e0')
                             let res = value[0].get()
                             console.log(res)
                             res.ttsResult = result.result[0]
@@ -105,7 +128,6 @@ exports.voiceToWords = async function (id) {
                             resolve(jsonUtils.getResponseBody(codes.success, res))
                         }).catch(err => {
                             console.table(err)
-                            console.log("e1");
                             reject(jsonUtils.getResponseBody(codes.other_error, err))
                         })
                     }).catch(err => {
@@ -119,7 +141,6 @@ exports.voiceToWords = async function (id) {
                 });
             })
             .on('error', function (err) {
-                //console.log('an error happened: ' + err.message);
                 fs.unlinkSync(catchPath)
                 reject(err)
             })
@@ -127,24 +148,33 @@ exports.voiceToWords = async function (id) {
     })
 }
 
+
 /**
  * 图像场景分类
  * @param files 客户端传来的图像文件
  */
-exports.imageClassify = async function (files) {
+exports.imageClassifyDir = async function (files) {
     let newPath = path.dirname(files.upload.path) + '/' + UUID.v1() + ".jpg"
     await fs.renameSync(files.upload.path, newPath)
-    let params = {message: newPath}
-    return repository.imageClassify(params).then(result => {
-        let jsonResult = eval('(' + result + ')')
-        fs.unlinkSync(newPath)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
-            class: jsonResult.first[1],
-            class_cn: jsonResult.first[2]
-        }))
-    }).catch(err => {
-        fs.unlinkSync(newPath)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    })
+    return sendImageDirToClassifyService(newPath)
+}
 
+
+/**
+ * 图像场景分类
+ * @param msgId 聊天id
+ */
+exports.imageClassify = async function (msgId) {
+    let value = null
+    try {
+        value = await repositoryMessage.getMessageById(msgId)
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    if (value == null || value.length === 0) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
+    }
+    let filename = value[0].get().content
+    let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
+    return sendImageDirToClassifyService(targetPath, false)
 }

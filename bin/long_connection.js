@@ -1,11 +1,5 @@
-const convService = require('../service/conversationService')
 const messageService = require('../service/messageService')
-const shieldingService = require('../service/shieldingService')
-const emotionService = require('../service/emotionService')
-const tools = require('../utils/tools')
 const textUtils = require('../utils/textUtils')
-const wordCloudService = require('../service/wordCloudService')
-
 let io
 
 exports.initSocket = function (server) {
@@ -182,50 +176,6 @@ function onConnect(socket) {
 
     })
 
-    //监听用户发布聊天内容
-    socket.on('message', function (objStr) {
-        let obj = JSON.parse(objStr)
-        markOnline(socket, obj.fromId)//保持在线
-        //console.log('发送消息', obj)
-        //console.log('对方的socketId为', id2SocketId[obj.toId])
-
-        async function processSentence(text) {
-            //情感分析
-            let emotionResult = await emotionService.segmentAndAnalyzeEmotion(text)
-            //console.log("情感分析结果", emotionResult)
-            let emotionScore = emotionResult.score
-            let segmentation = emotionResult.segmentation
-            //敏感词检测
-            let sensitive = await shieldingService.checkSensitive(text)
-            //如果不敏感，就加入到词云统计
-            if (!sensitive) {
-                wordCloudService.addToWordCloud(obj.fromId, obj.conversationId, emotionResult.toWordCloud).then()
-            }
-            //console.log("敏感判定结果", sensitive)
-            return Promise.resolve({emotion: emotionScore, sensitive: sensitive, segmentation: segmentation})
-        }
-
-        processSentence(obj.content).then((value) => {
-            obj.sensitive = value.sensitive
-            obj.emotion = value.emotion
-            obj.extra = value.segmentation
-            //更新对话信息
-            convService.updateConversation(obj.fromId, obj.toId, value.sensitive ? '*敏感信息*' : obj.content).then()
-            //保存消息，保存成功才能传递给对方
-            messageService.saveMessage(obj).then((value) => {
-                io.to(id2SocketId[obj.toId]).emit('message', value.data);
-                value.data.uuid = obj.uuid //传递客户端上的uuid
-                socket.emit('message_sent', value.data)
-                //console.log('value', value)
-                //console.log(obj.fromId + '对' + obj.toId + '说：' + obj.content);
-            }, (err) => {
-                //console.log("消息发送失败", err)
-            })
-        })
-
-
-    });
-
     //获取某好友是否在线
     socket.on('query_online', function (userId, friendId) {
         markOnline(socket, userId)//保持在线
@@ -244,35 +194,28 @@ function onConnect(socket) {
 }
 
 
-//发送图片消息
-exports.sentImageMessage = function (message) {
-    ////console.log('sendImageMessage', id2SocketId)
-    //更新对话信息
-    convService.updateConversation(message.fromId, message.toId, '[图片]').then()
-    if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
-        let socket = id2SocketId[message.fromId.toString()]
+
+exports.sentTextMessage = function(message){
+   if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
+        //let socket = id2SocketId[message.fromId.toString()]
         if (id2SocketId.hasOwnProperty(message.toId.toString())) {
             io.to(id2SocketId[message.toId]).emit('message', message);
         }
-        io.to(socket).emit('message_sent', message)
-       // //console.log(message.fromId + '对' + message.toId + '说：' + message.content);
+        // io.to(socket).emit('message_sent', message)
+        // //console.log(message.fromId + '对' + message.toId + '说：' + message.content);
     }
 }
 
-//发送图片消息
-exports.sentVoiceMessage = function (message) {
-  //  //console.log('sendVoiceMessage', id2SocketId)
+
+exports.broadcastMessageSent = function(message){
     //更新对话信息
-    convService.updateConversation(message.fromId, message.toId, '[语音]').then()
     if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
-        let socket = id2SocketId[message.fromId.toString()]
         if (id2SocketId.hasOwnProperty(message.toId.toString())) {
             io.to(id2SocketId[message.toId]).emit('message', message);
         }
-        io.to(socket).emit('message_sent', message)
-       // //console.log(message.fromId + '对' + message.toId + '说：' + message.content);
     }
 }
+
 
 exports.notifyRelationEvent = function(targetUserId){
     //console.log('通知好友事件')

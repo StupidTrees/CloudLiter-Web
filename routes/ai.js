@@ -25,7 +25,7 @@ router.post('/voice/dirtts', function (req, res) {
     let toId = req.query.toId
     let uuid = req.query.uuid
     let extra = req.query.seconds
-    console.log('extra',extra)
+    console.log('extra', extra)
     //从请求头中读取前端传来的文件files
     form.parse(req, function (err, fields, files) {
         if (err) {
@@ -45,20 +45,19 @@ router.post('/voice/dirtts', function (req, res) {
 /**
  * 语音记录转文字
  */
-router.post('/voice/tts',function (req,res){
+router.post('/voice/tts', function (req, res) {
     service.voiceToWords(req.body.id).then(value => {
         res.send(value)
-    },error => {
-        console.table(error)
-        console.log("error:"+error.toString())
+    }, error => {
+        console.log("error:" + JSON.stringify(error))
         res.send(error)
     })
 })
 
 /**
- * 图像识别
+ * 图像识别（直接上传文件）
  */
-router.post('/image/classify', function (req, res) {
+router.post('/image/classify_dir', function (req, res) {
     const form = new formidable.IncomingForm()
     //设置文件保存的目标路径
     let targetPath = path.join(__dirname, '../') + config.files.cacheDir
@@ -74,15 +73,29 @@ router.post('/image/classify', function (req, res) {
         } else {
             service.imageClassify(files).then(
                 (value) => {
-                    console.log("success",value)
+                    console.log("success", value)
                     res.send(value)
                 }).catch(err => {
-                    console.log("err_route",err)
+                    console.log("err_route", err)
                     res.send(err)
                 }
             )
         }
     })
 })
+
+
+/**
+ * 图像识别（直接对某个聊天文件）
+ */
+router.post('/image/classify', function (req, res) {
+    service.imageClassify(req.body.messageId).then(value => {
+        res.send(value)
+    }, error => {
+        res.send(error)
+    })
+})
+
+
 const service = require('../service/aiService')
 module.exports = router;

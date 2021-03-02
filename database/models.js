@@ -44,16 +44,16 @@ exports.User = con.sequelize.define(
         type: {
             type: DataTypes.INTEGER,//
             allowNull: false,
-            default:0
+            default: 0
         },
         subType: {
             type: DataTypes.STRING,
             allowNull: true
         },
         typePermission: {
-            type: DataTypes.ENUM('PRIVATE','PUBLIC','PROTECTED'),
+            type: DataTypes.ENUM('PRIVATE', 'PUBLIC', 'PROTECTED'),
             allowNull: false,
-            default:'PUBLIC'
+            default: 'PUBLIC'
         },
         createdAt: {
             type: DataTypes.DATE
@@ -69,6 +69,8 @@ exports.User = con.sequelize.define(
 
 //将定义好的模型同步到吧 数据表，不强制覆盖
 this.User.sync({force: false}).then(r => r)
+
+
 exports.Group = con.sequelize.define(
     'group', {
         id: {
@@ -237,7 +239,7 @@ exports.RelationEvent = con.sequelize.define(
             type: DataTypes.BIGINT
         },
         state: {
-            type: DataTypes.ENUM('REQUESTING', 'ACCEPTED', 'REJECTED', 'DELETE','DIRECT'),
+            type: DataTypes.ENUM('REQUESTING', 'ACCEPTED', 'REJECTED', 'DELETE', 'DIRECT'),
             allowNull: false
         },
         read: {
@@ -274,6 +276,43 @@ this.RelationEvent.sync({force: false}).then(r => r)
 
 
 /**
+ * 图片文件表
+ */
+exports.ImageTable = con.sequelize.define(
+    'image', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        messageId: {
+            type: DataTypes.BIGINT
+        },
+        fromId: {
+            type: DataTypes.BIGINT
+        },
+        toId: {
+            type: DataTypes.BIGINT
+        },
+        fileName: {
+            type: DataTypes.STRING
+        },
+        sensitive: {
+            type: DataTypes.STRING
+        },
+        tags: {
+            type: DataTypes.STRING
+        }
+    },
+    {
+        tableName: 'image'
+    }
+);
+
+this.ImageTable.sync({force: false}).then(r => r)
+
+
+/**
  * 聊天记录表
  */
 exports.Message = con.sequelize.define(
@@ -304,18 +343,22 @@ exports.Message = con.sequelize.define(
         sensitive: {
             type: DataTypes.BOOLEAN
         },
-        type:{
-            type:DataTypes.ENUM('TXT','IMG','VOICE'),
+        type: {
+            type: DataTypes.ENUM('TXT', 'IMG', 'VOICE'),
             default: 'TXT'
         },
         emotion: {
             type: DataTypes.FLOAT
         },
-        extra:{
-          type:DataTypes.STRING
+        image: {
+            type: DataTypes.BIGINT,
+            allowNull: true
         },
-        ttsResult:{
-            type:DataTypes.STRING
+        extra: {
+            type: DataTypes.STRING
+        },
+        ttsResult: {
+            type: DataTypes.STRING
         },
         createdAt: {
             type: DataTypes.DATE
@@ -354,16 +397,22 @@ this.Message.belongsTo(this.UserRelation, {
     as: 'relation'
 })
 
+this.Message.belongsTo(this.ImageTable, {
+    foreignKey: 'image',
+    targetKey: 'id',
+    as: 'imageObject'
+})
+
 this.Message.sync({force: false}).then(r => r)
 
 
 exports.wordCloudBin = con.sequelize.define(
-    'wordCloudBin',{
+    'wordCloudBin', {
         type: {
-            type: DataTypes.ENUM('USER','CONVERSATION')
+            type: DataTypes.ENUM('USER', 'CONVERSATION')
         },
-        key:{
-            type:DataTypes.STRING
+        key: {
+            type: DataTypes.STRING
         },
         word: {
             type: DataTypes.STRING
@@ -373,54 +422,56 @@ exports.wordCloudBin = con.sequelize.define(
         }
     }
 )
-this.wordCloudBin.sync({force: false}).then( r => r)
+this.wordCloudBin.sync({force: false}).then(r => r)
 
 exports.wordTop10 = con.sequelize.define(
-    'wordTop10',{
-        type:{
-            type:DataTypes.ENUM('CONV','USER')
+    'wordTop10', {
+        type: {
+            type: DataTypes.ENUM('CONV', 'USER')
         },
-        cloudId:{
-            type:DataTypes.STRING,
+        cloudId: {
+            type: DataTypes.STRING,
             primaryKey: true
         },
-        Top1:{
-            type:DataTypes.STRING
+        Top1: {
+            type: DataTypes.STRING
         },
-        Top2:{
-            type:DataTypes.STRING
+        Top2: {
+            type: DataTypes.STRING
         },
-        Top3:{
-            type:DataTypes.STRING
+        Top3: {
+            type: DataTypes.STRING
         },
-        Top4:{
-            type:DataTypes.STRING
+        Top4: {
+            type: DataTypes.STRING
         },
-        Top5:{
-            type:DataTypes.STRING
+        Top5: {
+            type: DataTypes.STRING
         },
-        Top6:{
-            type:DataTypes.STRING
+        Top6: {
+            type: DataTypes.STRING
         },
-        Top7:{
-            type:DataTypes.STRING
+        Top7: {
+            type: DataTypes.STRING
         },
-        Top8:{
-            type:DataTypes.STRING
+        Top8: {
+            type: DataTypes.STRING
         },
-        Top9:{
-            type:DataTypes.STRING
+        Top9: {
+            type: DataTypes.STRING
         },
-        Top10:{
-            type:DataTypes.STRING
+        Top10: {
+            type: DataTypes.STRING
         },
-        flag:{
-            type:DataTypes.INTEGER
+        flag: {
+            type: DataTypes.INTEGER
         },
-        private:{
-            type:DataTypes.BOOLEAN,
-            default:false
+        private: {
+            type: DataTypes.BOOLEAN,
+            default: false
         }
     }
 )
-this.wordTop10.sync({force: false}).then( r => r)
+this.wordTop10.sync({force: false}).then(r => r)
+
+

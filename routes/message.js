@@ -43,6 +43,19 @@ router.get('/get_message_after', function (req, res) {
 })
 
 /**
+ * 发送文本消息
+ */
+router.post('/send_text',function (req,res){
+    service.sendTextMessage(req.body.fromId,req.body.toId,req.body.content,req.body.uuid).then((value)=>{
+        console.log('send_text',value)
+        res.send(value)
+    },(err)=>{
+        console.log('err', err)
+        res.send(err)
+    })
+})
+
+/**
  * 发送图片消息
  * toId在Param中
  */

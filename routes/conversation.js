@@ -14,12 +14,12 @@ const wordCloudService = require("../service/wordCloudService");
  */
 router.get('/get', function (req, res, next) {
     let queryId = req.query.authId
-    if(req.query.id!==undefined){
+    if (req.query.id !== undefined) {
         queryId = req.query.id
     }
-    service.getConversations(queryId).then((value)=>{
+    service.getConversations(queryId).then((value) => {
         res.send(value)
-    },(err)=>{
+    }, (err) => {
         console.log(err)
         res.send(err)
     })
@@ -30,20 +30,20 @@ router.get('/get', function (req, res, next) {
  */
 router.get('/query', function (req, res, next) {
     let myId = req.query.authId
-    if(req.query.userId!==undefined){
+    if (req.query.userId !== undefined) {
         myId = req.query.userId
     }
-    service.getConversationById(myId,req.query.friendId).then((value)=>{
+    service.getConversationById(myId, req.query.friendId).then((value) => {
         res.send(value)
-    },(err)=>{
+    }, (err) => {
         res.send(err)
     })
 })
 
-router.get('/word_cloud',function (req,res){
-    wordCloudService.getWordCloud('CONV',req.query.userId,req.query.friendId).then((value)=>{
+router.get('/word_cloud', function (req, res) {
+    wordCloudService.getWordCloud('CONV', req.query.userId, req.query.friendId).then((value) => {
         res.send(value)
-    },(err)=>{
+    }, (err) => {
         res.send(err)
     })
 })

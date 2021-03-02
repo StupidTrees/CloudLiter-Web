@@ -23,7 +23,7 @@ exports.saveMessage = function (message) {
         fromId: message.fromId,
         toId: message.toId,
         content: message.content,
-        relationId: message.fromId + '-' + message.toId,
+        relationId: tools.getP2PId(message.fromId,message.toId),
         sensitive: message.sensitive,
         emotion: message.emotion,
         conversationId: id,
@@ -197,13 +197,25 @@ exports.getMessageById = function (id){
  * @param text 语音识别的结果
  * @param score
  * @param sensitive
- * @returns {Promise<[number, Model[]]>}
  */
 exports.setTTSResult = function (id,text,score,sensitive) {
     return Message.update({
         ttsResult: text,
         emotion:score,
         sensitive:sensitive
+    }, {
+        where: {id:id}
+    })
+}
+
+/**
+ * 设置某消息的image属性
+ * @param id
+ * @param imageId
+ */
+exports.setImageData = function (id,imageId) {
+    return Message.update({
+        image:imageId
     }, {
         where: {id:id}
     })
