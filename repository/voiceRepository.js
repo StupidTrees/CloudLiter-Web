@@ -6,26 +6,26 @@ const Op = models.Op
 /**
  * 仓库层：对话表数据读写
  */
-const ImageTable = models.ImageTable
+const VoiceTable = models.VoiceTable
 
 
 /**
  * 将图片记录保存
  */
-exports.saveImage = function (fromId, toId, filename, sensitive) {
-    return ImageTable.create({
+exports.saveVoice = function (fromId, toId, filename, length) {
+    return VoiceTable.create({
         fromId: fromId,
         toId: toId,
         fileName: filename,
-        sensitive: sensitive
+        length:length
     })
 }
 
 /**
- * 根据图片id获取图片文件名
+ * 根据录音id获取录音对象
  */
-exports.getImageById = function (imageId) {
-    return ImageTable.findByPk(imageId)
+exports.getVoiceById = function (voiceId) {
+    return VoiceTable.findByPk(voiceId)
 }
 
 

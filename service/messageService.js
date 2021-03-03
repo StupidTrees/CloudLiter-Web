@@ -1,5 +1,6 @@
 const repository = require('../repository/messageRepository');
 const imageRepo = require('../repository/imageRepository');
+const voiceRepo = require('../repository/voiceRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const textUtils = require('../utils/textUtils')
@@ -167,6 +168,7 @@ exports.sendTextMessage = async function (fromId, toId, content, uuid) {
     let obj = {
         fromId: fromId,
         toId: toId,
+        conversationId:tools.getP2PIdOrdered(fromId,toId),
         content: content,
         type: 'TXT'
     }
@@ -237,47 +239,37 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
         toId: toId,
         conversationId: tools.getP2PIdOrdered(fromId, toId),
         relationId: tools.getP2PId(fromId, toId),
-        content: fileName,
+        content: null,//fileName,
         type: 'IMG',
         extra: sensitiveDetail,
         sensitive: sensitive
     }
     let value
     try {
+        let data = await imageRepo.saveImage(fromId, toId, fileName, JSON.stringify(sensitiveDetail))
+        let imageData = data.get()
+        message.fileId = imageData.id
         value = await repository.saveMessage(message)
     } catch (e) {
         console.log(e)
         fs.unlinkSync(newPath) //清除文件
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    // 数据库更新成功
-    if (value) {
-        let messageData = value.get()
-        let imageData
-        try {
-            let data = await imageRepo.saveImage(messageData.id, messageData.fromId, messageData.toId, fileName, JSON.stringify(sensitiveDetail))
-            imageData = data.get()
-            messageData.image = imageData.id
-            await repository.setImageData(messageData.id, imageData.id)
-        } catch (e) {
-            console.log(e)
-            fs.unlinkSync(newPath) //清除文件
-            return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-        }
-        //更换头像成功，通知长连接发送消息，同时将头像文件名返回
-        messageData.uuid = uuid
-        console.log("保存图片文件", messageData)
-        await fillExtraMessageData(fromId, toId, messageData)
-        convRepo.updateConversation(message.fromId, message.toId, '[图片]').then()
-        long_connection.broadcastMessageSent(messageData)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success, messageData))
-    } else {
+    if (!value) {
         // 说明该用户id查找不到任何用户
         fs.unlinkSync(newPath) //清除文件
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
-}
+    let messageData = value.get()
+    //更换头像成功，通知长连接发送消息，同时将头像文件名返回
+    messageData.uuid = uuid
+    console.log("保存图片文件", messageData)
+    await fillExtraMessageData(fromId, toId, messageData)
+    convRepo.updateConversation(message.fromId, message.toId, '[图片]').then()
+    long_connection.broadcastMessageSent(messageData)
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, messageData))
 
+}
 
 
 /**
@@ -286,9 +278,9 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
  * @param toId
  * @param files 语音文件
  * @param uuid
- * @param extra
+ * @param length
  */
-exports.sendVoiceMessage = async function (fromId, toId, files, uuid, extra) {
+exports.sendVoiceMessage = async function (fromId, toId, files, uuid, length) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
     let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
@@ -301,10 +293,13 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid, extra) {
         content: fileName,
         type: 'VOICE',
         sensitive: false,
-        extra: extra.toString()
+        extra: length.toString()
     }
     let value
     try {
+        let data = await voiceRepo.saveVoice(fromId, toId, fileName, length)
+        let voiceData = data.get()
+        message.fileId = voiceData.id
         value = await repository.saveMessage(message)
     } catch (e) {
         console.log(e)
@@ -365,6 +360,24 @@ async function getFileToResponse(path) {
  */
 exports.getChatImage = async function (fileName) {
     return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + fileName)
+}
+
+/**
+ * 根据图片id，获取图片文件
+ * @param imageId
+ */
+exports.getImageById = async function (imageId) {
+    let value = null
+    try {
+        console.log("file_get", imageId)
+        value = await imageRepo.getImageById(imageId)
+        console.log("value", value)
+        let filename = value.get().fileName
+        console.log("filename", filename)
+        return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + filename)
+    } catch (e) {
+        return jsonUtils.getResponseBody(codes.other_error, e)
+    }
 }
 
 

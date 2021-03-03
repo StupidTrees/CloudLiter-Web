@@ -285,9 +285,6 @@ exports.ImageTable = con.sequelize.define(
             primaryKey: true,
             autoIncrement: true,
         },
-        messageId: {
-            type: DataTypes.BIGINT
-        },
         fromId: {
             type: DataTypes.BIGINT
         },
@@ -312,6 +309,38 @@ exports.ImageTable = con.sequelize.define(
 this.ImageTable.sync({force: false}).then(r => r)
 
 
+/**
+ * 图片文件表
+ */
+exports.VoiceTable = con.sequelize.define(
+    'voice', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        fromId: {
+            type: DataTypes.BIGINT
+        },
+        toId: {
+            type: DataTypes.BIGINT
+        },
+        fileName: {
+            type: DataTypes.STRING
+        },
+        tags: {
+            type: DataTypes.STRING
+        },
+        length:{
+            type:DataTypes.INTEGER
+        }
+    },
+    {
+        tableName: 'voice'
+    }
+);
+
+this.VoiceTable.sync({force: false}).then(r => r)
 /**
  * 聊天记录表
  */
@@ -350,7 +379,7 @@ exports.Message = con.sequelize.define(
         emotion: {
             type: DataTypes.FLOAT
         },
-        image: {
+        fileId: {
             type: DataTypes.BIGINT,
             allowNull: true
         },
@@ -395,12 +424,6 @@ this.Message.belongsTo(this.UserRelation, {
     foreignKey: 'relationId',
     targetKey: 'key',
     as: 'relation'
-})
-
-this.Message.belongsTo(this.ImageTable, {
-    foreignKey: 'image',
-    targetKey: 'id',
-    as: 'imageObject'
 })
 
 this.Message.sync({force: false}).then(r => r)

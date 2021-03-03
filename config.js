@@ -7,7 +7,7 @@ module.exports = {
     database:{
         name:'hichat',
         username:'cloudliter',
-        password:'1234',
+        password:'CloudLight2,',
         host:'localhost',
         port:3306
     },

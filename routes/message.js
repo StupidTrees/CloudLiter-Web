@@ -34,7 +34,7 @@ router.get('/get_message_after', function (req, res) {
     let afterId = (req.query.afterId === undefined || req.query.afterId == null || equals(req.query.afterId, 'null'))
         ? null : req.query.afterId
     service.getMessagesAfter(req.query.conversationId, afterId, req.query.includeBound).then((value) => {
-        console.log('getMessagesAfter',value)
+        console.log('getMessagesAfter', value)
         res.send(value)
     }, (err) => {
         console.log('err', err)
@@ -45,11 +45,11 @@ router.get('/get_message_after', function (req, res) {
 /**
  * 发送文本消息
  */
-router.post('/send_text',function (req,res){
-    service.sendTextMessage(req.body.fromId,req.body.toId,req.body.content,req.body.uuid).then((value)=>{
-        console.log('send_text',value)
+router.post('/send_text', function (req, res) {
+    service.sendTextMessage(req.body.fromId, req.body.toId, req.body.content, req.body.uuid).then((value) => {
+        console.log('send_text', value)
         res.send(value)
-    },(err)=>{
+    }, (err) => {
         console.log('err', err)
         res.send(err)
     })
@@ -79,7 +79,7 @@ router.post('/send_image', function (req, res) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.sendImageMessage(userId, toId, files,uuid).then(
+            service.sendImageMessage(userId, toId, files, uuid).then(
                 (value) => {
                     res.send(value)
                 }, (err) => {
@@ -110,14 +110,13 @@ router.post('/send_voice', function (req, res) {
     let userId = req.body.authId
     let toId = req.query.toId
     let uuid = req.query.uuid
-    let extra = req.query.seconds
-    console.log('extra',extra)
+    let length = req.query.seconds
     //从请求头中读取前端传来的文件files
     form.parse(req, function (err, fields, files) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.sendVoiceMessage(userId, toId, files,uuid,extra).then(
+            service.sendVoiceMessage(userId, toId, files, uuid, length).then(
                 (value) => {
                     res.send(value)
                 }, (err) => {
@@ -129,30 +128,29 @@ router.post('/send_voice', function (req, res) {
 })
 
 
-
-
 /**
- * 按文件名直接获取聊天文件
+ * 按图片id获取聊天文件
  */
-router.get('/image',function (req,res){
-    service.getChatImage(req.query.path).then(r => {
+router.get('/image', function (req, res) {
+    service.getImageById(req.query.imageId).then(r => {
         res.writeHead(200, "Ok");
-        res.write(r,"binary"); //格式必须为 binary，否则会出错
+        res.write(r, "binary"); //格式必须为 binary，否则会出错
         res.end();
-    }).catch(err=>{
+    }).catch(err => {
         res.send(err)
     })
 })
 
+
 /**
  * 按文件名直接获取语音文件
  */
-router.get('/voice',function (req,res){
+router.get('/voice', function (req, res) {
     service.getChatVoiceMessage(req.query.path).then(r => {
         res.writeHead(200, "Ok");
-        res.write(r,"binary"); //格式必须为 binary，否则会出错
+        res.write(r, "binary"); //格式必须为 binary，否则会出错
         res.end();
-    }).catch(err=>{
+    }).catch(err => {
         res.send(err)
     })
 })

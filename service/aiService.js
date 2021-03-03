@@ -4,6 +4,7 @@ const fs = require('fs')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const repository = require('../repository/aiRepository');
+const imageRepo = require('../repository/imageRepository');
 const repositoryMessage = require('../repository/messageRepository')
 const config = require('../config')
 const AipSpeech = require("baidu-aip-sdk").speech;
@@ -162,19 +163,19 @@ exports.imageClassifyDir = async function (files) {
 
 /**
  * 图像场景分类
- * @param msgId 聊天id
+ * @param imageId
  */
-exports.imageClassify = async function (msgId) {
+exports.imageClassify = async function (imageId) {
     let value = null
     try {
-        value = await repositoryMessage.getMessageById(msgId)
+        value = await imageRepo.getImageById(imageId)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    if (value == null || value.length === 0) {
+    if (!value) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
-    let filename = value[0].get().content
+    let filename = value.get().fileName
     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
     return sendImageDirToClassifyService(targetPath, false)
 }

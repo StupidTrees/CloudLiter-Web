@@ -71,15 +71,15 @@ router.post('/image/classify_dir', function (req, res) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.imageClassify(files).then(
-                (value) => {
-                    console.log("success", value)
-                    res.send(value)
-                }).catch(err => {
-                    console.log("err_route", err)
-                    res.send(err)
-                }
-            )
+            // service.imageClassify(files).then(
+            //     (value) => {
+            //         console.log("success", value)
+            //         res.send(value)
+            //     }).catch(err => {
+            //         console.log("err_route", err)
+            //         res.send(err)
+            //     }
+            // )
         }
     })
 })
@@ -89,7 +89,7 @@ router.post('/image/classify_dir', function (req, res) {
  * 图像识别（直接对某个聊天文件）
  */
 router.post('/image/classify', function (req, res) {
-    service.imageClassify(req.body.messageId).then(value => {
+    service.imageClassify(req.body.imageId).then(value => {
         res.send(value)
     }, error => {
         res.send(error)

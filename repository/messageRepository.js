@@ -2,12 +2,6 @@ const models = require('../database/models')
 const tools = require('../utils/tools')
 const {equals} = require("../utils/textUtils");
 const Op = models.Op
-
-/**
- * 仓库层：对话表数据读写
- */
-
-const Conversation = models.Conversation
 const Relation = models.UserRelation
 const User = models.User
 const Message = models.Message
@@ -27,7 +21,8 @@ exports.saveMessage = function (message) {
         sensitive: message.sensitive,
         emotion: message.emotion,
         conversationId: id,
-        type: message.type,
+        type: message.type,//,
+        fileId:message.fileId,
         extra: JSON.stringify(message.extra)
     })
 }
@@ -203,19 +198,6 @@ exports.setTTSResult = function (id,text,score,sensitive) {
         ttsResult: text,
         emotion:score,
         sensitive:sensitive
-    }, {
-        where: {id:id}
-    })
-}
-
-/**
- * 设置某消息的image属性
- * @param id
- * @param imageId
- */
-exports.setImageData = function (id,imageId) {
-    return Message.update({
-        image:imageId
     }, {
         where: {id:id}
     })
