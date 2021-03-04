@@ -7,6 +7,47 @@ const {codes} = require("../utils/codes");
 const formidable = require("formidable");
 
 /**
+ * 测试接口
+ */
+router.post('/face/test',function (req,res){
+    console.log(req.body.userId+'    '+req.body.imagePath)
+    res.send()
+})
+
+/**
+ * 人脸上传
+ */
+router.post('/face/upload', function (req, res) {
+    const form = new formidable.IncomingForm()
+    //设置文件保存的目标路径
+    let targetPath = path.join(__dirname, '../') + config.files.cacheDir
+    // 如果目录不存在则创建
+    if (!fs.existsSync(targetPath)) fs.mkdirSync(targetPath, {
+        recursive: true
+    })
+    //设置文件目标路径
+    form.uploadDir = targetPath
+    // 上传文件大小限制
+    form.maxFieldsSize = 20 * 1024 * 1024
+    //从请求头中读取前端传来的文件files
+    let userId = req.body.authId
+    form.parse(req, function (err, fields, files) {
+        if (err) {
+            res.send(jsonUtils.getResponseBody(codes.other_error, err))
+        } else {
+            service.faceUpload( userId,files).then(
+                (value) => {
+                    res.send(value)
+                }, (err) => {
+                    res.send(err)
+                }
+            )
+        }
+    })
+})
+
+
+/**
  * 语音直接转文字
  */
 router.post('/voice/dirtts', function (req, res) {

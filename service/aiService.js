@@ -42,6 +42,29 @@ function sendImageDirToClassifyService(fileAbsolutePath, imageId = null, unlinkA
     })
 }
 
+/**
+ * 人脸上传
+ * @param imageId
+ */
+exports.faceUpload = async function (userId, files) {
+    // 手动给文件加后缀, formidable默认保存的文件是无后缀的
+    let fileName = "face_userId_" + UUID.v1() + path.extname(files.upload.name)
+    let newPath = path.dirname(files.upload.path) + '/' + fileName
+    await fs.renameSync(files.upload.path, newPath)
+    //return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    //console.log('userId:'+userId+'  imagePath:'+newPath)
+    let params = {userId: userId, imagePath: newPath}
+    return repository.faceUploadR(params).then(result => {
+        //console.log('result:'+result)
+        let jsonResult = eval('(' + result + ')')
+        fs.unlinkSync(newPath)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    }).catch(err => {
+        //console.log('err:'+err)
+        fs.unlinkSync(newPath)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    })
+}
 
 /**
  * 语音直接转文字（不保存文件）
@@ -66,14 +89,14 @@ exports.dirTTS = async function (files) {
                     fs.unlinkSync(newPath)
                     resolve(jsonUtils.getResponseBody(codes.success, {result: result.result[0]}))
                 }, function (err) {
-                    console.log(err);
+                    //console.log(err);
                     fs.unlinkSync(catchPath)
                     fs.unlinkSync(newPath)
                     reject(jsonUtils.getResponseBody(codes.other_error, err))
                 });
             })
             .on('error', function (err) {
-                console.log('an error happened: ' + err.message);
+                //console.log('an error happened: ' + err.message);
                 fs.unlinkSync(catchPath)
                 fs.unlinkSync(newPath)
                 reject(err)
@@ -100,7 +123,7 @@ exports.voiceToWords = async function (id) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
     if (value[0].get().ttsResult !== null) {
-        console.log('from database')
+        //console.log('from database')
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, value[0].get()))
     }
 
@@ -124,7 +147,7 @@ exports.voiceToWords = async function (id) {
                         shieldingService.checkSensitive(result.result[0]).then(sensitive => {
                             //console.log('vv:'+value.score)
                             let res = value[0].get()
-                            console.log(res)
+                            //console.log(res)
                             res.ttsResult = result.result[0]
                             res.sensitive = sensitive
                             res.emotion = emotion.score
@@ -160,7 +183,7 @@ exports.voiceToWords = async function (id) {
 exports.imageClassifyDir = async function (files) {
     let newPath = path.dirname(files.upload.path) + '/' + UUID.v1() + ".jpg"
     await fs.renameSync(files.upload.path, newPath)
-    return sendImageDirToClassifyService(newPath,null,true)
+    return sendImageDirToClassifyService(newPath, null, true)
 }
 
 
@@ -179,10 +202,10 @@ exports.imageClassify = async function (imageId) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
     //直接返回永久缓存
-    if(!textUtils.isEmpty(value.get().scene)){
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,JSON.parse(value.get().scene)))
+    if (!textUtils.isEmpty(value.get().scene)) {
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, JSON.parse(value.get().scene)))
     }
     let filename = value.get().fileName
     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
-    return sendImageDirToClassifyService(targetPath, imageId,false)
+    return sendImageDirToClassifyService(targetPath, imageId, false)
 }
