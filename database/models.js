@@ -297,6 +297,9 @@ exports.ImageTable = con.sequelize.define(
         sensitive: {
             type: DataTypes.STRING
         },
+        scene: {
+            type: DataTypes.STRING
+        },
         tags: {
             type: DataTypes.STRING
         }
@@ -331,8 +334,8 @@ exports.VoiceTable = con.sequelize.define(
         tags: {
             type: DataTypes.STRING
         },
-        length:{
-            type:DataTypes.INTEGER
+        length: {
+            type: DataTypes.INTEGER
         }
     },
     {

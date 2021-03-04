@@ -12,25 +12,28 @@ const AipSpeech = require("baidu-aip-sdk").speech;
 const ffmpeg = require('fluent-ffmpeg');
 const emotionService = require('./emotionService')
 const shieldingService = require('./shieldingService')
-
+const textUtils = require('../utils/textUtils')
 const APP_ID = "23720221";
 const API_KEY = "xQemIBbMnIGGiS6aKuYIKDMy";
 const SECRET_KEY = "iPEecYnESGkK99S6MheGGaemEKs4RX5c";
 
 
 //将图片路径发往ai分类进程
-function sendImageDirToClassifyService(fileAbsolutePath, unlinkAfterSuccess = true) {
+function sendImageDirToClassifyService(fileAbsolutePath, imageId = null, unlinkAfterSuccess = true) {
     let params = {message: fileAbsolutePath}
     return repository.imageClassify(params).then(result => {
         let jsonResult = eval('(' + result + ')')
         if (unlinkAfterSuccess) {
             fs.unlinkSync(fileAbsolutePath)
         }
-
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
+        let data = {
             class: jsonResult.first[1],
             class_cn: jsonResult.first[2]
-        }))
+        }
+        if (imageId !== null) {
+            imageRepo.updateSceneById(imageId, JSON.stringify(data)).then()
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
     }).catch(err => {
         if (unlinkAfterSuccess) {
             fs.unlinkSync(fileAbsolutePath)
@@ -157,7 +160,7 @@ exports.voiceToWords = async function (id) {
 exports.imageClassifyDir = async function (files) {
     let newPath = path.dirname(files.upload.path) + '/' + UUID.v1() + ".jpg"
     await fs.renameSync(files.upload.path, newPath)
-    return sendImageDirToClassifyService(newPath)
+    return sendImageDirToClassifyService(newPath,null,true)
 }
 
 
@@ -175,7 +178,11 @@ exports.imageClassify = async function (imageId) {
     if (!value) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
+    //直接返回永久缓存
+    if(!textUtils.isEmpty(value.get().scene)){
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,JSON.parse(value.get().scene)))
+    }
     let filename = value.get().fileName
     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
-    return sendImageDirToClassifyService(targetPath, false)
+    return sendImageDirToClassifyService(targetPath, imageId,false)
 }

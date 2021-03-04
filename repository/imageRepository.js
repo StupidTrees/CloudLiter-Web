@@ -22,10 +22,37 @@ exports.saveImage = function (fromId, toId, filename, sensitive) {
 }
 
 /**
- * 根据图片id获取图片文件名
+ * 根据图片id获取图片对象
  */
 exports.getImageById = function (imageId) {
     return ImageTable.findByPk(imageId)
+}
+
+/**
+ * 根据图片id获取图片文件名
+ */
+exports.getImageFilenameById = function (imageId) {
+    return ImageTable.findByPk(
+        imageId, {
+            attributes: ['fileName']
+        }
+    )
+}
+
+
+/**
+ * 更新图片的分类结果
+ * @param imageId
+ * @param imageClass
+ */
+exports.updateSceneById = function (imageId, imageClass) {
+    return ImageTable.update({
+        "scene": imageClass
+    }, {
+        where: {
+            "id": imageId
+        }
+    })
 }
 
 

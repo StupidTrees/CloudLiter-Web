@@ -355,25 +355,14 @@ async function getFileToResponse(path) {
 
 
 /**
- * 根据聊天文件名，返回聊天图片
- * @param fileName
- */
-exports.getChatImage = async function (fileName) {
-    return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + fileName)
-}
-
-/**
  * 根据图片id，获取图片文件
  * @param imageId
  */
 exports.getImageById = async function (imageId) {
     let value = null
     try {
-        console.log("file_get", imageId)
-        value = await imageRepo.getImageById(imageId)
-        console.log("value", value)
+        value = await imageRepo.getImageFilenameById(imageId)
         let filename = value.get().fileName
-        console.log("filename", filename)
         return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + filename)
     } catch (e) {
         return jsonUtils.getResponseBody(codes.other_error, e)
