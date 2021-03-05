@@ -17,8 +17,38 @@ const APP_ID = "23720221";
 const API_KEY = "xQemIBbMnIGGiS6aKuYIKDMy";
 const SECRET_KEY = "iPEecYnESGkK99S6MheGGaemEKs4RX5c";
 
+exports.faceRecognize = async function(userId,imageId,rects){
+    console.log('imageId:'+imageId)
+    let filename = null
+    try {
+        let tmp = await imageRepo.getImageFilenameById(imageId)
+        filename = tmp.get().fileName
+    } catch (err) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
 
-//将图片路径发往ai分类进程
+    let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
+    console.log('Path:'+targetPath)
+    console.log('type  userId:'+typeof(userId)+'   imagePath:'+typeof (targetPath)+'   rects:'+typeof (rects)+'  '+rects)
+    let params = {userId:userId,imagePath: targetPath, rects: rects}
+    return repository.faceRecognizeR(params).then(result => {
+        //console.log('result:'+result)
+        let jsonResult = eval('(' + result + ')')
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+    }).catch(err => {
+        //console.log('err:'+err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    })
+}
+
+
+/**
+ * 将图片路径发往ai分类进程
+ * @param fileAbsolutePath
+ * @param imageId
+ * @param unlinkAfterSuccess
+ * @returns {Promise<{code: *, data: null, message: *} | {code: *, message: *}>}
+ */
 function sendImageDirToClassifyService(fileAbsolutePath, imageId = null, unlinkAfterSuccess = true) {
     let params = {message: fileAbsolutePath}
     return repository.imageClassify(params).then(result => {
