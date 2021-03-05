@@ -77,6 +77,10 @@ exports.queryRelationWithId = function (myId, friendId) {
  * @param myId 我的id
  * @param friendId 朋友的id
  */
+
+
+
+
 exports.queryRemarkWithId = function (myId, friendId) {
 
     let id = tools.getP2PId(myId, friendId)

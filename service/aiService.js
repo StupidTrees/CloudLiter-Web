@@ -6,6 +6,8 @@ const codes = require('../utils/codes').codes
 const repository = require('../repository/aiRepository');
 const imageRepo = require('../repository/imageRepository');
 const repositoryMessage = require('../repository/messageRepository')
+const relationRepository = require('../repository/userRelationRepository')
+const userRepository = require('../repository/userRepository')
 const config = require('../config')
 const AipSpeech = require("baidu-aip-sdk").speech;
 // 设置APPID/AK/SK
@@ -17,8 +19,8 @@ const APP_ID = "23720221";
 const API_KEY = "xQemIBbMnIGGiS6aKuYIKDMy";
 const SECRET_KEY = "iPEecYnESGkK99S6MheGGaemEKs4RX5c";
 
-exports.faceRecognize = async function(userId,imageId,rects){
-    console.log('imageId:'+imageId)
+exports.faceRecognize = async function (userId, imageId, rects) {
+    //console.log('imageId:' + imageId)
     let filename = null
     try {
         let tmp = await imageRepo.getImageFilenameById(imageId)
@@ -28,17 +30,64 @@ exports.faceRecognize = async function(userId,imageId,rects){
     }
 
     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
-    console.log('Path:'+targetPath)
-    console.log('type  userId:'+typeof(userId)+'   imagePath:'+typeof (targetPath)+'   rects:'+typeof (rects)+'  '+rects)
-    let params = {userId:userId,imagePath: targetPath, rects: rects}
+    //console.log('Path:' + targetPath)
+    //console.log('type  userId:' + typeof (userId) + '   imagePath:' + typeof (targetPath) + '   rects:' + typeof (rects) + '  ' + rects)
+    let params = {userId: userId, imagePath: targetPath, rects: rects}
     return repository.faceRecognizeR(params).then(result => {
-        //console.log('result:'+result)
-        let jsonResult = eval('(' + result + ')')
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+        return fillRecognitionInfo(userId,result)
     }).catch(err => {
         //console.log('err:'+err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
+}
+
+async function fillRecognitionInfo(userId, result){
+    //console.log('result:'+result)
+    //let jsonResult = eval('(' + result + ')')-
+    let jsonResult = JSON.parse(result)
+    //console.log('result:' + result + '    ' + typeof (result) + '     ' + JSON.stringify(result))
+    //console.log('jsonResult:' + JSON.stringify(jsonResult))
+    let finalResult = []
+    for(let i = 0;i<jsonResult.length;i++) {
+        let item = jsonResult[i]
+        let cache = {}
+        //console.log('item:'+item)
+        try {
+            let itemResult = item.result[0]
+            cache.id = item.id
+            cache.userId = itemResult.uid
+            if (userId.toString() === cache.userId) {
+                let data = userRepository.getUserById(userId)
+                if (textUtils.isEmpty(data[0].get().nickname)) {
+                    cache.userName = data[0].get().username
+                } else {
+                    cache.userName = data[0].get().nickname
+                }
+            } else {
+                //console.log('userId'+cache.userId)
+                let rel =await relationRepository.queryRemarkWithId(userId, cache.userId)
+                //console.log('userId:' + userId + '----' + cache.userId + "," + rel)
+                cache.userName = rel[0].get().remark
+                let userData = rel[0].get().user
+                if (textUtils.isEmpty(rel[0].get().remark)) {
+                    if (textUtils.isEmpty(userData.get().nickname)) {
+                        cache.userName = userData.get().username
+                    }
+                    cache.userName = userData.get().nickname
+                }
+            }
+            cache.state = 'success'
+        } catch (err) {
+            //console.log(err)
+            cache.id = item.id
+            cache.state = 'none'
+            cache.userId = null
+        } finally {
+            finalResult.push(cache)
+        }
+    }
+    //console.log('finalResult:' + JSON.stringify(finalResult))
+    return Promise.resolve(jsonUtils.getResponseBody(code.success,finalResult))
 }
 
 
@@ -184,7 +233,7 @@ exports.voiceToWords = async function (id) {
                             repositoryMessage.setTTSResult(id, result.result[0], emotion.score, sensitive)
                             resolve(jsonUtils.getResponseBody(codes.success, res))
                         }).catch(err => {
-                            console.table(err)
+                            //console.table(err)
                             reject(jsonUtils.getResponseBody(codes.other_error, err))
                         })
                     }).catch(err => {
