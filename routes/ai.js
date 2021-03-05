@@ -45,6 +45,7 @@ router.post('/face/recognize',function (req,res){
     service.faceRecognize(userId,req.body.imageId,req.body.rects).then(value => {
         res.send(value)
     },error => {
+        console.log("face_recognize_error",error)
         res.send(error)
     })
 })
