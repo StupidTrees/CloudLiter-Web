@@ -14,6 +14,7 @@ const shieldingService = require('../service/shieldingService')
 const emotionService = require("./emotionService");
 const wordCloudService = require("./wordCloudService");
 const convRepo = require("../repository/conversationRepository");
+const {getFileToResponse} = require("../utils/fileUtils");
 
 /**
  * 更新会话信息
@@ -321,37 +322,6 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid, length) {
     }
 }
 
-/**
- * 读取某文件作为response返回
- * @param path
- */
-async function getFileToResponse(path) {
-    try {
-        let file = await new Promise((resolve, reject) => {
-                //直接生成路径
-                //读取文件
-                fs.readFile(path, 'binary', function (err, file) {
-                    if (err) {
-                        reject(err)
-                    } else if (file === null) {
-                        reject(jsonUtils.getResponseBody(codes.no_chat_image_file))
-                    } else {
-                        //读取成功
-                        resolve(file)
-                    }
-                })
-            }
-        ).then((file) => {
-            return file
-        });
-        return Promise.resolve(file)
-
-    } catch
-        (e) {
-        //console.log("error", e)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    }
-}
 
 
 /**

@@ -313,7 +313,7 @@ this.ImageTable.sync({force: false}).then(r => r)
 
 
 /**
- * 图片文件表
+ * 音频文件表
  */
 exports.VoiceTable = con.sequelize.define(
     'voice', {
@@ -344,6 +344,34 @@ exports.VoiceTable = con.sequelize.define(
 );
 
 this.VoiceTable.sync({force: false}).then(r => r)
+
+
+/**
+ * 图片人脸表
+ */
+exports.ImageFaceTable = con.sequelize.define(
+    'image_face', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        imageId: {
+            type: DataTypes.BIGINT
+        },
+        userId: {
+            type: DataTypes.BIGINT
+        },
+        confidence: {
+            type: DataTypes.FLOAT
+        }
+    },
+    {
+        tableName: 'image_face'
+    }
+);
+
+this.ImageFaceTable.sync({force: false}).then(r => r)
 /**
  * 聊天记录表
  */
@@ -501,3 +529,28 @@ exports.wordTop10 = con.sequelize.define(
 this.wordTop10.sync({force: false}).then(r => r)
 
 
+exports.FacesTable = con.sequelize.define(
+    'faces', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey:true,
+            autoIncrement:true
+        },
+        userId:{
+            type:DataTypes.BIGINT
+        },
+        pic_name:{
+            type:DataTypes.STRING
+        },
+        json:{
+            type:DataTypes.STRING
+        },
+        state:{
+            type:DataTypes.INTEGER
+        }
+    },
+    {
+        tableName: 'faces'
+    }
+)
+this.FacesTable.sync({force: false}).then(r => r)

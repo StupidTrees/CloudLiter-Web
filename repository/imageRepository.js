@@ -7,7 +7,8 @@ const Op = models.Op
  * 仓库层：对话表数据读写
  */
 const ImageTable = models.ImageTable
-
+const FaceTable = models.FacesTable
+const ImageFaceTable = models.ImageFaceTable
 
 /**
  * 将图片记录保存
@@ -56,3 +57,52 @@ exports.updateSceneById = function (imageId, imageClass) {
 }
 
 
+exports.saveFaceInImage = function (imageId, userId, confidence) {
+    return ImageFaceTable.create(
+        {
+            imageId: imageId,
+            userId: userId,
+            confidence: confidence
+        }
+    )
+}
+
+
+exports.getFaces = function (userId) {
+    return FaceTable.findAll({
+        attributes: ['id', 'userId'],
+        where: {
+            userId: userId
+        }
+    })
+}
+
+/**
+ * 获取某人脸entity的文件名
+ * @param userId
+ * @param faceId
+ */
+exports.getFaceFilenameById = function (userId, faceId) {
+    return FaceTable.findByPk(faceId, {
+        attributes: ['pic_name'],
+        where: {
+            userId: userId
+        }
+    })
+}
+
+
+exports.deleteFace = function (userId, faceId) {
+    return FaceTable.destroy({
+        where: {
+            [Op.and]: [
+                {
+                    userId: userId
+                },
+                {
+                    id: faceId
+                }
+            ]
+        }
+    })
+}

@@ -39,22 +39,25 @@ exports.faceRecognize = async function (userId, imageId, rects) {
     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
     let params = {userId: userId, imagePath: targetPath, rects: rects}
     return repository.faceRecognizeR(params).then(result => {
-        return fillRecognitionInfo(userId,result)
+        return fillRecognitionInfo(imageId, userId, result)
     }).catch(err => {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
 }
 
-async function fillRecognitionInfo(userId, result){
+async function fillRecognitionInfo(imageId, userId, result) {
     let jsonResult = JSON.parse(result)
     let finalResult = []
-    for(let i = 0;i<jsonResult.length;i++) {
-        let item = jsonResult[i]
-        let cache = {}
+    for (let i = 0; i < jsonResult.length; i++) {
         try {
+            let item = jsonResult[i]
+            let cache = {}
             let itemResult = item.result[0]
-            cache.id = item.id
+            cache.imageId = imageId
+            cache.rectId = item.id
             cache.userId = itemResult.uid
+            cache.confidence = 1.0 - itemResult.distance
+            //if (cache.confidence < 0.4) continue
             if (userId.toString() === cache.userId) {
                 let data = userRepository.getUserById(userId)
                 if (textUtils.isEmpty(data[0].get().nickname)) {
@@ -63,7 +66,8 @@ async function fillRecognitionInfo(userId, result){
                     cache.userName = data[0].get().nickname
                 }
             } else {
-                let rel =await relationRepository.queryRemarkWithId(userId, cache.userId)
+                await imageRepo.saveFaceInImage(imageId, cache.userId, cache.confidence)
+                let rel = await relationRepository.queryRemarkWithId(userId, cache.userId)
                 cache.userName = rel[0].get().remark
                 let userData = rel[0].get().user
                 if (textUtils.isEmpty(rel[0].get().remark)) {
@@ -73,19 +77,13 @@ async function fillRecognitionInfo(userId, result){
                     cache.userName = userData.get().nickname
                 }
             }
-            cache.state = 'success'
-        } catch (err) {
-            //console.log(err)
-            cache.id = item.id
-            cache.state = 'none'
-            cache.userId = null
-        } finally {
             finalResult.push(cache)
+        } catch (err) {
+            console.log(err)
         }
     }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,finalResult))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, finalResult))
 }
-
 
 /**
  * 将图片路径发往ai分类进程
@@ -127,18 +125,15 @@ exports.faceUpload = async function (userId, files) {
     let fileName = "face_userId_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
     await fs.renameSync(files.upload.path, newPath)
-    //return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-    //console.log('userId:'+userId+'  imagePath:'+newPath)
     let params = {userId: userId, imagePath: newPath}
     return repository.faceUploadR(params).then(result => {
-        //console.log('result:'+result)
-        let jsonResult = eval('(' + result + ')')
+        let res = JSON.parse(result)
         fs.unlinkSync(newPath)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-    }).catch(err => {
-        //console.log('err:'+err)
-        fs.unlinkSync(newPath)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+        if(res['state']==='no_face'){
+            return Promise.reject(jsonUtils.getResponseBody(codes.face_not_found))
+        } else{
+            return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+        }
     })
 }
 

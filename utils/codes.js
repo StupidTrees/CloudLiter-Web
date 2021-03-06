@@ -115,10 +115,14 @@ exports.codes = {
         code:3021,
         message:'词云被隐藏'
     },
+    face_not_found:{
+        code:3022,
+        message:'图片中没有找到人脸'
+    },
     other_error:{
         code:5000,
         message:'其他错误'
-    },
+    }
 
 }
 

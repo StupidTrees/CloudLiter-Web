@@ -9,12 +9,12 @@ const formidable = require("formidable");
 /**
  * 测试接口
  */
-router.post('/face/test',function (req,res){
-    console.log(req.body.userId+'    '+req.body.imagePath)
+router.post('/face/test', function (req, res) {
+    console.log(req.body.userId + '    ' + req.body.imagePath)
     res.send()
 })
 
-router.post('/face/recognize',function (req,res){
+router.post('/face/recognize', function (req, res) {
     console.log('recognize')
     // let v = {}
     // v.id = "0"
@@ -42,10 +42,10 @@ router.post('/face/recognize',function (req,res){
 
     //let rects = '[{"id":"1","x":"0","y":"0","height":"1000","weight":"2000"},{"id":"0","x":"0","y":"0","height":"1000","weight":"2000"}]'
     let userId = req.body.authId
-    service.faceRecognize(userId,req.body.imageId,req.body.rects).then(value => {
+    service.faceRecognize(userId, req.body.imageId, req.body.rects).then(value => {
         res.send(value)
-    },error => {
-        console.log("face_recognize_error",error)
+    }, error => {
+        console.log("face_recognize_error", error)
         res.send(error)
     })
 })
@@ -72,10 +72,12 @@ router.post('/face/upload', function (req, res) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.faceUpload( userId,files).then(
+            service.faceUpload(userId, files).then(
                 (value) => {
+                    console.log(value)
                     res.send(value)
                 }, (err) => {
+                    console.log(err)
                     res.send(err)
                 }
             )

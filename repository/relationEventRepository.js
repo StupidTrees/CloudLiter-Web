@@ -14,6 +14,9 @@ const Message = models.Message
 const UserConversation = models.Conversation
 const RelationEvent = models.RelationEvent
 const User = models.User
+const VoiceTable = models.VoiceTable
+const ImageTable = models.ImageTable
+
 
 /**
  * 好友申请
@@ -199,66 +202,126 @@ exports.getMine = function (userId) {
     })
 }
 
+/**
+ * 清除录音文件
+ * @param userId
+ * @param friendId
+ * @returns {Promise<void>}
+ */
+async function deleteVoiceFiles(userId, friendId) {
+    let voices = await VoiceTable.findAll({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                },
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                }]
+        }
+    })
+    voices.forEach(function (item, _) {
+        let voicePath = path.join(__dirname, '../') + config.files.chatVoiceDir + item.get().fileName
+        console.log("删除文件：" + voicePath)
+        fs.unlinkSync(voicePath)
+    })
+    await VoiceTable.destroy({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                },
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                }]
+        }
+    })
+}
+
+/**
+ * 清除图像文件
+ * @param userId
+ * @param friendId
+ * @returns {Promise<void>}
+ */
+async function deleteImageFiles(userId, friendId) {
+    let images = await ImageTable.findAll({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                },
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                }]
+        }
+    })
+    images.forEach(function (item, _) {
+        let imagePath = path.join(__dirname, '../') + config.files.chatImageDir + item.get().fileName
+        console.log("删除文件：" + imagePath)
+        fs.unlinkSync(imagePath)
+    })
+    await ImageTable.destroy({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                },
+                {
+                    [Op.and]: [
+                        {fromId: userId}, {toId: friendId}
+                    ]
+                }]
+        }
+    })
+}
+
 
 /**
  * 删除好友与会话
  * @param userId
  * @param friendId
- * @returns {Promise<number>}
+ * @returns {Promise<void>}
  */
-exports.deleteFriend = function (userId, friendId) {
+exports.deleteFriend = async function (userId, friendId) {
     let id = tools.getP2PIdOrdered(userId, friendId)
-    return Message.findAll({
+    await deleteImageFiles(userId, friendId)
+    await deleteVoiceFiles(userId, friendId)
+    await Message.destroy({
         where: {
-            [Op.and]: [
-                {conversationId: id},
+            conversationId: id
+        }
+    })
+    await UserConversation.destroy({
+        where: {
+            key: id
+        }
+    })
+    await UserRelation.destroy({
+        where: {
+            [Op.or]: [
                 {
-                    [Op.or]: [
-                        {type: 'IMG'},
-                        {type: 'VOICE'}
-                    ]
+                    key: tools.getP2PId(userId, friendId)
+                }, {
+                    key: tools.getP2PId(friendId, userId)
                 }
             ]
         }
-    }).then((value) => {
-            let voicePath = path.join(__dirname, '../') + config.files.chatVoiceDir
-            let imagePath = path.join(__dirname, '../') + config.files.chatImageDir
-            value.forEach(function (item, index) {
-                let fn = ""
-                if (item.get().type === 'VOICE') {//语音消息
-                    fn = path.join(voicePath, item.get().content)
-                } else if (item.get().type === 'IMG') {
-                    fn = path.join(imagePath, item.get().content)
-                }
-                console.log("删除文件：" + fn)
-                fs.unlinkSync(fn)
-            })
-            return Message.destroy({
-                where: {
-                    conversationId: id
-                }
-            })
-        }
-    ).then((value) => {
-        return UserConversation.destroy({
-            where: {
-                key: id
-            }
-        })
-    }).then((value) => {
-        return UserRelation.destroy({
-            where: {
-                [Op.or]: [
-                    {
-                        key: tools.getP2PId(userId, friendId)
-                    }, {
-                        key: tools.getP2PId(friendId, userId)
-                    }
-                ]
-            }
-        })
     })
-
 }
 
 /**

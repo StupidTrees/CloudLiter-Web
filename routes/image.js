@@ -19,4 +19,34 @@ router.get('/get_entity', function (req, res) {
     })
 })
 
+/**
+ * 获取某用户的所有人脸
+ */
+router.get('/get_faces', function (req, res) {
+    service.getFacesOfUser(req.query.authId).then(r => {
+        res.send(r)
+    }).catch(err => {
+        res.send(err)
+    })
+})
+
+router.get("/face",function(req,res){
+    service.getFaceImage(req.query.authId,req.query.faceId).then(r=>{
+        res.writeHead(200, "Ok");
+        res.write(r, "binary"); //格式必须为 binary，否则会出错
+        res.end();
+    }).catch(err=>{
+        res.send(err)
+    })
+})
+
+router.post("/delete_face",function(req,res){
+    service.deleteFace(req.body.authId,req.body.faceId).then(r=>{
+        console.log("delete_face",r)
+       res.send(r)
+    }).catch(err=>{
+        console.log("delete_face_err",err)
+        res.send(err)
+    })
+})
 module.exports = router;
