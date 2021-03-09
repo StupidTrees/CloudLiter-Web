@@ -3,6 +3,8 @@ const models = require('../database/models')
 const codes = require('../utils/codes').codes
 const Op = models.Op
 const tools = require('../utils/tools')
+const sequelize = require('sequelize');
+//const sequelize = new Sequelize('sqlite::memory:');
 /**
  * 仓库层：用户关系数据读写
  * 操作和云图相关的几个数据库
@@ -183,6 +185,159 @@ exports.deleteConversationWordCloud = function (conversationId) {
         where: {
             [Op.and]: [{key: conversationId}, {type: 'CONVERSATION'}]
         }
+    })
+}
+
+/**
+ * 删除用户的特定一个词频
+ * @param wordId
+ * @returns {Promise<number>}
+ */
+exports.deleteUserWordCloud = function (wordId){
+    return wordCloudBin.destroy({
+        where:{id:wordId}
+    })
+}
+
+/**
+ * 按频率高到低排序
+ * @param cloudId
+ * @returns {Promise<Model[]>}
+ */
+exports.findAllByF = function(cloudId){
+
+    return wordCloudBin.findAll({
+        where:{key:cloudId},
+        order:sequelize.literal('num DESC')
+
+    })
+}
+
+exports.findWord = function (wordId){
+    return wordCloudBin.findAll({
+        where:{id:wordId}
+    })
+}
+
+exports.getRank = function(cloudId,word){
+    return wordTop10.findOrCreate({
+        where:{cloudId:cloudId}
+    }).then(value => {
+        let data = value[0].get()
+        console.log('data:'+JSON.stringify(data))
+        for(let i=1;i<=10;i++){
+            //console.log('i'+i)
+            if(data['Top'+i].split(':')[0]===word){
+                return i
+            }
+        }
+        return -1
+    })
+}
+
+exports.reSort = function (cloudId,rank,addMessage,length){
+    wordTop10.findOrCreate({
+            where: {
+                cloudId: cloudId
+            },
+            defaults: {
+                cloudId: cloudId,
+                type: 'USER'
+            }
+        }
+    ).then(value => {
+        console.log('rank:'+rank)
+        let data = value[0].get()
+        console.log(data)
+        let arr = []
+        let obj
+        let i
+        for (i = 1; i < rank; i++) {
+            if (data['Top' + i] != null) {
+                obj = {
+                    name: data['Top' + i].split(':')[0],
+                    freq: parseInt(data['Top' + i].split(':')[1])
+                }
+            } else {
+                obj = {
+                    name: null,
+                    freq: -1
+                }
+            }
+            arr.push(obj)
+        }
+        i = rank + 1
+        console.log(i)
+        for(;i<=10;i++){
+            console.log('in')
+            let j = ''
+            j = 'Top'+i
+            console.log(j+'   '+data[j])
+            if (data[j] != null) {
+                obj = {
+                    name: data[j].split(':')[0],
+                    freq: parseInt(data[j].split(':')[1])
+                }
+            } else {
+                obj = {
+                    name: null,
+                    freq: -1
+                }
+            }
+            console.log(i+'   '+obj.name)
+            arr.push(obj)
+        }
+        console.log(length)
+        if(length<=9){
+            obj = {
+                name: null,
+                freq: -1
+            }
+            arr.push(obj)
+        }
+        else{
+            obj = {
+                name:addMessage.word,
+                freq:addMessage.num
+            }
+            console.log('add:  '+addMessage.word)
+            arr.push(obj)
+        }
+        for(i =0;i<10;i++){
+            let a = arr[i]
+            console.log(JSON.stringify(a))
+        }
+        // arr.sort((a, b) => {
+        //     return b.freq - a.freq
+        // })
+
+
+        return wordTop10.update(
+            {
+                Top1: arr[0].name + ':' + arr[0].freq,
+                Top2: arr[1].name + ':' + arr[1].freq,
+                Top3: arr[2].name + ':' + arr[2].freq,
+                Top4: arr[3].name + ':' + arr[3].freq,
+                Top5: arr[4].name + ':' + arr[4].freq,
+                Top6: arr[5].name + ':' + arr[5].freq,
+                Top7: arr[6].name + ':' + arr[6].freq,
+                Top8: arr[7].name + ':' + arr[7].freq,
+                Top9: arr[8].name + ':' + arr[8].freq,
+                Top10: arr[9].name + ':' + arr[9].freq,
+                flag: arr[9].freq
+            },
+            {
+                where: {
+                    [Op.and]: [
+                        {type: 'USER'},
+                        {
+                            cloudId: cloudId
+                        }
+                    ]
+                }
+            }
+        )
+
     })
 }
 

@@ -77,3 +77,55 @@ exports.getWordCloud = async function (type,userId,friendId) {
 
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
 }
+
+
+exports.delWordCloud = async function(wordId,cloudId){
+    let rank
+    let word
+    try{
+        word = await wordCloudRepository.findWord(wordId)
+    }catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    word = word[0].get().word
+    console.log('word:'+word)
+    try{
+        rank = await wordCloudRepository.getRank(cloudId,word)
+    }catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    if(rank==-1){
+        return Promise.reject(jsonUtils.getResponseBody(codes.no_such_word_cloud))
+    }
+    //console.log('rank:'+rank)
+    //console.log("1")
+    let data
+    try{
+        data = await wordCloudRepository.findAllByF(cloudId)
+    }catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+
+    try{
+        await wordCloudRepository.deleteUserWordCloud(wordId)
+    }catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    try {
+        //console.log('2')
+        let value
+        if(data.length>=10) {
+            value = data[9].get()
+            console.log(value.word)
+        }
+        await wordCloudRepository.reSort(cloudId,rank,value,data.length)
+    }catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    return Promise.reject(jsonUtils.getResponseBody(codes.success))
+}

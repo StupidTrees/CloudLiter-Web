@@ -48,4 +48,12 @@ router.get('/word_cloud', function (req, res) {
     })
 })
 
+router.post('/delete_wordcloud',function (req,res){
+    wordCloudService.delWordCloud(req.body.wordId,req.body.cloudId).then(value => {
+        res.send(value)
+    }, error => {
+        res.send(error)
+    })
+})
+
 module.exports = router;
