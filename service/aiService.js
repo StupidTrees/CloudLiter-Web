@@ -99,12 +99,9 @@ function sendImageDirToClassifyService(fileAbsolutePath, imageId = null, unlinkA
         if (unlinkAfterSuccess) {
             fs.unlinkSync(fileAbsolutePath)
         }
-        let data = {
-            class: jsonResult.first[1],
-            class_cn: jsonResult.first[2]
-        }
+        let data = jsonResult.first[1]
         if (imageId !== null) {
-            imageRepo.updateSceneById(imageId, JSON.stringify(data)).then()
+            imageRepo.updateSceneById(imageId, data).then()
         }
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
     }).catch(err => {
