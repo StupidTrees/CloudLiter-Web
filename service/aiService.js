@@ -58,8 +58,10 @@ async function fillRecognitionInfo(imageId, userId, result) {
             cache.userId = itemResult.uid
             cache.confidence = 1.0 - itemResult.distance
             //if (cache.confidence < 0.4) continue
-            if (userId.toString() === cache.userId) {
-                let data = userRepository.getUserById(userId)
+            //console.log('userId:'+userId+'   '+typeof(userId))
+            //console.log('cuserId:'+cache.userId+'   '+typeof(cache.userId)+'   '+typeof(parseInt(cache.userId)))
+            if (userId === parseInt(cache.userId)) {
+                let data = await userRepository.getUserById(userId)
                 if (textUtils.isEmpty(data[0].get().nickname)) {
                     cache.userName = data[0].get().username
                 } else {
