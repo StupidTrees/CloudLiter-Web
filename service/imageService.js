@@ -5,6 +5,62 @@ const fileUtils = require('../utils/fileUtils')
 const config = require("../config");
 const fs = require('fs')
 const path = require('path')
+const lodash = require('lodash')
+
+/**
+ * 返回同类别图片id
+ * @param pageSize
+ * @param pageNum
+ * @param classKey
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.byClasses = async function(pageSize,pageNum,classKey){
+    let value = null
+    try{
+        value = await repository.getLimitImage(pageNum*pageSize,pageSize,classKey)
+    } catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+    let imageId = []
+    value.forEach(function (item){
+        let data = item.get()
+        imageId.push(data.id)
+    })
+    console.log('id:'+JSON.stringify(imageId))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,imageId))
+}
+
+/**
+ * 根据userId获取图片分类
+ * @param userId
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.getClasses = async function(userId){
+    console.log('userId:'+userId)
+    let value = null
+    try{
+        value = await repository.getClassesById(userId)
+    } catch (err){
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+    }
+
+    console.log('value:'+JSON.stringify(value[0].get()))
+    let classes = []
+    value.forEach( function (item){
+        let data = item.get()
+        //console.log('data:'+JSON.stringify(data))
+        if(data.scene!==null){
+            classes.push(data.scene)
+        }
+
+    })
+    //console.log(JSON.stringify(classes))
+    classes = lodash.uniqWith(classes,lodash.isEqual)
+    //console.log(JSON.stringify(classes))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success,classes))
+}
 
 /**
  * 获取图片对象

@@ -11,6 +11,35 @@ const FaceTable = models.FacesTable
 const ImageFaceTable = models.ImageFaceTable
 
 /**
+ * 有长度限制的查询
+ * @param offset
+ * @param limit
+ */
+exports.getLimitImage = function(offset,limit,key){
+    return ImageTable.findAll({
+
+        where:{scene:key}
+
+    },{
+        offset:offset,
+        limit:limit
+    })
+}
+
+/**
+ * 获取userId的所有image信息
+ * @param userId
+ * @returns {Promise<Model[]>}
+ */
+exports.getClassesById = function(userId){
+    return ImageTable.findAll({
+        where:{
+            fromId:userId
+        }
+    })
+}
+
+/**
  * 将图片记录保存
  */
 exports.saveImage = function (fromId, toId, filename, sensitive) {
