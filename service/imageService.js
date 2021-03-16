@@ -9,15 +9,16 @@ const lodash = require('lodash')
 
 /**
  * 返回同类别图片id
+ * @param userId
  * @param pageSize
  * @param pageNum
  * @param classKey
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.byClasses = async function(pageSize,pageNum,classKey){
+exports.getImagesByClass = async function(userId, pageSize, pageNum, classKey){
     let value = null
     try{
-        value = await repository.getLimitImage(pageNum*pageSize,pageSize,classKey)
+        value = await repository.getImagesOfClass(userId,pageNum*pageSize,pageSize,classKey)
     } catch (err){
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
@@ -27,7 +28,6 @@ exports.byClasses = async function(pageSize,pageNum,classKey){
         let data = item.get()
         imageId.push(data.id)
     })
-    console.log('id:'+JSON.stringify(imageId))
     return Promise.resolve(jsonUtils.getResponseBody(codes.success,imageId))
 }
 

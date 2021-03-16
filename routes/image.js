@@ -11,7 +11,7 @@ const service = require('../service/imageService')
  * 返回目标类别图片id(一页)
  */
 router.get('/by_class',function (req,res){
-    service.byClasses(req.query.pageSize,req.query.pageNum,req.query.classKey).then(r => {
+    service.getImagesByClass(req.query.authId,req.query.pageSize,req.query.pageNum,req.query.classKey).then(r => {
         res.send(r)
     }).catch(err => {
         res.send(err)

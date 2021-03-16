@@ -12,17 +12,27 @@ const ImageFaceTable = models.ImageFaceTable
 
 /**
  * 有长度限制的查询
+ * @param userId
  * @param offset
  * @param limit
+ * @param key
  */
-exports.getLimitImage = function(offset,limit,key){
+exports.getImagesOfClass = function (userId, offset, limit, key) {
     return ImageTable.findAll({
+        where: {
+            [Op.and]: [
+                {scene: key},
+                {
+                    [Op.or]: [
+                        {fromId: userId},
+                        {toId: userId}
+                    ]
+                }
+            ]
 
-        where:{scene:key}
-
-    },{
-        offset:offset,
-        limit:limit
+        },
+        offset:parseInt(offset),
+        limit:parseInt(limit)
     })
 }
 
@@ -31,10 +41,10 @@ exports.getLimitImage = function(offset,limit,key){
  * @param userId
  * @returns {Promise<Model[]>}
  */
-exports.getClassesById = function(userId){
+exports.getClassesById = function (userId) {
     return ImageTable.findAll({
-        where:{
-            fromId:userId
+        where: {
+            fromId: userId
         }
     })
 }
