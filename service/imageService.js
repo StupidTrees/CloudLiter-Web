@@ -15,20 +15,20 @@ const lodash = require('lodash')
  * @param classKey
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.getImagesByClass = async function(userId, pageSize, pageNum, classKey){
+exports.getImagesByClass = async function (userId, pageSize, pageNum, classKey) {
     let value = null
-    try{
-        value = await repository.getImagesOfClass(userId,pageNum*pageSize,pageSize,classKey)
-    } catch (err){
+    try {
+        value = await repository.getImagesOfClass(userId, pageNum * pageSize, pageSize, classKey)
+    } catch (err) {
         console.log(err)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
     let imageId = []
-    value.forEach(function (item){
+    value.forEach(function (item) {
         let data = item.get()
         imageId.push(data.id)
     })
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,imageId))
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, imageId))
 }
 
 /**
@@ -36,30 +36,39 @@ exports.getImagesByClass = async function(userId, pageSize, pageNum, classKey){
  * @param userId
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.getClasses = async function(userId){
-    console.log('userId:'+userId)
+exports.getClasses = async function (userId) {
+    console.log('userId:' + userId)
     let value = null
-    try{
+    try {
         value = await repository.getClassesById(userId)
-    } catch (err){
+    } catch (err) {
         console.log(err)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
 
-    console.log('value:'+JSON.stringify(value[0].get()))
-    let classes = []
-    value.forEach( function (item){
+    console.log('value:' + JSON.stringify(value[0].get()))
+    let classes = {}
+    for (let i = 0; i < value.length; i++) {
+        let item = value[i]
         let data = item.get()
-        //console.log('data:'+JSON.stringify(data))
-        if(data.scene!==null){
-            classes.push(data.scene)
+        if (data.scene !== null) {
+            let img = await repository.getImagesOfClass(userId, 0, 1, data.scene)
+            let representId
+            if (img != null && img.length > 0) {
+                representId = img[0].get().id
+            }
+            classes[data.scene] = {
+                key: data.scene,
+                representId: representId
+            }
         }
-
-    })
-    //console.log(JSON.stringify(classes))
-    classes = lodash.uniqWith(classes,lodash.isEqual)
-    //console.log(JSON.stringify(classes))
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success,classes))
+    }
+    let result = []
+    for(let x in classes){
+        result.push(classes[x])
+    }
+    console.log(result)
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
 }
 
 /**

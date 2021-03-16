@@ -36,6 +36,9 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
     })
 }
 
+
+
+
 /**
  * 获取userId的所有image信息
  * @param userId
