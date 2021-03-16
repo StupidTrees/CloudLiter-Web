@@ -4,6 +4,7 @@ const codes = require('../utils/codes').codes
 const Op = models.Op
 const tools = require('../utils/tools')
 const sequelize = require('sequelize');
+const TextUtils = require("../utils/textUtils");
 //const sequelize = new Sequelize('sqlite::memory:');
 /**
  * 仓库层：用户关系数据读写
@@ -190,12 +191,15 @@ exports.deleteConversationWordCloud = function (conversationId) {
 
 /**
  * 删除用户的特定一个词频
- * @param wordId
  * @returns {Promise<number>}
+ * @param userId
+ * @param word
  */
-exports.deleteUserWordCloud = function (wordId){
+exports.deleteUserWordCloud = function (userId, word) {
     return wordCloudBin.destroy({
-        where:{id:wordId}
+        where: {
+            [Op.and]: [{key: userId}, {word:word}]
+        }
     })
 }
 
@@ -204,30 +208,32 @@ exports.deleteUserWordCloud = function (wordId){
  * @param cloudId
  * @returns {Promise<Model[]>}
  */
-exports.findAllByF = function(cloudId){
+exports.findAllByF = function (cloudId) {
 
     return wordCloudBin.findAll({
-        where:{key:cloudId},
-        order:sequelize.literal('num DESC')
+        where: {key: cloudId},
+        order: sequelize.literal('num DESC')
 
     })
 }
 
-exports.findWord = function (wordId){
+exports.findWord = function (wordId) {
     return wordCloudBin.findAll({
-        where:{id:wordId}
+        where: {id: wordId}
     })
 }
 
-exports.getRank = function(cloudId,word){
-    return wordTop10.findOrCreate({
-        where:{cloudId:cloudId}
-    }).then(value => {
-        let data = value[0].get()
-        console.log('data:'+JSON.stringify(data))
-        for(let i=1;i<=10;i++){
-            //console.log('i'+i)
-            if(data['Top'+i].split(':')[0]===word){
+/**
+ * 找到某词位于词云中的次位
+ * @param cloudId
+ * @param wordKey
+ */
+exports.getRank = function (cloudId, wordKey) {
+    return wordTop10.findByPk(cloudId).then(value => {
+        let data = value.get()
+        for (let i = 1; i <= 10; i++) {
+            let word = data['Top' + i]
+            if (!TextUtils.isEmpty(word)&&word.split(':')[0] === wordKey) {
                 return i
             }
         }
@@ -235,7 +241,7 @@ exports.getRank = function(cloudId,word){
     })
 }
 
-exports.reSort = function (cloudId,rank,addMessage,length){
+exports.reSort = function (cloudId, rank, addMessage, length) {
     wordTop10.findOrCreate({
             where: {
                 cloudId: cloudId
@@ -246,7 +252,7 @@ exports.reSort = function (cloudId,rank,addMessage,length){
             }
         }
     ).then(value => {
-        console.log('rank:'+rank)
+        console.log('rank:' + rank)
         let data = value[0].get()
         console.log(data)
         let arr = []
@@ -268,11 +274,11 @@ exports.reSort = function (cloudId,rank,addMessage,length){
         }
         i = rank + 1
         console.log(i)
-        for(;i<=10;i++){
+        for (; i <= 10; i++) {
             console.log('in')
             let j = ''
-            j = 'Top'+i
-            console.log(j+'   '+data[j])
+            j = 'Top' + i
+            console.log(j + '   ' + data[j])
             if (data[j] != null) {
                 obj = {
                     name: data[j].split(':')[0],
@@ -284,26 +290,25 @@ exports.reSort = function (cloudId,rank,addMessage,length){
                     freq: -1
                 }
             }
-            console.log(i+'   '+obj.name)
+            console.log(i + '   ' + obj.name)
             arr.push(obj)
         }
         console.log(length)
-        if(length<=9){
+        if (length <= 9) {
             obj = {
                 name: null,
                 freq: -1
             }
             arr.push(obj)
-        }
-        else{
+        } else {
             obj = {
-                name:addMessage.word,
-                freq:addMessage.num
+                name: addMessage.word,
+                freq: addMessage.num
             }
-            console.log('add:  '+addMessage.word)
+            console.log('add:  ' + addMessage.word)
             arr.push(obj)
         }
-        for(i =0;i<10;i++){
+        for (i = 0; i < 10; i++) {
             let a = arr[i]
             console.log(JSON.stringify(a))
         }

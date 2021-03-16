@@ -79,16 +79,13 @@ exports.getWordCloud = async function (type,userId,friendId) {
 }
 
 
-exports.delWordCloud = async function(wordId,cloudId){
+/**
+ * 删除词云
+ * @param word
+ * @param cloudId
+ */
+exports.delWordCloud = async function(word,cloudId){
     let rank
-    let word
-    try{
-        word = await wordCloudRepository.findWord(wordId)
-    }catch (err){
-        console.log(err)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-    }
-    word = word[0].get().word
     console.log('word:'+word)
     try{
         rank = await wordCloudRepository.getRank(cloudId,word)
@@ -96,11 +93,9 @@ exports.delWordCloud = async function(wordId,cloudId){
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
     }
-    if(rank==-1){
+    if(rank===-1){
         return Promise.reject(jsonUtils.getResponseBody(codes.no_such_word_cloud))
     }
-    //console.log('rank:'+rank)
-    //console.log("1")
     let data
     try{
         data = await wordCloudRepository.findAllByF(cloudId)
@@ -110,7 +105,7 @@ exports.delWordCloud = async function(wordId,cloudId){
     }
 
     try{
-        await wordCloudRepository.deleteUserWordCloud(wordId)
+        await wordCloudRepository.deleteUserWordCloud(cloudId,word)
     }catch (err){
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
