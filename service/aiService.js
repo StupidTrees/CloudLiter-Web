@@ -46,7 +46,7 @@ exports.faceRecognize = async function (userId, imageId, rects) {
     })
 }
 
-exports.faceRecognizeByW = async function (userId, whiteId, imageId, rects){
+exports.faceRecognizeByW = async function (userId, imageId, rects){
     let filename = null
     try {
         let tmp = await imageRepo.getImageFilenameById(imageId)
