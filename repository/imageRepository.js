@@ -7,6 +7,7 @@ const Op = models.Op
  * 仓库层：对话表数据读写
  */
 const ImageTable = models.ImageTable
+const GalleryClassTable = models.GalleryClasses
 const FaceTable = models.FacesTable
 const ImageFaceTable = models.ImageFaceTable
 
@@ -31,12 +32,10 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
             ]
 
         },
-        offset:parseInt(offset),
-        limit:parseInt(limit)
+        offset: parseInt(offset),
+        limit: parseInt(limit)
     })
 }
-
-
 
 
 /**
@@ -45,9 +44,9 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
  * @returns {Promise<Model[]>}
  */
 exports.getClassesById = function (userId) {
-    return ImageTable.findAll({
+    return GalleryClassTable.findAll({
         where: {
-            fromId: userId
+            userId: userId
         }
     })
 }
@@ -95,6 +94,25 @@ exports.updateSceneById = function (imageId, imageClass) {
         where: {
             "id": imageId
         }
+    }).then(r => {
+        ImageTable.findByPk(imageId)
+            .then(value => {
+                if (value == null) return
+                let image = value.get()
+                GalleryClassTable.create(
+                    {
+                        userId: image.fromId,
+                        classKey: image.scene
+                    }).then(_ => {
+                    GalleryClassTable.create({
+                        userId: image.toId,
+                        classKey: image.scene
+                    })
+                })
+
+            })
+
+
     })
 }
 

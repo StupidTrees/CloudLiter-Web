@@ -37,7 +37,6 @@ exports.getImagesByClass = async function (userId, pageSize, pageNum, classKey) 
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.getClasses = async function (userId) {
-    console.log('userId:' + userId)
     let value = null
     try {
         value = await repository.getClassesById(userId)
@@ -45,27 +44,21 @@ exports.getClasses = async function (userId) {
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
-
-    console.log('value:' + JSON.stringify(value[0].get()))
-    let classes = {}
+    let result = []
     for (let i = 0; i < value.length; i++) {
         let item = value[i]
         let data = item.get()
-        if (data.scene !== null) {
-            let img = await repository.getImagesOfClass(userId, 0, 1, data.scene)
+        if (data.classKey !== null) {
+            let img = await repository.getImagesOfClass(userId, 0, 1, data.classKey)
             let representId
             if (img != null && img.length > 0) {
                 representId = img[0].get().id
             }
-            classes[data.scene] = {
-                key: data.scene,
+            result.push({
+                key: data.classKey,
                 representId: representId
-            }
+            })
         }
-    }
-    let result = []
-    for(let x in classes){
-        result.push(classes[x])
     }
     console.log(result)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))

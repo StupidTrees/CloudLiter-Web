@@ -309,9 +309,8 @@ exports.ImageTable = con.sequelize.define(
     }
 );
 
+
 this.ImageTable.sync({force: false}).then(r => r)
-
-
 /**
  * 音频文件表
  */
@@ -554,3 +553,45 @@ exports.FacesTable = con.sequelize.define(
     }
 )
 this.FacesTable.sync({force: false}).then(r => r)
+
+
+/**
+ * 用户的图像分类表
+ */
+exports.GalleryClasses = con.sequelize.define(
+    'gallery_classes', {
+        userId:{
+            type:DataTypes.BIGINT,
+            primaryKey:true
+        },
+        classKey:{
+            type:DataTypes.STRING,
+            primaryKey:true
+        }
+    },
+    {
+        tableName: 'gallery_classes'
+    }
+)
+this.GalleryClasses.sync({force:false}).then(r=>r)
+this.GalleryClasses.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+
+
+// con.sequelize.query(`
+// CREATE TRIGGER imageSceneT
+// AFTER UPDATE ON image
+// FOR EACH ROW
+// BEGIN
+// if NEW.scene <> NULL then
+//        replace into gallery_classes values (OLD.fromId,NEW.scene);
+//        replace into gallery_classes values (OLD.toId,NEW.scene);
+// end if;
+// END;`
+// ).then(r => {
+//         console.log("Trigger加载完成:"+r)
+// })
+
