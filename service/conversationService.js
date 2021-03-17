@@ -1,4 +1,5 @@
 const repository = require('../repository/conversationRepository');
+const whiteListRepository = require('../repository/whiteListRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const textUtils = require('../utils/textUtils')
@@ -120,3 +121,12 @@ exports.updateConversation = async function (fromId, toId, lastMessage) {
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
+exports.setWhiteId = async function(userId, whiteId){
+    try {
+        await whiteListRepository.addWhiteId(userId,whiteId)
+    } catch (err) {
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}
