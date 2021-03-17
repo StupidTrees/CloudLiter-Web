@@ -554,3 +554,23 @@ exports.FacesTable = con.sequelize.define(
     }
 )
 this.FacesTable.sync({force: false}).then(r => r)
+
+exports.whiteList = con.sequelize.define(
+    'whitelist', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        userId: {
+            type: DataTypes.BIGINT
+        },
+        whiteId: {
+            type: DataTypes.BIGINT
+        }
+    },
+    {
+        tableName: 'whitelist'
+    }
+)
+this.whiteList.sync({force: false}).then(r => r)

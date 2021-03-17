@@ -14,33 +14,12 @@ router.post('/face/test', function (req, res) {
     res.send()
 })
 
+/**
+ * 人脸识别
+ */
 router.post('/face/recognize', function (req, res) {
     console.log('recognize')
-    // let v = {}
-    // v.id = "0"
-    // v.x = "0"
-    // v.y = "0"
-    // v.width = "2000"
-    // v.height = "1000"
-    //
-    // let number = rects.push(v)
-    // console.log('number1:'+number)
-    // let v1 = {}
-    // v1.id = "1"
-    // v1.x = "0"
-    // v1.y = "0"
-    // v1.width = "2000"
-    // v1.height = "1000"
-    // number = rects.push(v1)
-    // console.log('number2:'+number)
-    // console.log(rects+"-------"+typeof (rects))
-    // console.log(rects[0].id+"*******"+rects[1].id)
-    // let test = [{id:'id'},{a:'a'}]
-    // console.log(test+"     "+test.toString())
-    // let userId = req.body.authId
-    // console.log('userId:'+userId)
 
-    //let rects = '[{"id":"1","x":"0","y":"0","height":"1000","weight":"2000"},{"id":"0","x":"0","y":"0","height":"1000","weight":"2000"}]'
     let userId = req.body.authId
     service.faceRecognize(userId, req.body.imageId, req.body.rects).then(value => {
         res.send(value)
@@ -50,6 +29,15 @@ router.post('/face/recognize', function (req, res) {
     })
 })
 
+router.post('/face/recognize_by_whiteid',function(req,res){
+    let userId = req.body.authId
+    service.faceRecognizeByW(userId, req.body.whiteId, req.body.imageId, req.body.rects).then(value => {
+        res.send(value)
+    }, error => {
+        console.log("face_recognize_error", error)
+        res.send(error)
+    })
+})
 
 /**
  * 人脸上传

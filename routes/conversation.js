@@ -56,4 +56,11 @@ router.post('/delete_wordcloud',function (req,res){
     })
 })
 
+router.get('/set_whiteid',function(req,res){
+    service.setWhiteId(req.query.authId,req.query.whiteId).then(value => {
+        res.send(value)
+    },error => {
+        res.send(error)
+    })
+})
 module.exports = router;
