@@ -29,6 +29,9 @@ router.post('/face/recognize', function (req, res) {
     })
 })
 
+/**
+ * 白名单识别
+ */
 router.post('/face/recognize_by_whiteid',function(req,res){
     let userId = req.body.authId
     service.faceRecognizeByW(userId, req.body.imageId, req.body.rects).then(value => {
