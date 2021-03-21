@@ -597,22 +597,19 @@ this.GalleryClasses.belongsTo(this.User, {
 
 
 
-exports.whiteList = con.sequelize.define(
+exports.Whitelist = con.sequelize.define(
     'whitelist', {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true,
-        },
         userId: {
-            type: DataTypes.BIGINT
+            type: DataTypes.BIGINT,
+            primaryKey:true
         },
         whiteId: {
-            type: DataTypes.BIGINT
+            type: DataTypes.BIGINT,
+            primaryKey:true
         }
     },
     {
         tableName: 'whitelist'
     }
 )
-this.whiteList.sync({force: false}).then(r => r)
+this.Whitelist.sync({force: false}).then(r => r)

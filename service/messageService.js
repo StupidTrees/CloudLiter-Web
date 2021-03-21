@@ -324,20 +324,6 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid, length) {
 
 
 
-/**
- * 根据图片id，获取图片文件
- * @param imageId
- */
-exports.getImageById = async function (imageId) {
-    let value = null
-    try {
-        value = await imageRepo.getImageFilenameById(imageId)
-        let filename = value.get().fileName
-        return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + filename)
-    } catch (e) {
-        return jsonUtils.getResponseBody(codes.other_error, e)
-    }
-}
 
 
 /**

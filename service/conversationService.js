@@ -110,23 +110,13 @@ exports.getConversationById = async function (userId, friendId) {
  * 更新会话信息
  * @param fromId
  * @param toId
- * @param message
+ * @param lastMessage
  */
 exports.updateConversation = async function (fromId, toId, lastMessage) {
     try {
         await repository.updateConversation(fromId, toId, lastMessage)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-}
-
-exports.setWhiteId = async function(userId, whiteId){
-    try {
-        await whiteListRepository.addWhiteId(userId,whiteId)
-    } catch (err) {
-        console.log(err)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }

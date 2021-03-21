@@ -10,6 +10,8 @@
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/files" />
             <excludedPath local="true" path="$PROJECT_DIR$/node_modules" />
+            <excludedPath local="true" path="$PROJECT_DIR$/Ai/face/face_pic" />
+            <excludedPath path="/home/webapp/hichat/AI/face/face_pic" />
           </excludedPaths>
         </serverdata>
       </paths>

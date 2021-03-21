@@ -76,10 +76,12 @@ exports.getClassesById = function (userId) {
  */
 exports.getFriendFacesOfUser = function(userId){
     return sequelize.query(`select distinct iff.userId, u.username, u.nickname,r.remark,u.avatar
-    from image as i,image_face as iff, user as u, relation as r
+    from image as i,image_face as iff, user as u, relation as r, whitelist as w
     where i.id = iff.imageId
-        and (i.fromId = ${userId} or i.toId = ${userId})
         and iff.userId = u.id
+        and w.userId = u.id
+        and w.whiteId = ${userId}
+        and (i.fromId = ${userId} or i.toId = ${userId})
         and r.userId = ${userId}
         and r.friendId = u.id
     `)

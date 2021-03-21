@@ -7,6 +7,24 @@ const fs = require('fs')
 const path = require('path')
 const lodash = require('lodash')
 const textUtils = require("../utils/textUtils");
+const whiteListRepository = require("../repository/whiteListRepository");
+const {getFileToResponse} = require("../utils/fileUtils");
+
+
+/**
+ * 根据图片id，获取图片文件
+ * @param imageId
+ */
+exports.getImageById = async function (imageId) {
+    let value = null
+    try {
+        value = await repository.getImageFilenameById(imageId)
+        let filename = value.get().fileName
+        return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + filename)
+    } catch (e) {
+        return jsonUtils.getResponseBody(codes.other_error, e)
+    }
+}
 
 /**
  * 返回同类别图片id
@@ -40,16 +58,16 @@ exports.getImagesByClass = async function (userId, pageSize, pageNum, classKey) 
  * @param pageNum
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
-exports.getImagesOfFriend = async function (userId, friendId,pageSize, pageNum) {
+exports.getImagesOfFriend = async function (userId, friendId, pageSize, pageNum) {
     let value = null
     try {
-        value = await repository.getImageOfFriend(userId,friendId,pageNum*pageSize,pageSize)
+        value = await repository.getImageOfFriend(userId, friendId, pageNum * pageSize, pageSize)
     } catch (err) {
         console.log(err)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
     let result = []
-    for(let i=0;i<value[0].length;i++) {
+    for (let i = 0; i < value[0].length; i++) {
         let data = value[0][i]
         console.log(data)
         result.push(data.id)
@@ -95,30 +113,21 @@ exports.getClasses = async function (userId) {
  * 获取某用户相册里的所有亲友
  * @param userId
  */
-exports.getFriendFacesOfUser = async function(userId){
+exports.getFriendFacesOfUser = async function (userId) {
     let value = null
-    try{
-        value =  await repository.getFriendFacesOfUser(userId)
+    try {
+        value = await repository.getFriendFacesOfUser(userId)
         let res = []
-        for(let i=0;i<value[0].length;i++){
+        for (let i = 0; i < value[0].length; i++) {
             let data = value[0][i]
-            let userName = null
-            if(!textUtils.isEmpty(data.remark)){
-                userName = data.remark
-            }else if(!textUtils.isEmpty(data.nickname)){
-                userName = data.nickname
-            }else{
-                userName = data.username
-            }
-
             res.push({
-                userId:data.userId,
-                userName:userName,
-                userAvatar:data.avatar
+                userId: data.userId,
+                userName: getUsernameForShow(data.username,data.nickname,data.remark),
+                userAvatar: data.avatar
             })
         }
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
-    }catch(e){
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
+    } catch (e) {
         console.log(e)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
@@ -197,3 +206,69 @@ exports.deleteFace = async function (userId, faceId) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
 }
+
+/**
+ * 添加人脸白名单
+ * @param userId
+ * @param whitelist
+ */
+exports.addToWhitelist = async function (userId, whitelist) {
+    try {
+       await whiteListRepository.addToWhitelist(userId,whitelist)
+    } catch (err) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+}
+
+
+function getUsernameForShow(username,nickname,remark){
+    let userName
+    if (!textUtils.isEmpty(remark)) {
+        userName = remark
+    } else if (!textUtils.isEmpty(nickname)) {
+        userName = nickname
+    } else {
+        userName = username
+    }
+    return userName
+}
+
+/**
+ * 获得白名单
+ * @param userId
+ */
+exports.getWhiteList = async function (userId) {
+    try {
+        let value = await whiteListRepository.getWhiteList(userId)
+        let result = []
+        for(let i =0;i<value[0].length;i++){
+            let data = value[0][i]
+            result.push({
+                userId: data.id,
+                userName: getUsernameForShow(data.username,data.nickname,data.remark),
+                userAvatar: data.avatar
+            })
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
+    } catch (err) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
+
+}
+
+/**
+ * 获得白名单
+ * @param userId
+ * @param friendId
+ */
+exports.removeFromWhiteList = async function (userId,friendId) {
+    try {
+        await whiteListRepository.removeFromWhiteList(userId,friendId)
+    } catch (err) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
+
+}
+
