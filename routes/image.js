@@ -19,6 +19,17 @@ router.get('/by_class',function (req,res){
 })
 
 /**
+ * 返回包含某位好友的所有照片
+ */
+router.get('/by_friend',function (req,res){
+    service.getImagesOfFriend(req.query.authId,req.query.friendId,req.query.pageSize,req.query.pageNum).then(r => {
+        res.send(r)
+    }).catch(err => {
+        res.send(err)
+    })
+})
+
+/**
  * 根据userId获取图片分类
  */
 router.get('/classes', function (req, res) {
@@ -29,6 +40,16 @@ router.get('/classes', function (req, res) {
     })
 })
 
+/**
+ * 根据userId获取相册里的亲友人脸
+ */
+router.get('/friend_faces',function (req,res){
+    service.getFriendFacesOfUser(req.query.authId).then(r => {
+        res.send(r)
+    }).catch(err => {
+        res.send(err)
+    })
+})
 
 /**
  * 按图片id获取图片对象

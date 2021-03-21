@@ -6,6 +6,7 @@ const config = require("../config");
 const fs = require('fs')
 const path = require('path')
 const lodash = require('lodash')
+const textUtils = require("../utils/textUtils");
 
 /**
  * 返回同类别图片id
@@ -29,6 +30,31 @@ exports.getImagesByClass = async function (userId, pageSize, pageNum, classKey) 
         imageId.push(data.id)
     })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, imageId))
+}
+
+/**
+ * 返回某个好友的所有照片id
+ * @param userId
+ * @param friendId
+ * @param pageSize
+ * @param pageNum
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
+exports.getImagesOfFriend = async function (userId, friendId,pageSize, pageNum) {
+    let value = null
+    try {
+        value = await repository.getImageOfFriend(userId,friendId,pageNum*pageSize,pageSize)
+    } catch (err) {
+        console.log(err)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+    }
+    let result = []
+    for(let i=0;i<value[0].length;i++) {
+        let data = value[0][i]
+        console.log(data)
+        result.push(data.id)
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
 }
 
 /**
@@ -62,6 +88,40 @@ exports.getClasses = async function (userId) {
     }
     console.log(result)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, result))
+}
+
+
+/**
+ * 获取某用户相册里的所有亲友
+ * @param userId
+ */
+exports.getFriendFacesOfUser = async function(userId){
+    let value = null
+    try{
+        value =  await repository.getFriendFacesOfUser(userId)
+        let res = []
+        for(let i=0;i<value[0].length;i++){
+            let data = value[0][i]
+            let userName = null
+            if(!textUtils.isEmpty(data.remark)){
+                userName = data.remark
+            }else if(!textUtils.isEmpty(data.nickname)){
+                userName = data.nickname
+            }else{
+                userName = data.username
+            }
+
+            res.push({
+                userId:data.userId,
+                userName:userName,
+                userAvatar:data.avatar
+            })
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
+    }catch(e){
+        console.log(e)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
 }
 
 /**

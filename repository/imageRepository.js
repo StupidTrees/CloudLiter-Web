@@ -1,6 +1,5 @@
 const models = require('../database/models')
-const tools = require('../utils/tools')
-const {equals} = require("../utils/textUtils");
+const sequelize = require('../database/connector').sequelize
 const Op = models.Op
 
 /**
@@ -39,6 +38,25 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
 
 
 /**
+ * 获取包含朋友人脸的所有照片
+ * @param userId
+ * @param friendId
+ * @param offset
+ * @param limit
+ */
+exports.getImageOfFriend = function (userId,friendId, offset,limit) {
+    return sequelize.query(`select distinct i.id
+    from image as i,image_face as iff
+    where i.id = iff.imageId
+        and iff.userId = ${friendId}
+        and (i.fromId = ${userId} or i.toId = ${userId})
+        limit ${offset},${limit}`)
+}
+
+
+
+
+/**
  * 获取userId的所有image信息
  * @param userId
  * @returns {Promise<Model[]>}
@@ -49,6 +67,22 @@ exports.getClassesById = function (userId) {
             userId: userId
         }
     })
+}
+
+
+/**
+ * 获取某用户相册里的所有亲友
+ * @param userId
+ */
+exports.getFriendFacesOfUser = function(userId){
+    return sequelize.query(`select distinct iff.userId, u.username, u.nickname,r.remark,u.avatar
+    from image as i,image_face as iff, user as u, relation as r
+    where i.id = iff.imageId
+        and (i.fromId = ${userId} or i.toId = ${userId})
+        and iff.userId = u.id
+        and r.userId = ${userId}
+        and r.friendId = u.id
+    `)
 }
 
 /**
