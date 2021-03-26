@@ -74,7 +74,7 @@ exports.getConversationsOfOneUser = function (userId) {
  * @param friendId
  */
 exports.getConversationById = function (userId,friendId){
-    let id = tools.getP2PIdOrdered(userId,friendId)
+    //let id = tools.getP2PIdOrdered(userId,friendId)
     let relationForeignKey,relationAs,userForeignKey,userAs
     if(parseInt(userId)<parseInt(friendId)){
         relationForeignKey = 'relation1Id'
@@ -89,7 +89,8 @@ exports.getConversationById = function (userId,friendId){
     }
     return Conversation.findAll({
         where:{
-            key:id
+            [Op.or]:[{[Op.and]:[{user1Id:userId},{user2Id:friendId}]},
+                     {[Op.and]:[{user1Id:friendId},{user2Id:userId}]}]
         },
         include: [{
             foreignKey:relationForeignKey,
@@ -114,7 +115,8 @@ exports.updateConversation = function (fromId,toId,lastMessage){
     },{
         where:{
             key:{
-                [Op.eq]:tools.getP2PIdOrdered(fromId,toId)
+                [Op.or]:[{[Op.and]:[{user1Id:fromId},{user2Id:toId}]},
+                    {[Op.and]:[{user1Id:toId},{user2Id:fromId}]}]
             }
         }
     })

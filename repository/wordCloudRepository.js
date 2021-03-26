@@ -181,12 +181,17 @@ exports.findOrCreateConWord = function (conversationId, word, addNum) {
  * 删除会话相关词频
  * @param conversationId
  */
-exports.deleteConversationWordCloud = function (conversationId) {
-    return wordCloudBin.destroy({
-        where: {
-            [Op.and]: [{key: conversationId}, {type: 'CONVERSATION'}]
-        }
-    })
+exports.deleteConversationWordCloud = function (userId,friendId) {
+    // return wordCloudBin.destroy({
+    //     where: {
+    //         [Op.and]: [{key: conversationId}, {type: 'CONVERSATION'}]
+    //     }
+    // })
+    return `delete from wordCloudBins 
+    where conversationId in (
+        select id from conversation
+        where (user1Id =${userId} and user2Id = ${friendId}) or (user1Id =${friendId} and user2Id = ${userId})
+    )`
 }
 
 /**

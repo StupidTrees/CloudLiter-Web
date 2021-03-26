@@ -168,8 +168,9 @@ this.UserRelation.sync({force: false}).then(r => r)
  */
 exports.Conversation = con.sequelize.define(
     'conversation', {
-        key: {
-            type: DataTypes.STRING,
+        id: {
+            type: DataTypes.BIGINT,
+            autoIncrement: true,
             primaryKey: true
         },
         user1Id: {
@@ -392,7 +393,7 @@ exports.Message = con.sequelize.define(
             type: DataTypes.STRING
         },
         conversationId: {
-            type: DataTypes.STRING
+            type: DataTypes.BIGINT
         },
         relationId: {
             type: DataTypes.STRING
@@ -577,7 +578,7 @@ this.whiteList.sync({force: false}).then(r => r)
 
 
 exports.GroupChatTable = con.sequelize.define(
-    'groupchattable', {
+    'group_chat_table', {
         id: {
             type: DataTypes.BIGINT,
             primaryKey:true,
@@ -591,28 +592,29 @@ exports.GroupChatTable = con.sequelize.define(
         }
     },
     {
-        tableName: 'groupchattable'
+        tableName: 'group_chat_table'
     }
 )
 this.FacesTable.sync({force: false}).then(r => r)
 
 
-exports.ChatMember = con.sequelize.define(
-    'chatmember', {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey:true,
-            autoIncrement:true
-        },
+exports.GroupMember = con.sequelize.define(
+    'group_member', {
         userId:{
             type:DataTypes.BIGINT
         },
-        chatId:{
+        groupId:{
             type:DataTypes.BIGINT
+        },
+        createdAt:{
+            type:DataTypes.DATE
+        },
+        nickname:{
+            type:DataTypes.STRING
         }
     },
     {
-        tableName: 'chatmember'
+        tableName: 'group_member'
     }
 )
 this.FacesTable.sync({force: false}).then(r => r)

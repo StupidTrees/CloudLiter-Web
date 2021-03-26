@@ -11,7 +11,7 @@ const Message = models.Message
  * 将消息保存
  */
 exports.saveMessage = function (message) {
-    let id = tools.getP2PIdOrdered(message.fromId, message.toId)
+    //let id = tools.getP2PIdOrdered(message.fromId, message.toId)
     return Message.create({
         read: false,
         fromId: message.fromId,
@@ -20,7 +20,7 @@ exports.saveMessage = function (message) {
         relationId: tools.getP2PId(message.fromId,message.toId),
         sensitive: message.sensitive,
         emotion: message.emotion,
-        conversationId: id,
+        conversationId: message.conversationId,
         type: message.type,//,
         fileId:message.fileId,
         extra: JSON.stringify(message.extra)

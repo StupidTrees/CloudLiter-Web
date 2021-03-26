@@ -6,7 +6,7 @@ const tools = require('../utils/tools')
  */
 
 const GroupChatTable = models.GroupChatTable
-const ChatMember = models.ChatMember
+const GroupMember = models.GroupMember
 
 exports.createNewGroupChat = function (masterId,name){
     return GroupChatTable.create({
@@ -21,5 +21,5 @@ exports.createNewGroupChat = function (masterId,name){
  * @returns {Promise<Model[]>}
  */
 exports.addMembers = function (userList){
-    return ChatMember.bulkCreate(userList)
+    return GroupMember.bulkCreate(userList)
 }

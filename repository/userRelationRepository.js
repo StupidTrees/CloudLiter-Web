@@ -198,9 +198,10 @@ exports.friendRemark = function (id1, id2, remark) {
  * @returns {Promise<number>}
  */
 exports.deleteFriend = function (id1, id2) {
-    let convId = tools.getP2PIdOrdered(id1, id2)
+    //let convId = tools.getP2PIdOrdered(id1, id2)
     let relId = tools.getP2PId(id1, id2)
-    return UserConversation.destroy({where: {key: convId}}).then((value) => {
+    return UserConversation.destroy({where: {[Op.or]:[{[Op.and]:[{user1Id:id1},{user2Id:id2}]},
+                {[Op.and]:[{user1Id:id2},{user2Id:id1}]}]}}).then((value) => {
         return UserRelation.destroy({where: {key: relId}})
     }).catch((err) => {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))

@@ -165,11 +165,11 @@ async function fillExtraMessageData(fromId, toId, data) {
  * @param content
  * @param uuid
  */
-exports.sendTextMessage = async function (fromId, toId, content, uuid) {
+exports.sendTextMessage = async function (fromId, toId, conversationId, content, uuid) {
     let obj = {
         fromId: fromId,
         toId: toId,
-        conversationId:tools.getP2PIdOrdered(fromId,toId),
+        conversationId:conversationId,
         content: content,
         type: 'TXT'
     }
@@ -214,7 +214,7 @@ exports.sendTextMessage = async function (fromId, toId, content, uuid) {
  * @param files 图片文件
  * @param uuid
  */
-exports.sendImageMessage = async function (fromId, toId, files, uuid) {
+exports.sendImageMessage = async function (fromId, toId, conversationId, files, uuid) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
     let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
@@ -238,7 +238,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
     let message = {
         fromId: fromId,
         toId: toId,
-        conversationId: tools.getP2PIdOrdered(fromId, toId),
+        conversationId: conversationId,
         relationId: tools.getP2PId(fromId, toId),
         content: null,//fileName,
         type: 'IMG',
@@ -281,7 +281,7 @@ exports.sendImageMessage = async function (fromId, toId, files, uuid) {
  * @param uuid
  * @param length
  */
-exports.sendVoiceMessage = async function (fromId, toId, files, uuid, length) {
+exports.sendVoiceMessage = async function (fromId, toId, conversationId, files, uuid, length) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
     let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
@@ -289,7 +289,7 @@ exports.sendVoiceMessage = async function (fromId, toId, files, uuid, length) {
     let message = {
         fromId: fromId,
         toId: toId,
-        conversationId: tools.getP2PIdOrdered(fromId, toId),
+        conversationId: conversationId,
         relationId: tools.getP2PId(fromId, toId),
         content: fileName,
         type: 'VOICE',

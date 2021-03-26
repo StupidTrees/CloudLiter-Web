@@ -298,17 +298,19 @@ async function deleteImageFiles(userId, friendId) {
  * @returns {Promise<void>}
  */
 exports.deleteFriend = async function (userId, friendId) {
-    let id = tools.getP2PIdOrdered(userId, friendId)
+    //let id = tools.getP2PIdOrdered(userId, friendId)
     await deleteImageFiles(userId, friendId)
     await deleteVoiceFiles(userId, friendId)
     await Message.destroy({
         where: {
-            conversationId: id
+            [Op.or]:[{[Op.and]:[{fromId:userId},{toId:friendId}]},
+                {[Op.and]:[{fromId:friendId},{toId:userId}]}]
         }
     })
     await UserConversation.destroy({
         where: {
-            key: id
+            [Op.or]:[{[Op.and]:[{user1Id:userId},{user2Id:friendId}]},
+                {[Op.and]:[{user1Id:friendId},{user2Id:userId}]}]
         }
     })
     await UserRelation.destroy({

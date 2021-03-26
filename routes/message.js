@@ -46,7 +46,7 @@ router.get('/get_message_after', function (req, res) {
  * 发送文本消息
  */
 router.post('/send_text', function (req, res) {
-    service.sendTextMessage(req.body.fromId, req.body.toId, req.body.content, req.body.uuid).then((value) => {
+    service.sendTextMessage(req.body.fromId, req.body.toId, req.body.conversationId, req.body.content, req.body.uuid).then((value) => {
         console.log('send_text', value)
         res.send(value)
     }, (err) => {
@@ -73,13 +73,14 @@ router.post('/send_image', function (req, res) {
     form.maxFieldsSize = 20 * 1024 * 1024
     let userId = req.body.authId
     let toId = req.query.toId
+    let conversationId = req.query.conversationId
     let uuid = req.query.uuid
     //从请求头中读取前端传来的文件files
     form.parse(req, function (err, fields, files) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.sendImageMessage(userId, toId, files, uuid).then(
+            service.sendImageMessage(userId, toId, conversationId, files, uuid).then(
                 (value) => {
                     res.send(value)
                 }, (err) => {
@@ -108,6 +109,7 @@ router.post('/send_voice', function (req, res) {
     // 上传文件大小限制
     form.maxFieldsSize = 20 * 1024 * 1024
     let userId = req.body.authId
+    let conversationId = req.query.conversationId
     let toId = req.query.toId
     let uuid = req.query.uuid
     let length = req.query.seconds
@@ -116,7 +118,7 @@ router.post('/send_voice', function (req, res) {
         if (err) {
             res.send(jsonUtils.getResponseBody(codes.other_error, err))
         } else {
-            service.sendVoiceMessage(userId, toId, files, uuid, length).then(
+            service.sendVoiceMessage(userId, toId, conversationId, files, uuid, length).then(
                 (value) => {
                     res.send(value)
                 }, (err) => {
