@@ -29,18 +29,15 @@ router.post('/face/recognize', function (req, res) {
     })
 })
 
-/**
- * 白名单识别
- */
-router.post('/face/recognize_by_whiteid',function(req,res){
-    let userId = req.body.authId
-    service.faceRecognizeByW(userId, req.body.imageId, req.body.rects).then(value => {
-        res.send(value)
-    }, error => {
-        console.log("face_recognize_error", error)
-        res.send(error)
-    })
-})
+// router.post('/face/recognize_by_whiteid',function(req,res){
+//     let userId = req.body.authId
+//     service.faceRecognizeByW(userId, req.body.imageId, req.body.rects).then(value => {
+//         res.send(value)
+//     }, error => {
+//         console.log("face_recognize_error", error)
+//         res.send(error)
+//     })
+// })
 
 /**
  * 人脸上传
@@ -118,7 +115,6 @@ router.post('/voice/dirtts', function (req, res) {
  */
 router.post('/voice/tts', function (req, res) {
     service.voiceToWords(req.body.id).then(value => {
-        console.log('value:'+value)
         res.send(value)
     }, error => {
         console.log("error:" + JSON.stringify(error))

@@ -1,12 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs')
-/**
- * 路由层：用户操作
- */
-
 const service = require('../service/messageService')
-
 
 /**
  * 查询某一对话的消息记录
@@ -129,19 +124,6 @@ router.post('/send_voice', function (req, res) {
     })
 })
 
-
-/**
- * 按图片id获取聊天文件
- */
-router.get('/image', function (req, res) {
-    service.getImageById(req.query.imageId).then(r => {
-        res.writeHead(200, "Ok");
-        res.write(r, "binary"); //格式必须为 binary，否则会出错
-        res.end();
-    }).catch(err => {
-        res.send(err)
-    })
-})
 
 
 /**

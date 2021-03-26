@@ -39,7 +39,7 @@ class face_mysql:
         db = self.conn_mysql()
         cursor = db.cursor()
 
-        sql = "select * from faces where (userId = '%s' or userId in (select friendId from relation where userId = '%s' ));" % (userId,userId)
+        sql = "select * from faces where (userId = '%s' or userId in (select friendId from relation as r,whitelist as w where w.userId = r.friendId and w.whiteId = r.userId and r.userId = '%s' ));" % (userId,userId)
         try:
             cursor.execute(sql)
             results = cursor.fetchall()

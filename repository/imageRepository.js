@@ -1,12 +1,12 @@
 const models = require('../database/models')
-const tools = require('../utils/tools')
-const {equals} = require("../utils/textUtils");
+const sequelize = require('../database/connector').sequelize
 const Op = models.Op
 
 /**
  * 仓库层：对话表数据读写
  */
 const ImageTable = models.ImageTable
+const GalleryClassTable = models.GalleryClasses
 const FaceTable = models.FacesTable
 const ImageFaceTable = models.ImageFaceTable
 
@@ -31,10 +31,30 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
             ]
 
         },
-        offset:parseInt(offset),
-        limit:parseInt(limit)
+        offset: parseInt(offset),
+        limit: parseInt(limit)
     })
 }
+
+
+/**
+ * 获取包含朋友人脸的所有照片
+ * @param userId
+ * @param friendId
+ * @param offset
+ * @param limit
+ */
+exports.getImageOfFriend = function (userId,friendId, offset,limit) {
+    return sequelize.query(`select distinct i.id
+    from image as i,image_face as iff
+    where i.id = iff.imageId
+        and iff.userId = ${friendId}
+        and (i.fromId = ${userId} or i.toId = ${userId})
+        limit ${offset},${limit}`)
+}
+
+
+
 
 /**
  * 获取userId的所有image信息
@@ -42,11 +62,29 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
  * @returns {Promise<Model[]>}
  */
 exports.getClassesById = function (userId) {
-    return ImageTable.findAll({
+    return GalleryClassTable.findAll({
         where: {
-            fromId: userId
+            userId: userId
         }
     })
+}
+
+
+/**
+ * 获取某用户相册里的所有亲友
+ * @param userId
+ */
+exports.getFriendFacesOfUser = function(userId){
+    return sequelize.query(`select distinct iff.userId, u.username, u.nickname,r.remark,u.avatar
+    from image as i,image_face as iff, user as u, relation as r, whitelist as w
+    where i.id = iff.imageId
+        and iff.userId = u.id
+        and w.userId = u.id
+        and w.whiteId = ${userId}
+        and (i.fromId = ${userId} or i.toId = ${userId})
+        and r.userId = ${userId}
+        and r.friendId = u.id
+    `)
 }
 
 /**
@@ -92,6 +130,25 @@ exports.updateSceneById = function (imageId, imageClass) {
         where: {
             "id": imageId
         }
+    }).then(r => {
+        ImageTable.findByPk(imageId)
+            .then(value => {
+                if (value == null) return
+                let image = value.get()
+                GalleryClassTable.create(
+                    {
+                        userId: image.fromId,
+                        classKey: image.scene
+                    }).then(_ => {
+                    GalleryClassTable.create({
+                        userId: image.toId,
+                        classKey: image.scene
+                    })
+                })
+
+            })
+
+
     })
 }
 

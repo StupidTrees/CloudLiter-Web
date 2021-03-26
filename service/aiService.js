@@ -46,97 +46,79 @@ exports.faceRecognize = async function (userId, imageId, rects) {
     })
 }
 
-/**
- * 白名单版人脸识别
- * @param userId
- * @param imageId
- * @param rects
- * @returns {Promise<*>}
- */
-exports.faceRecognizeByW = async function (userId, imageId, rects){
-
-    let filename = null
-    try {
-        let tmp = await imageRepo.getImageFilenameById(imageId)
-        filename = tmp.get().fileName
-    } catch (err) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    }
-
-    //获取白名单
-    let value
-    try{
-        value = await whiteListRepository.findByUserId(userId)
-    } catch (err) {
-        console.log(err)
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-    }
-    let whiteList = []
-    value.forEach(item=>{
-        whiteList.push(item.get().whiteId)//提取白名单id
-    })
-
-    let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
-    let params = {userId: userId, imagePath: targetPath, rects: rects}
-    return repository.faceRecognizeR(params).then(result => {
-        return fillRecognitionInfoByW(imageId, userId, whiteList,result)
-    }).catch(err => {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    })
-}
-
-/**
- * 过滤ai信息
- * @param imageId
- * @param userId
- * @param whiteList
- * @param result
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
- */
-async function fillRecognitionInfoByW(imageId,userId, whiteList,result){
-    let jsonResult = JSON.parse(result)
-    let finalResult = []
-    for (let i = 0; i < jsonResult.length; i++) {
-        try {
-            let item = jsonResult[i]
-            let cache = {}
-            let itemResult = item.result[0]
-            cache.imageId = imageId
-            cache.rectId = item.id
-            cache.userId = itemResult.uid
-            if(!whiteList.includes(cache.userId)){
-                continue
-            }
-            cache.confidence = 1.0 - itemResult.distance
-            //if (cache.confidence < 0.4) continue
-            //console.log('userId:'+userId+'   '+typeof(userId))
-            //console.log('cuserId:'+cache.userId+'   '+typeof(cache.userId)+'   '+typeof(parseInt(cache.userId)))
-            if (userId === parseInt(cache.userId)) {
-                let data = await userRepository.getUserById(userId)
-                if (textUtils.isEmpty(data[0].get().nickname)) {
-                    cache.userName = data[0].get().username
-                } else {
-                    cache.userName = data[0].get().nickname
-                }
-            } else {
-                await imageRepo.saveFaceInImage(imageId, cache.userId, cache.confidence)
-                let rel = await relationRepository.queryRemarkWithId(userId, cache.userId)
-                cache.userName = rel[0].get().remark
-                let userData = rel[0].get().user
-                if (textUtils.isEmpty(rel[0].get().remark)) {
-                    if (textUtils.isEmpty(userData.get().nickname)) {
-                        cache.userName = userData.get().username
-                    }
-                    cache.userName = userData.get().nickname
-                }
-            }
-            finalResult.push(cache)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success, finalResult))
-}
+// exports.faceRecognizeByW = async function (userId, imageId, rects){
+//     let filename = null
+//     try {
+//         let tmp = await imageRepo.getImageFilenameById(imageId)
+//         filename = tmp.get().fileName
+//     } catch (err) {
+//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+//     }
+//
+//     let value
+//     try{
+//         value = await whiteListRepository.getWhiteList(userId)
+//     } catch (err) {
+//         console.log(err)
+//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+//     }
+//     let whiteList = []
+//     value.forEach(item=>{
+//         whiteList.push(item.get().whiteId)
+//     })
+//
+//     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
+//     let params = {userId: userId, imagePath: targetPath, rects: rects}
+//     return repository.faceRecognizeR(params).then(result => {
+//         return fillRecognitionInfoByW(imageId, userId, whiteList,result)
+//     }).catch(err => {
+//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
+//     })
+// }
+// async function fillRecognitionInfoByW(imageId,userId, whiteList,result){
+//     let jsonResult = JSON.parse(result)
+//     let finalResult = []
+//     for (let i = 0; i < jsonResult.length; i++) {
+//         try {
+//             let item = jsonResult[i]
+//             let cache = {}
+//             let itemResult = item.result[0]
+//             cache.imageId = imageId
+//             cache.rectId = item.id
+//             cache.userId = itemResult.uid
+//             if(!whiteList.includes(cache.userId)){
+//                 continue
+//             }
+//             cache.confidence = 1.0 - itemResult.distance
+//             //if (cache.confidence < 0.4) continue
+//             //console.log('userId:'+userId+'   '+typeof(userId))
+//             //console.log('cuserId:'+cache.userId+'   '+typeof(cache.userId)+'   '+typeof(parseInt(cache.userId)))
+//             if (userId === parseInt(cache.userId)) {
+//                 let data = await userRepository.getUserById(userId)
+//                 if (textUtils.isEmpty(data[0].get().nickname)) {
+//                     cache.userName = data[0].get().username
+//                 } else {
+//                     cache.userName = data[0].get().nickname
+//                 }
+//             } else {
+//                 await imageRepo.saveFaceInImage(imageId, cache.userId, cache.confidence)
+//                 let rel = await relationRepository.queryRemarkWithId(userId, cache.userId)
+//                 cache.userName = rel[0].get().remark
+//                 let userData = rel[0].get().user
+//                 if (textUtils.isEmpty(rel[0].get().remark)) {
+//                     if (textUtils.isEmpty(userData.get().nickname)) {
+//                         cache.userName = userData.get().username
+//                     }
+//                     cache.userName = userData.get().nickname
+//                 }
+//             }
+//             finalResult.push(cache)
+//         } catch (err) {
+//             console.log(err)
+//         }
+//     }
+//     return Promise.resolve(jsonUtils.getResponseBody(codes.success, finalResult))
+// }
 async function fillRecognitionInfo(imageId, userId, result) {
     let jsonResult = JSON.parse(result)
     let finalResult = []
@@ -294,51 +276,46 @@ exports.voiceToWords = async function (id) {
     let catchPath = path.join(__dirname, '../') + config.files.chatVoiceDir + filename + 'voice.wav'
     return new Promise((resolve, reject) => {
         let client = new AipSpeech(APP_ID, API_KEY, SECRET_KEY);
-        try {
-            ffmpeg(targetPath)
-                .on('end', function () {
-                    let voice = fs.readFileSync(catchPath);
-                    let voiceBuffer = new Buffer(voice);
-                    client.recognize(voiceBuffer, 'wav', 16000).then(function (result) {
-                        if (result.result === undefined || result.result === null || result.result.length === 0) {
-                            reject(jsonUtils.getResponseBody(codes.other_error))
-                            return
-                        }
-                        fs.unlinkSync(catchPath)
-                        emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(emotion => {
-                            //console.log('value:'+value.score)
-                            shieldingService.checkSensitive(result.result[0]).then(sensitive => {
-                                //console.log('vv:'+value.score)
-                                let res = value[0].get()
-                                //console.log(res)
-                                res.ttsResult = result.result[0]
-                                res.sensitive = sensitive
-                                res.emotion = emotion.score
-                                repositoryMessage.setTTSResult(id, result.result[0], emotion.score, sensitive)
-                                resolve(jsonUtils.getResponseBody(codes.success, res))
-                            }).catch(err => {
-                                //console.table(err)
-                                reject(jsonUtils.getResponseBody(codes.other_error, err))
-                            })
+        ffmpeg(targetPath)
+            .on('end', function () {
+                let voice = fs.readFileSync(catchPath);
+                let voiceBuffer = new Buffer(voice);
+                client.recognize(voiceBuffer, 'wav', 16000).then(function (result) {
+                    if (result.result === undefined || result.result === null || result.result.length === 0) {
+                        reject(jsonUtils.getResponseBody(codes.other_error))
+                        return
+                    }
+                    fs.unlinkSync(catchPath)
+                    emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(emotion => {
+                        //console.log('value:'+value.score)
+                        shieldingService.checkSensitive(result.result[0]).then(sensitive => {
+                            //console.log('vv:'+value.score)
+                            let res = value[0].get()
+                            //console.log(res)
+                            res.ttsResult = result.result[0]
+                            res.sensitive = sensitive
+                            res.emotion = emotion.score
+                            repositoryMessage.setTTSResult(id, result.result[0], emotion.score, sensitive)
+                            resolve(jsonUtils.getResponseBody(codes.success, res))
                         }).catch(err => {
+                            //console.table(err)
                             reject(jsonUtils.getResponseBody(codes.other_error, err))
                         })
-
-                    }, function (err) {
-                        //console.log(err);
-                        fs.unlinkSync(catchPath)
+                    }).catch(err => {
                         reject(jsonUtils.getResponseBody(codes.other_error, err))
-                    });
-                })
-                .on('error', function (err) {
+                    })
+
+                }, function (err) {
+                    //console.log(err);
                     fs.unlinkSync(catchPath)
                     reject(jsonUtils.getResponseBody(codes.other_error, err))
-                })
-                .save(catchPath);
-        } catch (err){
-            console.log('ff_err:'+err)
-            reject(jsonUtils.getResponseBody(codes.other_error,err))
-        }
+                });
+            })
+            .on('error', function (err) {
+                fs.unlinkSync(catchPath)
+                reject(err)
+            })
+            .save(catchPath);
     })
 }
 

@@ -48,18 +48,18 @@ router.get('/word_cloud', function (req, res) {
     })
 })
 
-router.post('/delete_wordcloud',function (req,res){
-    wordCloudService.delWordCloud(req.body.wordId,req.body.cloudId).then(value => {
+router.post('/delete_wordcloud', function (req, res) {
+    wordCloudService.delWordCloud(req.body.wordId, req.body.cloudId).then(value => {
         res.send(value)
     }, error => {
         res.send(error)
     })
 })
 
-router.get('/set_whiteid',function(req,res){
-    service.setWhiteId(req.query.authId,req.query.whiteId).then(value => {
+router.post('/set_whiteid', function (req, res) {
+    servicsetWhiteId(req.body.authId, req.body.whiteId).then(value => {
         res.send(value)
-    },error => {
+    }, error => {
         res.send(error)
     })
 })

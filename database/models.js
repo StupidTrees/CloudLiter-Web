@@ -393,7 +393,7 @@ exports.Message = con.sequelize.define(
             type: DataTypes.STRING
         },
         conversationId: {
-            type: DataTypes.BIGINT
+            type: DataTypes.STRING
         },
         relationId: {
             type: DataTypes.STRING
@@ -556,26 +556,65 @@ exports.FacesTable = con.sequelize.define(
 )
 this.FacesTable.sync({force: false}).then(r => r)
 
-exports.whiteList = con.sequelize.define(
-    'whitelist', {
-        id: {
-            type: DataTypes.BIGINT,
-            primaryKey: true,
-            autoIncrement: true,
+
+/**
+ * 用户的图像分类表
+ */
+exports.GalleryClasses = con.sequelize.define(
+    'gallery_classes', {
+        userId:{
+            type:DataTypes.BIGINT,
+            primaryKey:true
         },
+        classKey:{
+            type:DataTypes.STRING,
+            primaryKey:true
+        }
+    },
+    {
+        tableName: 'gallery_classes'
+    }
+)
+this.GalleryClasses.sync({force:false}).then(r=>r)
+this.GalleryClasses.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+
+
+// con.sequelize.query(`
+// CREATE TRIGGER imageSceneT
+// AFTER UPDATE ON image
+// FOR EACH ROW
+// BEGIN
+// if NEW.scene <> NULL then
+//        replace into gallery_classes values (OLD.fromId,NEW.scene);
+//        replace into gallery_classes values (OLD.toId,NEW.scene);
+// end if;
+// END;`
+// ).then(r => {
+//         console.log("Trigger加载完成:"+r)
+// })
+
+
+
+exports.Whitelist = con.sequelize.define(
+    'whitelist', {
         userId: {
-            type: DataTypes.BIGINT
+            type: DataTypes.BIGINT,
+            primaryKey:true
         },
         whiteId: {
-            type: DataTypes.BIGINT
+            type: DataTypes.BIGINT,
+            primaryKey:true
         }
     },
     {
         tableName: 'whitelist'
     }
 )
-this.whiteList.sync({force: false}).then(r => r)
-
+this.Whitelist.sync({force: false}).then(r => r)
 
 exports.GroupChatTable = con.sequelize.define(
     'group_chat_table', {
