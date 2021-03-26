@@ -574,3 +574,45 @@ exports.whiteList = con.sequelize.define(
     }
 )
 this.whiteList.sync({force: false}).then(r => r)
+
+
+exports.GroupChatTable = con.sequelize.define(
+    'groupchattable', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey:true,
+            autoIncrement:true
+        },
+        master:{
+            type: DataTypes.BIGINT
+        },
+        name: {
+            type: DataTypes.STRING
+        }
+    },
+    {
+        tableName: 'groupchattable'
+    }
+)
+this.FacesTable.sync({force: false}).then(r => r)
+
+
+exports.ChatMember = con.sequelize.define(
+    'chatmember', {
+        id: {
+            type: DataTypes.BIGINT,
+            primaryKey:true,
+            autoIncrement:true
+        },
+        userId:{
+            type:DataTypes.BIGINT
+        },
+        chatId:{
+            type:DataTypes.BIGINT
+        }
+    },
+    {
+        tableName: 'chatmember'
+    }
+)
+this.FacesTable.sync({force: false}).then(r => r)

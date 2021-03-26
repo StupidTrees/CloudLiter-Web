@@ -11,6 +11,7 @@ exports.faceRecognizeR = function (params){
             port: 8088,
             path: '/face/query',
             method: 'POST',
+
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             }

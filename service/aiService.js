@@ -46,7 +46,15 @@ exports.faceRecognize = async function (userId, imageId, rects) {
     })
 }
 
+/**
+ * 白名单版人脸识别
+ * @param userId
+ * @param imageId
+ * @param rects
+ * @returns {Promise<*>}
+ */
 exports.faceRecognizeByW = async function (userId, imageId, rects){
+
     let filename = null
     try {
         let tmp = await imageRepo.getImageFilenameById(imageId)
@@ -55,6 +63,7 @@ exports.faceRecognizeByW = async function (userId, imageId, rects){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
 
+    //获取白名单
     let value
     try{
         value = await whiteListRepository.findByUserId(userId)
@@ -64,7 +73,7 @@ exports.faceRecognizeByW = async function (userId, imageId, rects){
     }
     let whiteList = []
     value.forEach(item=>{
-        whiteList.push(item.get().whiteId)
+        whiteList.push(item.get().whiteId)//提取白名单id
     })
 
     let targetPath = path.join(__dirname, '../') + config.files.chatImageDir + filename
@@ -75,6 +84,15 @@ exports.faceRecognizeByW = async function (userId, imageId, rects){
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     })
 }
+
+/**
+ * 过滤ai信息
+ * @param imageId
+ * @param userId
+ * @param whiteList
+ * @param result
+ * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
+ */
 async function fillRecognitionInfoByW(imageId,userId, whiteList,result){
     let jsonResult = JSON.parse(result)
     let finalResult = []
