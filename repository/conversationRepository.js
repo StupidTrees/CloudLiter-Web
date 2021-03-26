@@ -18,7 +18,7 @@ exports.newConversation = function (id1, id2) {
     let smallId = Math.min(id1, id2)
     let largeId = Math.max(id1, id2)
     return Conversation.create({
-        key: smallId + '-' + largeId,
+        //key: smallId + '-' + largeId,
         user1Id: smallId,
         user2Id: largeId,
         lastMessage:'已经成为好友啦，说句话吧！',

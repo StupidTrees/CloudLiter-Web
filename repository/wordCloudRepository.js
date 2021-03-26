@@ -3,8 +3,8 @@ const models = require('../database/models')
 const codes = require('../utils/codes').codes
 const Op = models.Op
 const tools = require('../utils/tools')
-const sequelize = require('sequelize');
 const TextUtils = require("../utils/textUtils");
+const sequelize = require('../database/connector').sequelize
 //const sequelize = new Sequelize('sqlite::memory:');
 /**
  * 仓库层：用户关系数据读写
@@ -179,7 +179,8 @@ exports.findOrCreateConWord = function (conversationId, word, addNum) {
 
 /**
  * 删除会话相关词频
- * @param conversationId
+ * @param userId
+ * @param friendId
  */
 exports.deleteConversationWordCloud = function (userId,friendId) {
     // return wordCloudBin.destroy({
@@ -187,11 +188,11 @@ exports.deleteConversationWordCloud = function (userId,friendId) {
     //         [Op.and]: [{key: conversationId}, {type: 'CONVERSATION'}]
     //     }
     // })
-    return `delete from wordCloudBins 
+    return sequelize.query(`delete from wordCloudBins 
     where conversationId in (
         select id from conversation
         where (user1Id =${userId} and user2Id = ${friendId}) or (user1Id =${friendId} and user2Id = ${userId})
-    )`
+    )`)
 }
 
 /**
@@ -398,8 +399,17 @@ exports.changeAccessibility = function (userId, isPrivate) {
 
 
 exports.isPrivate = function (userId) {
-    return wordTop10.findByPk(userId, {
-        attributes: ['private']
+    // return wordTop10.findByPk(userId, {
+    //     attributes: ['private']
+    // })
+    return wordTop10.findOrCreate({
+        where: {
+            cloudId:userId
+        },
+        defaults: {
+            cloudId: userId,
+            type: 'USER'
+        }
     })
 }
 

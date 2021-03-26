@@ -170,9 +170,8 @@ exports.getMine = async function(userId){
 exports.deleteFriend = async function(userId, friendId){
     let value
     try{
-        let conversationId = await convRepository.getConversationById()
         //同时删除对话词云
-        await wordCloudRepository.deleteConversationWordCloud(tools.getP2PIdOrdered(userId,friendId))
+        await wordCloudRepository.deleteConversationWordCloud(userId,friendId)
         await eventRepository.deleteFriend(userId,friendId)
 
     }catch (err){

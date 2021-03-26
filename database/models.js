@@ -448,7 +448,7 @@ this.Message.belongsTo(this.User, {
 
 this.Message.belongsTo(this.Conversation, {
     foreignKey: 'conversationId',
-    targetKey: 'key',
+    targetKey: 'id',
     as: 'conversation'
 })
 

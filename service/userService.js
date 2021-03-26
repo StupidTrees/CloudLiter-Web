@@ -125,7 +125,7 @@ exports.fetchBaseProfile = async function (userId) {
         let wordCloudPrivate = null
         try {
             let val = await wordCloudRepository.isPrivate(userId)
-            wordCloudPrivate = val.get().private
+            wordCloudPrivate = val[0].get().private
         } catch (e) {
             return Promise.reject(
                 jsonUtils.getResponseBody(codes.other_error, e)

@@ -34,7 +34,7 @@ exports.getConversations = async function (userId) {
         }
         let rawData = item.get()
         let data = {
-            id: rawData.key,
+            id: rawData.id,
             historyId: rawData.historyId,
             lastMessage: rawData.lastMessage,
             friendId: relData.friendId,
@@ -82,7 +82,7 @@ exports.getConversationById = async function (userId, friendId) {
     let relationData = rawData.hasOwnProperty('relation1') ? rawData['relation1'] : rawData['relation2']
     let userData = rawData.hasOwnProperty('user1') ? rawData['user1'] : rawData['user2']
     let data = {
-        id: rawData.key,
+        id: rawData.id,
         historyId: rawData.historyId,
         lastMessage: rawData.lastMessage,
         groupId: relationData.groupId,
