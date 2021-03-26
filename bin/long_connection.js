@@ -1,4 +1,5 @@
 const messageService = require('../service/messageService')
+const conversationRepository = require('../repository/conversationRepository')
 const textUtils = require('../utils/textUtils')
 let io
 
@@ -10,66 +11,51 @@ exports.initSocket = function (server) {
 
 //记录用户id和socketId转换表
 const id2SocketId = {}
-
 //记录用户和其正在进行对话
 const user2Conversation = {}
 //记录用户正在被期待的对话
 const userExpectedConversation = {}
 
-function removeUserFromConversation(userId, convId) {
+async function removeUserFromConversation(userId, convId) {
     if (user2Conversation[userId] === convId) {
         delete user2Conversation[userId]
     }
-
     //从朋友的被期待列表中移除自己
-    let friendId = getTheOtherId(userId, convId)
-    if (userExpectedConversation.hasOwnProperty(friendId)) {
-        let users = userExpectedConversation[friendId]
-        userExpectedConversation[friendId].splice(users.indexOf(userId), 1)
-    }
-}
-
-function getTheOtherId(userId, conversationId) {
-    let arr = conversationId.split('-')
-    if (arr.length === 2) {
-        let str1 = arr[0]
-        let str2 = arr[1]
-        if (textUtils.equals(userId, str1)) {
-            return str2
-        } else {
-            return str1
+    let ids = null
+    try{
+        ids = await conversationRepository.getConversationUserIds(userId, convId)
+        for(let i=0;i<ids.length;i++){
+            let friendId = ids[i]
+            if (userExpectedConversation.hasOwnProperty(friendId)) {
+                let users = userExpectedConversation[friendId]
+                userExpectedConversation[friendId].splice(users.indexOf(userId), 1)
+            }
         }
+    }catch (e){
+        console.log(e)
     }
-    return ''
+
 }
 
-function removeUser(key) {
-    //console.log("disconnect", key)
+async function removeUser(key) {
     if (user2Conversation.hasOwnProperty(key)) {
-        removeUserFromConversation(key, user2Conversation[key])
-        //console.log("用户断连，退出对话窗口", userExpectedConversation)
+        await removeUserFromConversation(key, user2Conversation[key])
     }
-
-    //console.log("用户" + key + "下线", userExpectedConversation)
     if (userExpectedConversation.hasOwnProperty(key)) {
         //通知正在和他进行对话的好友，他下了
+        console.log("removeUser",key)
         userExpectedConversation[key].forEach(item => {
-            //console.log('通知下线', key + "->" + id2SocketId[item])
             io.to(id2SocketId[item]).emit('query_online_result', key, 'OFFLINE')
         })
     }
     if (id2SocketId.hasOwnProperty(key)) {
-        //删除
         delete id2SocketId[key]
-        //console.log(key + "退出了");
     }
 }
 
 function markOnline(socket, userId) {
     if (!id2SocketId.hasOwnProperty(userId)) {
         id2SocketId[userId] = socket.id
-        //console.log(userId + "上线了");
-        //console.log("当前在线列表", id2SocketId);
         //获取未读消息列表
         messageService.countUnreadMessage(userId).then((value) => {
             socket.emit('unread_message', JSON.stringify(value))
@@ -96,21 +82,21 @@ function onConnect(socket) {
     })
 
     socket.on('logout', function (userId) {
-        removeUser(userId)
+        removeUser(userId).then()
     })
     //监听用户退出
     socket.on('disconnect', function () {
         //将退出用户在在线列表删除
         let key = socket.name
-        removeUser(key)
+        removeUser(key).then()
     })
 
     //某用户进入某对话
-    socket.on('into_conversation', function (userId, friendId, conversationId) {
+    socket.on('into_conversation', async function (userId, friendId, conversationId) {
         markOnline(socket, userId) //确保在线
         if (user2Conversation.hasOwnProperty(userId)) {
             //断开用户和原有对话的联系
-            removeUserFromConversation(userId, user2Conversation[userId])
+            await removeUserFromConversation(userId, user2Conversation[userId])
             //console.log("断开用户和原有对话的联系")
         }
         user2Conversation[userId] = conversationId
@@ -119,12 +105,12 @@ function onConnect(socket) {
             userExpectedConversation[friendId] = []
         }
         userExpectedConversation[friendId].push(userId)
-        //console.log("用户进入对话窗口", userExpectedConversation)
+        console.log("用户进入对话窗口", userExpectedConversation)
 
         //通知正在和他进行对话的好友，他进入了某对话
         if (userExpectedConversation.hasOwnProperty(userId)) {
             userExpectedConversation[userId].forEach(item => {
-                //console.log('通知进入对话', userId + "->" + id2SocketId[item])
+                console.log('通知进入对话', userId + "->" + id2SocketId[item])
                 let mark = textUtils.equals(friendId, item) ? 'YOU' : 'OTHER'
                 io.to(id2SocketId[item]).emit('query_online_result', userId, mark)
             })
@@ -132,14 +118,14 @@ function onConnect(socket) {
     })
 
     //某用户退出某对话
-    socket.on('left_conversation', function (userId, conversationId) {
+    socket.on('left_conversation', async function (userId, conversationId) {
+        console.log("用户退出对话窗口", userExpectedConversation)
+        await removeUserFromConversation(userId, conversationId)
 
-        removeUserFromConversation(userId, conversationId)
-        //console.log("用户退出对话窗口", userExpectedConversation)
         //通知正在和他进行对话的好友，他退出某对话
         if (userExpectedConversation.hasOwnProperty(userId)) {
             userExpectedConversation[userId].forEach(item => {
-                //console.log('通知退出对话', userId + "->" + id2SocketId[item])
+                console.log('通知退出对话', userId + "->" + id2SocketId[item])
                 io.to(id2SocketId[item]).emit('query_online_result', userId, 'ONLINE')
             })
         }
@@ -149,30 +135,40 @@ function onConnect(socket) {
     socket.on('mark_all_read', function (userId, convId, topTime) {
         //console.log('标记全部已读', userId + "," + convId + "," + topTime)
         markOnline(socket, userId)//保持在线
-        if(userId==null||convId==null||topTime==null){
-            return ;
+        if (userId == null || convId == null || topTime == null) {
+            return;
         }
         messageService.markAllRead(userId, convId, topTime).then()
         //通知处于对话框对方，他读了一堆消息
-        if (userExpectedConversation.hasOwnProperty(getTheOtherId(userId, convId))) {
-            //console.log('通知已读全部消息', userId + "->" + id2SocketId[getTheOtherId(userId, convId)])
-            io.to(id2SocketId[getTheOtherId(userId, convId)]).emit('friend_read_all', userId, convId,topTime)
-        }
+        conversationRepository.getConversationUserIds(userId, convId).then((ids) => {
+            ids.forEach((friendId) => {
+                if (userExpectedConversation.hasOwnProperty(friendId)) {
+                    //console.log('通知已读全部消息', userId + "->" + id2SocketId[getTheOtherId(userId, convId)])
+                    io.to(id2SocketId[friendId]).emit('friend_read_all', userId, convId, topTime)
+                }
+            })
+        })
+
     })
 
     //标记某消息已读
     socket.on('mark_read', function (userId, convId, messageId) {
         markOnline(socket, userId)//保持在线
         //console.log('标记已读',userId + "," + convId + "," + messageId)
-        if(userId==null||convId==null||messageId==null){
-            return ;
+        if (userId == null || convId == null || messageId == null) {
+            return;
         }
         messageService.markRead(messageId).then()
         //通知处于对话框的对方，他读了一条消息
-        if (userExpectedConversation.hasOwnProperty(getTheOtherId(userId, convId))) {
-            //console.log('通知已读某条消息', userId + "->" + id2SocketId[getTheOtherId(userId, convId)])
-            io.to(id2SocketId[getTheOtherId(userId, convId)]).emit('friend_read_one', userId, convId,messageId)
-        }
+        conversationRepository.getConversationUserIds(userId, convId).then((ids) => {
+            ids.forEach((friendId) => {
+                if (userExpectedConversation.hasOwnProperty(friendId)) {
+                    //console.log('通知已读某条消息', userId + "->" + id2SocketId[getTheOtherId(userId, convId)])
+                    io.to(id2SocketId[friendId]).emit('friend_read_one', userId, convId, messageId)
+                }
+            })
+        })
+
 
     })
 
@@ -181,33 +177,31 @@ function onConnect(socket) {
         markOnline(socket, userId)//保持在线
         let mark = id2SocketId.hasOwnProperty(friendId) ? 'ONLINE' : 'OFFLINE'
         if (user2Conversation.hasOwnProperty(friendId)) {
-            let other = getTheOtherId(friendId, user2Conversation[friendId])
-            if (textUtils.equals(other, userId)) {
-                mark = 'YOU'
-            } else {
-                mark = 'OTHER'
-            }
+            conversationRepository.getConversationUserIds(friendId, user2Conversation[friendId]).then((ids) => {
+                let contains = false
+                for(let i=0;i<ids.length;i++){
+                    if (ids[i].toString() === userId.toString()) {
+                        contains = true
+                        break
+                    }
+                }
+                if (contains) {
+                    mark = 'YOU'
+                } else {
+                    mark = 'OTHER'
+                }
+                socket.emit('query_online_result', friendId, mark)
+            })
+        } else {
+            socket.emit('query_online_result', friendId, mark)
         }
-        socket.emit('query_online_result', friendId, mark)
+
     })
 
 }
 
 
-
-exports.sentTextMessage = function(message){
-   if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
-        //let socket = id2SocketId[message.fromId.toString()]
-        if (id2SocketId.hasOwnProperty(message.toId.toString())) {
-            io.to(id2SocketId[message.toId]).emit('message', message);
-        }
-        // io.to(socket).emit('message_sent', message)
-        // //console.log(message.fromId + '对' + message.toId + '说：' + message.content);
-    }
-}
-
-
-exports.broadcastMessageSent = function(message){
+exports.broadcastMessageSent = function (message) {
     //更新对话信息
     if (id2SocketId.hasOwnProperty(message.fromId.toString())) {
         if (id2SocketId.hasOwnProperty(message.toId.toString())) {
@@ -217,7 +211,7 @@ exports.broadcastMessageSent = function(message){
 }
 
 
-exports.notifyRelationEvent = function(targetUserId){
+exports.notifyRelationEvent = function (targetUserId) {
     //console.log('通知好友事件')
     if (id2SocketId.hasOwnProperty(targetUserId.toString())) {
         let socket = id2SocketId[targetUserId.toString()]

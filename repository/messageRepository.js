@@ -34,7 +34,7 @@ exports.saveMessage = function (message) {
  * @param pageSize 分页大小
  */
 exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSize) {
-    console.log("fromId", fromId)
+   // console.log("fromId", fromId)
 
     if (fromId == null) {
         console.log("fromId===null", fromId)
@@ -80,7 +80,6 @@ exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSiz
  * @param includeBound 是否包含afterId
  */
 exports.getMessagesAfter = function (conversationId, afterId, includeBound) {
-    console.log('getMessagesAfter', conversationId + "," + afterId + ',' + includeBound)
     if (afterId == null) {
         return Promise.resolve([])
     } else {
@@ -98,8 +97,6 @@ exports.getMessagesAfter = function (conversationId, afterId, includeBound) {
                     }
                 ]
             },
-            //  offset: pageSize * pageNum,
-            //limit: parseInt(pageSize),
             order: [['id', 'DESC']]
         })
     }

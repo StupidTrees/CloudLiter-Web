@@ -16,47 +16,10 @@ exports.getConversations = async function (userId) {
         console.log('err', e)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-
-    if (value == null) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
-    }
-
     let res = []
-    value.forEach(function (item) {
-        let relData
-        let friendData
-        if (textUtils.equals(item.get().user1Id, userId)) {
-            relData = item.get()['relation1'].get()
-            friendData = item.get()['user2'].get()
-        } else {
-            relData = item.get()['relation2'].get()
-            friendData = item.get()['user1'].get()
-        }
-        let rawData = item.get()
-        let data = {
-            id: rawData.id,
-            historyId: rawData.historyId,
-            lastMessage: rawData.lastMessage,
-            friendId: relData.friendId,
-            friendAvatar: friendData.avatar,
-            friendNickname: friendData.nickname,
-            friendRemark: relData.remark,
-            group: relData.groupId,
-            relationId: relData.key,
-            createdAt: rawData.createdAt,
-            updatedAt: rawData.updatedAt
-        }
-        if(friendData.typePermission==='PRIVATE'){
-            data.friendType = 0
-            data.friendSubType = 'normal'
-        } else {
-            data.friendType = friendData.type
-            data.firendSubType = friendData.subType
-
-        }
-        res.push(data)
-        // console.log('item',data)
-    })
+    for(let i=0;i<value[0].length;i++){
+        res.push(value[0][i])
+    }
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
@@ -72,37 +35,10 @@ exports.getConversationById = async function (userId, friendId) {
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    if (value == null) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
-    }
-    if (value.length === 0) {
+    if (value[0].length === 0) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
-    let rawData = value[0].get()
-    let relationData = rawData.hasOwnProperty('relation1') ? rawData['relation1'] : rawData['relation2']
-    let userData = rawData.hasOwnProperty('user1') ? rawData['user1'] : rawData['user2']
-    let data = {
-        id: rawData.id,
-        historyId: rawData.historyId,
-        lastMessage: rawData.lastMessage,
-        groupId: relationData.groupId,
-        relationId: relationData.key,
-        friendId: relationData.friendId,
-        friendAvatar: userData.avatar,
-        friendNickname : userData.nickname,
-        friendRemark : relationData.remark,
-        createdAt: rawData.createdAt,
-        updatedAt: rawData.updatedAt
-    }
-    if(userData.typePermission==='PRIVATE'){
-        data.friendType = 0
-        data.friendSubType = 'normal'
-    } else {
-        data.friendType = userData.type
-        data.friendSubType = userData.subType
-
-    }
-    //console.log('data', data)
+    let data = value[0]
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
 }
 

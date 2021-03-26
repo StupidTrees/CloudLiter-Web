@@ -122,6 +122,9 @@ exports.UserRelation = con.sequelize.define(
             // references:'user', //关联表名
             // referencesKey:'id' //关联表的列名
         },
+        conversationId:{
+            type:DataTypes.BIGINT
+        },
         remark: {
             type: DataTypes.STRING
             //备注
@@ -159,6 +162,13 @@ this.UserRelation.belongsTo(this.Group, {
     targetKey: 'id',
     as: 'group'
 })
+//将关系表的friend字段声明为外键，映射到用户表的id
+this.UserRelation.belongsTo(this.Conversation, {
+    foreignKey: 'conversationId',
+    targetKey: 'id',
+    as: 'conversation'
+})
+
 
 //将定义好的模型同步到数据表，不强制覆盖
 this.UserRelation.sync({force: false}).then(r => r)
@@ -179,12 +189,6 @@ exports.Conversation = con.sequelize.define(
         user2Id: {
             type: DataTypes.BIGINT
         },
-        relation1Id: {
-            type: DataTypes.STRING
-        },
-        relation2Id: {
-            type: DataTypes.STRING
-        },
         lastMessage: {
             type: DataTypes.STRING
         },
@@ -204,16 +208,6 @@ this.Conversation.belongsTo(this.User, {
     foreignKey: 'user1Id',
     targetKey: 'id',
     as: 'user1'
-})
-this.Conversation.belongsTo(this.UserRelation, {
-    foreignKey: 'relation1Id',
-    as: 'relation1',
-    targetKey: 'key'
-})
-this.Conversation.belongsTo(this.UserRelation, {
-    foreignKey: 'relation2Id',
-    targetKey: 'key',
-    as: 'relation2'
 })
 this.Conversation.belongsTo(this.User, {
     foreignKey: 'user2Id',

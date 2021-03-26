@@ -29,7 +29,6 @@ router.get('/get_message_after', function (req, res) {
     let afterId = (req.query.afterId === undefined || req.query.afterId == null || equals(req.query.afterId, 'null'))
         ? null : req.query.afterId
     service.getMessagesAfter(req.query.conversationId, afterId, req.query.includeBound).then((value) => {
-        console.log('getMessagesAfter', value)
         res.send(value)
     }, (err) => {
         console.log('err', err)

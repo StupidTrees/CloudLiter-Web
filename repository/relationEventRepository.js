@@ -22,7 +22,6 @@ const ImageTable = models.ImageTable
  * 好友申请
  * @param userId
  * @param friendId
- * @returns {Promise<string|[number, Model<TModelAttributes, TCreationAttributes>[]]|Model<TModelAttributes, TCreationAttributes>|*>}
  */
 exports.applyFriend = async function (userId, friendId) {
     let message = await RelationEvent.findAll({where: {[Op.and]: [{userId: userId}, {friendId: friendId}, {state: 'REQUESTING'}]}})
@@ -74,52 +73,10 @@ exports.acceptFriendApply = async function (id) {
     return {user1: result.userId, user2: result.friendId}
 }
 
-/**
- * 寻找NFC好友事件，没有则新建
- * @param userId
- * @param friendId
- */
-exports.findOrCreateDirectRelationEvent = function (userId, friendId) {
-    return RelationEvent.findOrCreate({
-        where: {
-            [Op.or]: [
-                {[Op.and]: [{userId: friendId}, {friendId: userId}, {state: 'DIRECT'}]},
-                {[Op.and]: [{userId: userId}, {friendId: friendId}, {state: 'DIRECT'}]}
-            ]
-        },
-        defaults: {
-            userId: userId,
-            friendId: friendId,
-            state: 'DIRECT',
-            read: false
-        }
-    }).then(([user, created]) => {
-        return user
-    })
-}
-
-/**
- * 拒绝NFC好友事件
- * @param userId
- * @param friendId
- * @returns {Promise<number>}
- */
-exports.rejectDirectRelationEvent = function (userId, friendId) {
-    return RelationEvent.destroy(
-        {
-            where: {
-                [Op.or]: [
-                    {[Op.and]: [{userId: userId}, {friendId: friendId}, {state: 'DIRECT'}]},
-                    {[Op.and]: [{userId: friendId}, {friendId: userId}, {state: 'DIRECT'}]}]
-            }
-        }
-    )
-}
 
 /**
  * 拒绝好友申请
- * @param eventId
- * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
+ * @param id
  */
 exports.rejectFriendApply = async function (id) {
     let result
@@ -176,7 +133,6 @@ exports.countUnread = function (userId) {
 /**
  * 获取好友申请信息（所有和自己相关）
  * @param userId
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>[]>}
  */
 exports.getMine = function (userId) {
     return RelationEvent.findAll({

@@ -60,9 +60,22 @@ exports.responseFriendApply = async function resFriendApply(id, action){
             console.log('err',err)
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
         }
+        //在对话表里直接开启一个对话
+        let conversationData
+        try {
+            let val = await convRepository.newConversation(message.user1, message.user2)
+            console.log("CONV",val)
+            conversationData = val.get()
+        } catch (err) {
+            console.log('对话表插入失败',err)
+            if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已有对话
+                return Promise.reject(jsonUtils.getResponseBody(codes.conversation_exists))
+            }
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
+        }
         //在关系表里插入数据
         try{
-            await repository.makeFriends(message.user1,message.user2)
+            await repository.makeFriends(message.user1,message.user2,conversationData.id)
         }catch (err){
             console.log('关系表插入失败',err)
             if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已经是好友
@@ -72,16 +85,7 @@ exports.responseFriendApply = async function resFriendApply(id, action){
             }
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
         }
-        //在对话表里直接开启一个对话
-        try {
-            await convRepository.newConversation(message.user1, message.user2)
-        } catch (err) {
-            console.log('对话表插入失败',err)
-            if(err.original.code==='ER_DUP_ENTRY'){ //主键重复，即已有对话
-                return Promise.reject(jsonUtils.getResponseBody(codes.conversation_exists))
-            }
-            return Promise.reject(jsonUtils.getResponseBody(codes.other_error,err))
-        }
+
         //通知广播消息
         long_connection.notifyRelationEvent(message.user1)
         return  Promise.resolve(jsonUtils.getResponseBody(codes.success))

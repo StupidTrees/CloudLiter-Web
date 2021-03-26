@@ -24,20 +24,6 @@ router.get('/friends', function (req, res, next) {
     })
 })
 
-/**
- * 建立好友关系
- */
-router.post('/make_friends',function (req, res, next) {
-    let queryId = req.body.authId
-    if(req.body.id!==undefined){
-        queryId = req.body.id
-    }
-    service.makeFriends(queryId,req.body.friend).then((value)=>{
-        res.send(value)
-    }).catch(err=>{
-        res.send(err)
-    })
-})
 
 
 

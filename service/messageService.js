@@ -162,6 +162,7 @@ async function fillExtraMessageData(fromId, toId, data) {
  * 发送文字消息
  * @param fromId
  * @param toId
+ * @param conversationId
  * @param content
  * @param uuid
  */
@@ -211,6 +212,7 @@ exports.sendTextMessage = async function (fromId, toId, conversationId, content,
  * 发送图片消息
  * @param fromId
  * @param toId
+ * @param conversationId
  * @param files 图片文件
  * @param uuid
  */

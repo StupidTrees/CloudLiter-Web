@@ -1,6 +1,6 @@
 const models = require('../database/models')
 const Op = models.Op
-const tools = require('../utils/tools')
+const sequelize = require('../database/connector').sequelize
 /**
  * 仓库层：对话表数据读写
  */
@@ -21,9 +21,7 @@ exports.newConversation = function (id1, id2) {
         //key: smallId + '-' + largeId,
         user1Id: smallId,
         user2Id: largeId,
-        lastMessage:'已经成为好友啦，说句话吧！',
-        relation1Id: smallId + '-' + largeId,
-        relation2Id: largeId + '-' + smallId
+        lastMessage: '已经成为好友啦，说句话吧！'
     })
 }
 
@@ -33,39 +31,14 @@ exports.newConversation = function (id1, id2) {
  * @param userId 用户id
  */
 exports.getConversationsOfOneUser = function (userId) {
-    return Conversation.findAll({
-        where: {
-            [Op.or]: [
-                {
-                    user1Id: {
-                        [Op.eq]: userId
-                    }
-                },
-                {
-                    user2Id: {
-                        [Op.eq]: userId
-                    }
-                }
-            ]
-        }, include: [{ //把relation1Id字段的关系对象也查出来
-            //attributes:[],
-            foreignKey:'relation1Id',
-            as: 'relation1',
-            model: Relation
-        }, {
-            foreignKey:'relation2Id',
-            as: 'relation2',
-            model: Relation
-        },{
-            foreignKey:'user1Id',
-            as:'user1',
-            model:User
-        },{
-            foreignKey:'user2Id',
-            as:'user2',
-            model:User
-        }]
-    })
+    return sequelize.query(
+        `select c.id,c.createdAt,c.updatedAt,lastMessage,r.friendId,u.avatar as friendAvatar,u.nickname as friendNickname,r.remark as friendRemark,r.groupId
+    from conversation as c,relation as r,user as u
+    where c.id = r.conversationId
+        and (c.user1Id = ${userId} or c.user2Id = ${userId})
+        and r.userId = ${userId}
+        and r.friendId = u.id
+    `)
 }
 
 /**
@@ -73,52 +46,65 @@ exports.getConversationsOfOneUser = function (userId) {
  * @param userId
  * @param friendId
  */
-exports.getConversationById = function (userId,friendId){
-    //let id = tools.getP2PIdOrdered(userId,friendId)
-    let relationForeignKey,relationAs,userForeignKey,userAs
-    if(parseInt(userId)<parseInt(friendId)){
-        relationForeignKey = 'relation1Id'
-        relationAs = 'relation1'
-        userForeignKey = 'user2Id'
-        userAs = 'user2'
-    }else{
-        relationForeignKey = 'relation2Id'
-        relationAs = 'relation2'
-        userForeignKey = 'user1Id'
-        userAs = 'user1'
-    }
+exports.getConversationById = function (userId, friendId) {
+    return sequelize.query(
+        `select c.id,c.createdAt,c.updatedAt,c.lastMessage,r.friendId,u.avatar as friendAvatar,u.nickname as friendNickname,r.remark as friendRemark,r.groupId
+    from conversation as c,relation as r,user as u
+    where c.id = r.conversationId
+        and r.userId = ${userId}
+        and r.friendId = ${friendId}
+        and u.id = ${friendId}
+    `)
+}
+
+/**
+ * 获得对话id
+ * @param userId
+ * @param friendId
+ */
+exports.getConversationId = function (userId, friendId) {
     return Conversation.findAll({
-        where:{
-            [Op.or]:[{[Op.and]:[{user1Id:userId},{user2Id:friendId}]},
-                     {[Op.and]:[{user1Id:friendId},{user2Id:userId}]}]
-        },
-        include: [{
-            foreignKey:relationForeignKey,
-            as: relationAs,
-            model: Relation
-        },{
-            foreignKey:userForeignKey,
-            as:userAs,
-            model:User
-        }]
+        attributes:['id'],
+        where: {
+            [Op.or]: [{[Op.and]: [{user1Id: userId}, {user2Id: friendId}]},
+                {[Op.and]: [{user1Id: friendId}, {user2Id: userId}]}]
+        }
     })
 }
+
+
 /**
  * 更新会话的最新消息
  * @param fromId
  * @param toId
  * @param lastMessage
  */
-exports.updateConversation = function (fromId,toId,lastMessage){
-    return Conversation.update({
-        lastMessage:lastMessage
-    },{
-        where:{
-            key:{
-                [Op.or]:[{[Op.and]:[{user1Id:fromId},{user2Id:toId}]},
-                    {[Op.and]:[{user1Id:toId},{user2Id:fromId}]}]
-            }
-        }
-    })
+exports.updateConversation = function (fromId, toId, lastMessage) {
+    return sequelize.query(`
+    update conversation
+    set lastMessage = '${lastMessage}'
+    where (user1Id=${fromId} and user2Id = ${toId})
+            or (user2Id=${fromId} and user1Id = ${toId})
+    `)
 }
 
+/**
+ * 获得改对话的所有成员id，除了userId
+ * @param userId
+ * @param conversationId
+ */
+exports.getConversationUserIds = function (userId,conversationId){
+    return Conversation.findByPk(conversationId).then(value=>{
+        let result = []
+        let data = value.get()
+        if(data.groupId==null){
+           if(data.user1Id.toString()!==userId.toString()){
+               result.push(data.user1Id.toString())
+           }
+            if(data.user2Id.toString()!==userId.toString()){
+                result.push(data.user2Id.toString())
+            }
+        }
+        return Promise.resolve(result)
+    })
+}

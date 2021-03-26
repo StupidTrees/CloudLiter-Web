@@ -9,7 +9,6 @@ const Op = models.Op
 
 const UserRelation = models.UserRelation
 const UserConversation = models.Conversation
-const RelationEvent = models.RelationEvent
 const User = models.User
 const Group = models.Group
 
@@ -102,17 +101,20 @@ exports.queryRemarkWithId = function (myId, friendId) {
  *建立好友关系
  * @param id1 用户1
  * @param id2 用户2
+ * @param conversationId
  */
-exports.makeFriends = function (id1, id2) {
+exports.makeFriends = function (id1, id2,conversationId) {
     //这将在关系表中插入两行数据，即id1->id2和id2->id1
     return UserRelation.create({
         key: id1 + '-' + id2,
+        conversationId:conversationId,
         userId: id1,
         friendId: id2,
         groupId: null
     }).then((user) => {
         return UserRelation.create({
             key: id2 + '-' + id1,
+            conversationId:conversationId,
             userId: id2,
             friendId: id1,
             groupId: null

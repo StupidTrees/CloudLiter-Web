@@ -1,10 +1,7 @@
 const repository = require('../repository/userRelationRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
-const convRepository = require('../repository/conversationRepository')
-const wordCloudRepository = require('../repository/wordCloudRepository')
-const textUtils = require('../utils/textUtils')
-const tools = require("../utils/tools");
+require('../repository/wordCloudRepository');
 
 /**
  * 获取某用户的所有朋友
@@ -13,6 +10,7 @@ const tools = require("../utils/tools");
  */
 exports.getFriends = async function (id) {
     let value = null
+    let conversationId = null
     try {
         value = await repository.getFriendsOfId(id)
     } catch (e) {
@@ -28,6 +26,7 @@ exports.getFriends = async function (id) {
         let group = item.get().group
         res.push(
             {
+                conversationId:item.get().conversationId,
                 groupId: item.get().groupId,
                 remark: item.get().remark,
                 groupName: group == null ? null : group.groupName,
@@ -66,6 +65,7 @@ exports.queryRelation = async function (userId, friendId) {
     let usr = dataRaw.user.get()
     let group = dataRaw.group
     let data = {
+        conversationId:dataRaw.conversationId,
         groupId: dataRaw.groupId,
         remark: dataRaw.remark,
         groupName: group == null ? null : group.groupName,
@@ -76,42 +76,6 @@ exports.queryRelation = async function (userId, friendId) {
     }
     //console.log("result", res)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data));
-}
-
-/**
- * 建立好友关系
- * @param user1
- * @param user2
- * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
- */
-exports.makeFriends = async function (user1, user2) {
-    //不能和自己成为好友
-    if (textUtils.equals(user1, user2)) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_myself))
-    }del
-    //在关系表里插入数据
-    try {
-        await repository.makeFriends(user1, user2)
-    } catch (err) {
-        console.log('关系表插入失败', err)
-        if (err.original.code === 'ER_DUP_ENTRY') { //主键重复，即已经是好友
-            return Promise.reject(jsonUtils.getResponseBody(codes.already_friends))
-        } else if (err.original.code === 'ER_NO_REFERENCED_ROW_2') { //外键不存在，即有一个用户id是假的
-            return Promise.reject(jsonUtils.getResponseBody(codes.make_friends_with_ghost))
-        }
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    }
-    //在对话表里直接开启一个对话
-    try {
-        await convRepository.newConversation(user1, user2)
-    } catch (err) {
-        console.log('对话表插入失败', err)
-        if (err.original.code === 'ER_DUP_ENTRY') { //主键重复，即已有对话
-            return Promise.reject(jsonUtils.getResponseBody(codes.conversation_exists))
-        }
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
-    }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
 
@@ -146,24 +110,3 @@ exports.friendRemark = async function (id1, id2, remark) {
     return Promise.resolve(jsonUtils.getResponseBody(codes.success
     ))
 }
-
-// /**
-//  * 删除好友
-//  * @param id1
-//  * @param id2
-//  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
-//  */
-// exports.deleteFriend = async function (id1, id2) {
-//     let value
-//     try {
-//         value = await repository.deleteFriend(id1, id2)
-//
-//     } catch (e) {
-//         console.log(e)
-//         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-//     }
-//     if (value === 0) {
-//         return Promise.reject(jsonUtils.getResponseBody(codes.relation_not_exists))
-//     }
-//     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
-// }
