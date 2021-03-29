@@ -12,12 +12,13 @@ const VoiceTable = models.VoiceTable
 /**
  * 将图片记录保存
  */
-exports.saveVoice = function (fromId, toId, filename, length) {
+exports.saveVoice = function (fromId, toId, conversationId, filename, length) {
     return VoiceTable.create({
         fromId: fromId,
         toId: toId,
+        conversationId: conversationId,
         fileName: filename,
-        length:length
+        length: length
     })
 }
 

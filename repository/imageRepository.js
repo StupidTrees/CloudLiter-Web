@@ -44,7 +44,7 @@ exports.getImagesOfClass = function (userId, offset, limit, key) {
  * @param offset
  * @param limit
  */
-exports.getImageOfFriend = function (userId,friendId, offset,limit) {
+exports.getImageOfFriend = function (userId, friendId, offset, limit) {
     return sequelize.query(`select distinct i.id
     from image as i,image_face as iff
     where i.id = iff.imageId
@@ -54,12 +54,9 @@ exports.getImageOfFriend = function (userId,friendId, offset,limit) {
 }
 
 
-
-
 /**
  * 获取userId的所有image信息
  * @param userId
- * @returns {Promise<Model[]>}
  */
 exports.getClassesById = function (userId) {
     return GalleryClassTable.findAll({
@@ -74,7 +71,7 @@ exports.getClassesById = function (userId) {
  * 获取某用户相册里的所有亲友
  * @param userId
  */
-exports.getFriendFacesOfUser = function(userId){
+exports.getFriendFacesOfUser = function (userId) {
     return sequelize.query(`select distinct iff.userId, u.username, u.nickname,r.remark,u.avatar
     from image as i,image_face as iff, user as u, relation as r, whitelist as w
     where i.id = iff.imageId
@@ -87,15 +84,30 @@ exports.getFriendFacesOfUser = function(userId){
     `)
 }
 
+exports.deleteUserAvatar = function (userId) {
+    return sequelize.query(`delete from image where id in (
+    select avatar from user where id = ${userId})
+    `).catch(e => {
+
+    })
+}
+exports.deleteChatGroupAvatar = function (groupId) {
+    return sequelize.query(`delete from image where id in (
+    select avatar from group_chat where id = ${groupId})
+    `).catch(e => {
+
+    })
+}
 /**
  * 将图片记录保存
  */
-exports.saveImage = function (fromId, toId, filename, sensitive) {
+exports.saveImage = function (fromId, toId, conversationId,filename, sensitive) {
     return ImageTable.create({
         fromId: fromId,
         toId: toId,
+        conversationId:conversationId,
         fileName: filename,
-        sensitive: sensitive
+        sensitive: sensitive,
     })
 }
 
@@ -145,7 +157,6 @@ exports.updateSceneById = function (imageId, imageClass) {
                         classKey: image.scene
                     })
                 })
-
             })
 
 

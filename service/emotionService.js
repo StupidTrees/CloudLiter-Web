@@ -44,7 +44,6 @@ exports.segmentAndAnalyzeEmotion = async function (str) {
             reject()
         } else {
             let analysis = nodejieba.tag(str)
-            console.log(analysis)
             let tokens = []
             let toWordCloud = []
             analysis.forEach((value) => {
@@ -54,14 +53,11 @@ exports.segmentAndAnalyzeEmotion = async function (str) {
                     toWordCloud.push(value.word)
                 }
             })
-            console.log(tokens)
-            console.log(toWordCloud)
             sentiment.analyze(str, {
                 language: 'cn'
             }, function (str) {
                 return tokens
             }, function (nul, res) {
-                console.log(res)
                 resolve({segmentation: tokens, score: res.score, toWordCloud: toWordCloud})
             })
         }

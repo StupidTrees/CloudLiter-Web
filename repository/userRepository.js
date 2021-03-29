@@ -1,6 +1,7 @@
 const models = require('../database/models')
 const Op = models.Op
-
+const imageRepo = require('../repository/imageRepository')
+const sequelize = require('../database/connector').sequelize
 /**
  * 仓库层：用户数据读写
  */
@@ -36,8 +37,8 @@ exports.createUser = function (username, password, gender, nickname) {
             password: password,
             gender: gender,
             nickname: nickname,
-            type:0,
-            typePermission:'PUBLIC'
+            type: 0,
+            typePermission: 'PUBLIC'
         }
     )
 }
@@ -98,14 +99,13 @@ exports.updateUserAvatar = function (id, avatarPath) {
  * 修改某用户的昵称
  * @param id
  * @param nickname
- * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.changeNickname = function(id,nickname){
+exports.changeNickname = function (id, nickname) {
     return User.update({
-        nickname:nickname
-    },{
-        where:{
-            id:id
+        nickname: nickname
+    }, {
+        where: {
+            id: id
         }
     })
 }
@@ -115,12 +115,12 @@ exports.changeNickname = function(id,nickname){
  * @param id
  * @param signature
  */
-exports.changeSignature = function(id,signature){
+exports.changeSignature = function (id, signature) {
     return User.update({
-        signature:signature
-    },{
-        where:{
-            id:id
+        signature: signature
+    }, {
+        where: {
+            id: id
         }
     })
 }
@@ -132,12 +132,12 @@ exports.changeSignature = function(id,signature){
  * @param gender
  * @returns {Promise<[number, Model<TModelAttributes, TCreationAttributes>[]]>}
  */
-exports.changeGender = function(id,gender){
+exports.changeGender = function (id, gender) {
     return User.update({
-        gender:gender
-    },{
-        where:{
-            id:id
+        gender: gender
+    }, {
+        where: {
+            id: id
         }
     })
 }
@@ -145,43 +145,46 @@ exports.changeGender = function(id,gender){
 /**
  * 获取某用户的头像文件名
  * @param id
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes> | null>}
  */
-exports.getAvatarPathById = function (id){
-    return User.findOne({
-    where:{
-        id:id
-    },
-        attributes:['avatar']
+exports.getAvatarPathById = function (id) {
+    return sequelize.query(`
+    select i.fileName
+    from image as i,user as u
+    where u.avatar = i.id
+        and u.id = ${id}
+    limit 1`)
+}
+
+exports.searchUserIdByWordCloud = function (word) {
+    return wordTop10.findAll({
+        where: {
+            [Op.and]: [
+                {private: false},
+                {type: 'USER'},
+                {
+                    [Op.or]: [{Top1: {[Op.like]: '%' + word + '%'}},
+                        {Top2: {[Op.like]: '%' + word + '%'}},
+                        {Top3: {[Op.like]: '%' + word + '%'}},
+                        {Top4: {[Op.like]: '%' + word + '%'}},
+                        {Top5: {[Op.like]: '%' + word + '%'}},
+                        {Top6: {[Op.like]: '%' + word + '%'}},
+                        {Top7: {[Op.like]: '%' + word + '%'}},
+                        {Top8: {[Op.like]: '%' + word + '%'}},
+                        {Top9: {[Op.like]: '%' + word + '%'}},
+                        {Top10: {[Op.like]: '%' + word + '%'}}
+                    ]
+                }]
+        }
     })
-}
-
-exports.searchUserIdByWordCloud = function(word){
-            return wordTop10.findAll({
-                where:{[Op.and]:[
-                    {private:false},
-                    {type:'USER'},
-                        {[Op.or]:[{Top1:{[Op.like]:'%'+word+'%'}},
-                                {Top2:{[Op.like]:'%'+word+'%'}},
-                                {Top3:{[Op.like]:'%'+word+'%'}},
-                                {Top4:{[Op.like]:'%'+word+'%'}},
-                                {Top5:{[Op.like]:'%'+word+'%'}},
-                                {Top6:{[Op.like]:'%'+word+'%'}},
-                                {Top7:{[Op.like]:'%'+word+'%'}},
-                                {Top8:{[Op.like]:'%'+word+'%'}},
-                                {Top9:{[Op.like]:'%'+word+'%'}},
-                                {Top10:{[Op.like]:'%'+word+'%'}}
-                            ]}]}
-            })
 
 }
 
-exports.changeType = function(id,type,subType,typePermission){
+exports.changeType = function (id, type, subType, typePermission) {
     return User.update({
         type: type,
         subType: subType,
         typePermission: typePermission
-    },{
-        where:{id:id}
+    }, {
+        where: {id: id}
     })
 }

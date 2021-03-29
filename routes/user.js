@@ -10,6 +10,7 @@ const fs = require('fs')
 
 const service = require('../service/userService')
 const wordCloudService = require("../service/wordCloudService");
+const imageService = require("../service/imageService");
 
 
 /**
@@ -162,6 +163,7 @@ router.post('/profile/upload_avatar',function (req, res) {
                 (value)=>{
                     res.send(value)
                 },(err)=>{
+                    console.log("upload_avatar",err)
                     res.send(err)
                 }
             )
@@ -173,11 +175,25 @@ router.post('/profile/upload_avatar',function (req, res) {
  * 按用户id查询头像
  */
 router.get('/profile/query_avatar',function (req,res){
-    service.queryAvatar(req.query.id).then(r => {
+    service.queryAvatar(req.query.userId).then(r => {
         res.writeHead(200, "Ok");
         res.write(r,"binary"); //格式必须为 binary，否则会出错
         res.end();
     }).catch((err)=>{
+        console.log("query_avatar",err)
+        res.send(err)
+    })
+})
+/**
+ * 按资源id查询头像
+ */
+router.get('/profile/avatar',function (req,res){
+    imageService.getImageById(req.query.imageId,config.files.avatarDir).then(r => {
+        res.writeHead(200, "Ok");
+        res.write(r,"binary"); //格式必须为 binary，否则会出错
+        res.end();
+    }).catch((err)=>{
+        console.log("query_avatar",err)
         res.send(err)
     })
 })
@@ -188,7 +204,7 @@ router.get('/profile/query_avatar',function (req,res){
  */
 router.get('/profile/word_cloud',function (req,res){
     let queryId = req.query.authId
-    wordCloudService.getWordCloud('USER',queryId,req.query.userId).then(r=>{
+    wordCloudService.getWordCloud(queryId,'USER',req.query.userId).then(r=>{
         res.send(r)
     }).catch((err)=>{
         res.send(err)

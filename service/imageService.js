@@ -5,7 +5,6 @@ const fileUtils = require('../utils/fileUtils')
 const config = require("../config");
 const fs = require('fs')
 const path = require('path')
-const lodash = require('lodash')
 const textUtils = require("../utils/textUtils");
 const whiteListRepository = require("../repository/whiteListRepository");
 const {getFileToResponse} = require("../utils/fileUtils");
@@ -14,15 +13,23 @@ const {getFileToResponse} = require("../utils/fileUtils");
 /**
  * 根据图片id，获取图片文件
  * @param imageId
+ * @param dir
  */
-exports.getImageById = async function (imageId) {
+exports.getImageById = async function (imageId, dir = config.files.chatImageDir) {
     let value = null
     try {
+        if (imageId == null || imageId === 'null') {
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+        }
         value = await repository.getImageFilenameById(imageId)
-        let filename = value.get().fileName
-        return getFileToResponse(path.join(__dirname, '../') + config.files.chatImageDir + '/' + filename)
+        if (value && value.get().fileName != null) {
+            return getFileToResponse(path.join(__dirname, '../') + dir + '/' + value.get().fileName)
+        } else {
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+        }
     } catch (e) {
-        return jsonUtils.getResponseBody(codes.other_error, e)
+        console.log("getImageById", e)
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
 }
 
@@ -122,7 +129,7 @@ exports.getFriendFacesOfUser = async function (userId) {
             let data = value[0][i]
             res.push({
                 userId: data.userId,
-                userName: getUsernameForShow(data.username,data.nickname,data.remark),
+                userName: getUsernameForShow(data.username, data.nickname, data.remark),
                 userAvatar: data.avatar
             })
         }
@@ -214,7 +221,7 @@ exports.deleteFace = async function (userId, faceId) {
  */
 exports.addToWhitelist = async function (userId, whitelist) {
     try {
-       await whiteListRepository.addToWhitelist(userId,whitelist)
+        await whiteListRepository.addToWhitelist(userId, whitelist)
     } catch (err) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }
@@ -222,7 +229,7 @@ exports.addToWhitelist = async function (userId, whitelist) {
 }
 
 
-function getUsernameForShow(username,nickname,remark){
+function getUsernameForShow(username, nickname, remark) {
     let userName
     if (!textUtils.isEmpty(remark)) {
         userName = remark
@@ -242,11 +249,11 @@ exports.getWhiteList = async function (userId) {
     try {
         let value = await whiteListRepository.getWhiteList(userId)
         let result = []
-        for(let i =0;i<value[0].length;i++){
+        for (let i = 0; i < value[0].length; i++) {
             let data = value[0][i]
             result.push({
                 userId: data.id,
-                userName: getUsernameForShow(data.username,data.nickname,data.remark),
+                userName: getUsernameForShow(data.username, data.nickname, data.remark),
                 userAvatar: data.avatar
             })
         }
@@ -262,9 +269,9 @@ exports.getWhiteList = async function (userId) {
  * @param userId
  * @param friendId
  */
-exports.removeFromWhiteList = async function (userId,friendId) {
+exports.removeFromWhiteList = async function (userId, friendId) {
     try {
-        await whiteListRepository.removeFromWhiteList(userId,friendId)
+        await whiteListRepository.removeFromWhiteList(userId, friendId)
     } catch (err) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, err))
     }

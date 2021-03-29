@@ -5,7 +5,7 @@ const Op = models.Op
 const Relation = models.UserRelation
 const User = models.User
 const Message = models.Message
-
+const sequelize = require('../database/connector').sequelize
 
 /**
  * 将消息保存
@@ -15,14 +15,12 @@ exports.saveMessage = function (message) {
     return Message.create({
         read: false,
         fromId: message.fromId,
-        toId: message.toId,
         content: message.content,
-        relationId: tools.getP2PId(message.fromId,message.toId),
         sensitive: message.sensitive,
         emotion: message.emotion,
         conversationId: message.conversationId,
         type: message.type,//,
-        fileId:message.fileId,
+        fileId: message.fileId,
         extra: JSON.stringify(message.extra)
     })
 }
@@ -34,10 +32,9 @@ exports.saveMessage = function (message) {
  * @param pageSize 分页大小
  */
 exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSize) {
-   // console.log("fromId", fromId)
+    // console.log("fromId", fromId)
 
     if (fromId == null) {
-        console.log("fromId===null", fromId)
         return Message.findAll({
             where: {
                 conversationId: {
@@ -49,7 +46,6 @@ exports.getMessagesOfOneConversation = function (conversationId, fromId, pageSiz
             order: [['id', 'DESC']]
         })
     } else {
-        console.log("fromId!=null", fromId)
         return Message.findAll({
             where: {
                 [Op.and]: [
@@ -83,7 +79,7 @@ exports.getMessagesAfter = function (conversationId, afterId, includeBound) {
     if (afterId == null) {
         return Promise.resolve([])
     } else {
-        let op = equals(includeBound,'true') ? Op.gte : Op.gt
+        let op = equals(includeBound, 'true') ? Op.gte : Op.gt
         return Message.findAll({
             where: {
                 [Op.and]: [
@@ -110,27 +106,62 @@ exports.getMessagesAfter = function (conversationId, afterId, includeBound) {
  * @param userId
  */
 exports.getUnreadConversationsOfOneUser = function (userId) {
-    return Message.findAll(
-        {
-            attributes: ['conversationId'],
-            where: {
-                [Op.and]: [
-                    {
-                        toId: userId
-                    },
-                    {
-                        read: false
-                    }
-                ]
-            }
-        })
+    return sequelize.query(`
+    select count(*) as num,conversationId
+    from message as m
+    where m.read = 0
+        and conversationId in(select id from conversation where user1Id = ${userId} or user2Id = ${userId})
+    group by conversationId
+    `)
+    // return Message.findAll(
+    //     {
+    //         attributes: ['conversationId'],
+    //         where: {
+    //             [Op.and]: [
+    //                 {
+    //                     toId: userId
+    //                 },
+    //                 {
+    //                     read: false
+    //                 }
+    //             ]
+    //         }
+    //     })
+}
+exports.getUnreadConversationsGroupOfOneUser = function (userId) {
+    return sequelize.query(`
+    select count(*) as num,conversationId
+    from message as m
+    where m.read = 0
+        and m.conversationId in
+        (select c.id from conversation as c,group_member as gm
+            where c.groupId is not null
+                  and c.groupId = gm.groupId
+                  and gm.userId = ${userId}
+        )
+    group by conversationId
+    `)
+    // return Message.findAll(
+    //     {
+    //         attributes: ['conversationId'],
+    //         where: {
+    //             [Op.and]: [
+    //                 {
+    //                     toId: userId
+    //                 },
+    //                 {
+    //                     read: false
+    //                 }
+    //             ]
+    //         }
+    //     })
 }
 
 /**
  * 将某对话下的所有消息标记为已读
  * @param toUserId
  * @param conversationId
- * @param topId
+ * @param topTime
  */
 exports.markAllRead = function (toUserId, conversationId, topTime) {
     if (equals(topTime, 'null')) {
@@ -145,7 +176,7 @@ exports.markAllRead = function (toUserId, conversationId, topTime) {
                     conversationId: conversationId
                 },
                 {
-                    toId: toUserId
+                    fromId: {[Op.ne]:toUserId}
                 },
                 {
                     createdAt: {
@@ -177,9 +208,9 @@ exports.markRead = function (messageId) {
  * @param id
  * @returns {Promise<Model[]>}
  */
-exports.getMessageById = function (id){
+exports.getMessageById = function (id) {
     return Message.findAll({
-        where:{id:id}
+        where: {id: id}
     })
 }
 
@@ -190,12 +221,20 @@ exports.getMessageById = function (id){
  * @param score
  * @param sensitive
  */
-exports.setTTSResult = function (id,text,score,sensitive) {
+exports.setTTSResult = function (id, text, score, sensitive) {
     return Message.update({
         ttsResult: text,
-        emotion:score,
-        sensitive:sensitive
+        emotion: score,
+        sensitive: sensitive
     }, {
-        where: {id:id}
+        where: {id: id}
+    })
+}
+
+exports.deleteMessagesOfConversation = function (conversationId){
+    return Message.destroy({
+        where:{
+            conversationId:conversationId
+        }
     })
 }

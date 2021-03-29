@@ -6,13 +6,6 @@ const jsonUtils = require("../utils/jsonUtils");
 const {codes} = require("../utils/codes");
 const formidable = require("formidable");
 
-/**
- * 测试接口
- */
-router.post('/face/test', function (req, res) {
-    console.log(req.body.userId + '    ' + req.body.imagePath)
-    res.send()
-})
 
 /**
  * 人脸识别
@@ -28,16 +21,6 @@ router.post('/face/recognize', function (req, res) {
         res.send(error)
     })
 })
-
-// router.post('/face/recognize_by_whiteid',function(req,res){
-//     let userId = req.body.authId
-//     service.faceRecognizeByW(userId, req.body.imageId, req.body.rects).then(value => {
-//         res.send(value)
-//     }, error => {
-//         console.log("face_recognize_error", error)
-//         res.send(error)
-//     })
-// })
 
 /**
  * 人脸上传
@@ -62,10 +45,10 @@ router.post('/face/upload', function (req, res) {
         } else {
             service.faceUpload(userId, files).then(
                 (value) => {
-                    console.log(value)
+                    console.log("face_upload",value)
                     res.send(value)
                 }, (err) => {
-                    console.log(err)
+                    console.log("face_upload",err)
                     res.send(err)
                 }
             )
@@ -89,9 +72,6 @@ router.post('/voice/dirtts', function (req, res) {
     form.uploadDir = targetPath
     // 上传文件大小限制
     form.maxFieldsSize = 20 * 1024 * 1024
-    let userId = req.body.authId
-    let toId = req.query.toId
-    let uuid = req.query.uuid
     let extra = req.query.seconds
     console.log('extra', extra)
     //从请求头中读取前端传来的文件files

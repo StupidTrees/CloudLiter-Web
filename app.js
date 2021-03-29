@@ -10,6 +10,7 @@ const relationEventRouter = require('./routes/relationEvent')
 const conversationRouter = require('./routes/conversation');
 const messageRouter = require('./routes/message');
 const groupRouter = require('./routes/group');
+const groupChatRouter = require('./routes/groupchat');
 const imageRouter = require('./routes/image');
 const tokenVerifier = require('./middleware/tokenVerify')
 
@@ -36,6 +37,7 @@ app.use('/relation', relationEventRouter)
 app.use('/conversation', conversationRouter);
 app.use('/message', messageRouter);
 app.use('/group', groupRouter);
+app.use('/group_chat', groupChatRouter);
 app.use('/ai',aiRouter)
 app.use('/image', imageRouter);
 

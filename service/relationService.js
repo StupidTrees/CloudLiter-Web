@@ -36,8 +36,6 @@ exports.getFriends = async function (id) {
                 friendAvatar: usr.avatar
             })
     })
-    console.log(res)
-    //console.log("result", res)
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res));
 }
 

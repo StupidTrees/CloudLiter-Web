@@ -189,7 +189,7 @@ exports.deleteConversationWordCloud = function (userId,friendId) {
     //     }
     // })
     return sequelize.query(`delete from wordCloudBins 
-    where conversationId in (
+    where id in (
         select id from conversation
         where (user1Id =${userId} and user2Id = ${friendId}) or (user1Id =${friendId} and user2Id = ${userId})
     )`)

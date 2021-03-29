@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "fastscan": "^1.0.6",
+    "fluent-ffmpeg": "^2.1.2",
     "formidable": "^1.2.2",
     "hashmap": "^2.4.0",
     "http": "0.0.1-security",
@@ -43,6 +44,7 @@
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
+    "baidu-aip-sdk": "^2.4.6",
     "connect-multiparty": "^2.2.0",
     "nodejieba": "^2.4.1",
     "patch-package": "^6.2.2",

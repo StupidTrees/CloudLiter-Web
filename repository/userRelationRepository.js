@@ -81,7 +81,6 @@ exports.queryRelationWithId = function (myId, friendId) {
 
 
 exports.queryRemarkWithId = function (myId, friendId) {
-
     let id = tools.getP2PId(myId, friendId)
     return UserRelation.findAll({
         attributes: ['remark'],

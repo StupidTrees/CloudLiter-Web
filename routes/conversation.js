@@ -29,11 +29,7 @@ router.get('/get', function (req, res, next) {
  * 根据id查询某一对话的详情
  */
 router.get('/query', function (req, res, next) {
-    let myId = req.query.authId
-    if (req.query.userId !== undefined) {
-        myId = req.query.userId
-    }
-    service.getConversationById(myId, req.query.friendId).then((value) => {
+    service.getConversationById(req.query.authId, req.query.conversationId).then((value) => {
         res.send(value)
     }, (err) => {
         res.send(err)
@@ -41,7 +37,7 @@ router.get('/query', function (req, res, next) {
 })
 
 router.get('/word_cloud', function (req, res) {
-    wordCloudService.getWordCloud('CONV', req.query.userId, req.query.friendId).then((value) => {
+    wordCloudService.getWordCloud(req.query.authId,'CONV', req.query.conversationId).then((value) => {
         res.send(value)
     }, (err) => {
         res.send(err)

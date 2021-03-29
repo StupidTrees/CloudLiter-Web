@@ -103,6 +103,58 @@ this.Group.belongsTo(this.User, {
 })
 this.Group.sync({force: false}).then(r => r)
 
+
+/**
+ * 会话表
+ */
+exports.Conversation = con.sequelize.define(
+    'conversation', {
+        id: {
+            type: DataTypes.BIGINT,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        type:{
+            type:DataTypes.ENUM('GROUP','FRIEND'),
+            default:'FRIEND'
+        },
+        user1Id: {
+            type: DataTypes.BIGINT
+        },
+        user2Id: {
+            type: DataTypes.BIGINT
+        },
+        groupId: {
+            type: DataTypes.BIGINT
+        },
+        lastMessage: {
+            type: DataTypes.STRING
+        },
+        createdAt: {
+            type: DataTypes.DATE
+        },
+        updatedAt: {
+            type: DataTypes.DATE
+        }
+    },
+    {
+        tableName: 'conversation'
+    }
+);
+
+this.Conversation.belongsTo(this.User, {
+    foreignKey: 'user1Id',
+    targetKey: 'id',
+    as: 'user1'
+})
+this.Conversation.belongsTo(this.User, {
+    foreignKey: 'user2Id',
+    targetKey: 'id',
+    as: 'user2'
+})
+this.Conversation.sync({force: false}).then(r => r)
+
+
 /**
  * 用户好友关系表
  */
@@ -122,8 +174,8 @@ exports.UserRelation = con.sequelize.define(
             // references:'user', //关联表名
             // referencesKey:'id' //关联表的列名
         },
-        conversationId:{
-            type:DataTypes.BIGINT
+        conversationId: {
+            type: DataTypes.BIGINT
         },
         remark: {
             type: DataTypes.STRING
@@ -173,48 +225,6 @@ this.UserRelation.belongsTo(this.Conversation, {
 //将定义好的模型同步到数据表，不强制覆盖
 this.UserRelation.sync({force: false}).then(r => r)
 
-/**
- * 会话表
- */
-exports.Conversation = con.sequelize.define(
-    'conversation', {
-        id: {
-            type: DataTypes.BIGINT,
-            autoIncrement: true,
-            primaryKey: true
-        },
-        user1Id: {
-            type: DataTypes.BIGINT
-        },
-        user2Id: {
-            type: DataTypes.BIGINT
-        },
-        lastMessage: {
-            type: DataTypes.STRING
-        },
-        createdAt: {
-            type: DataTypes.DATE
-        },
-        updatedAt: {
-            type: DataTypes.DATE
-        }
-    },
-    {
-        tableName: 'conversation'
-    }
-);
-
-this.Conversation.belongsTo(this.User, {
-    foreignKey: 'user1Id',
-    targetKey: 'id',
-    as: 'user1'
-})
-this.Conversation.belongsTo(this.User, {
-    foreignKey: 'user2Id',
-    targetKey: 'id',
-    as: 'user2'
-})
-this.Conversation.sync({force: false}).then(r => r)
 
 /**
  * 好友事件表
@@ -283,7 +293,10 @@ exports.ImageTable = con.sequelize.define(
         fromId: {
             type: DataTypes.BIGINT
         },
-        toId: {
+        toId:{
+            type:DataTypes.BIGINT
+        },
+        conversationId: {
             type: DataTypes.BIGINT
         },
         fileName: {
@@ -320,7 +333,10 @@ exports.VoiceTable = con.sequelize.define(
         fromId: {
             type: DataTypes.BIGINT
         },
-        toId: {
+        toId:{
+            type:DataTypes.BIGINT
+        },
+        conversationId: {
             type: DataTypes.BIGINT
         },
         fileName: {
@@ -380,16 +396,10 @@ exports.Message = con.sequelize.define(
         fromId: {
             type: DataTypes.BIGINT
         },
-        toId: {
-            type: DataTypes.BIGINT
-        },
         content: {
             type: DataTypes.STRING
         },
         conversationId: {
-            type: DataTypes.STRING
-        },
-        relationId: {
             type: DataTypes.STRING
         },
         read: {
@@ -434,23 +444,12 @@ this.Message.belongsTo(this.User, {
     as: 'fromUser'
 })
 
-this.Message.belongsTo(this.User, {
-    foreignKey: 'toId',
-    targetKey: 'id',
-    as: 'toUser'
-})
-
 this.Message.belongsTo(this.Conversation, {
     foreignKey: 'conversationId',
     targetKey: 'id',
     as: 'conversation'
 })
 
-this.Message.belongsTo(this.UserRelation, {
-    foreignKey: 'relationId',
-    targetKey: 'key',
-    as: 'relation'
-})
 
 this.Message.sync({force: false}).then(r => r)
 
@@ -528,20 +527,20 @@ exports.FacesTable = con.sequelize.define(
     'faces', {
         id: {
             type: DataTypes.BIGINT,
-            primaryKey:true,
-            autoIncrement:true
+            primaryKey: true,
+            autoIncrement: true
         },
-        userId:{
-            type:DataTypes.BIGINT
+        userId: {
+            type: DataTypes.BIGINT
         },
-        pic_name:{
-            type:DataTypes.STRING
+        pic_name: {
+            type: DataTypes.STRING
         },
-        json:{
-            type:DataTypes.STRING
+        json: {
+            type: DataTypes.STRING
         },
-        state:{
-            type:DataTypes.INTEGER
+        state: {
+            type: DataTypes.INTEGER
         }
     },
     {
@@ -556,20 +555,20 @@ this.FacesTable.sync({force: false}).then(r => r)
  */
 exports.GalleryClasses = con.sequelize.define(
     'gallery_classes', {
-        userId:{
-            type:DataTypes.BIGINT,
-            primaryKey:true
+        userId: {
+            type: DataTypes.BIGINT,
+            primaryKey: true
         },
-        classKey:{
-            type:DataTypes.STRING,
-            primaryKey:true
+        classKey: {
+            type: DataTypes.STRING,
+            primaryKey: true
         }
     },
     {
         tableName: 'gallery_classes'
     }
 )
-this.GalleryClasses.sync({force:false}).then(r=>r)
+this.GalleryClasses.sync({force: false}).then(r => r)
 this.GalleryClasses.belongsTo(this.User, {
     foreignKey: 'userId',
     targetKey: 'id',
@@ -592,16 +591,15 @@ this.GalleryClasses.belongsTo(this.User, {
 // })
 
 
-
 exports.Whitelist = con.sequelize.define(
     'whitelist', {
         userId: {
             type: DataTypes.BIGINT,
-            primaryKey:true
+            primaryKey: true
         },
         whiteId: {
             type: DataTypes.BIGINT,
-            primaryKey:true
+            primaryKey: true
         }
     },
     {
@@ -611,43 +609,59 @@ exports.Whitelist = con.sequelize.define(
 this.Whitelist.sync({force: false}).then(r => r)
 
 exports.GroupChatTable = con.sequelize.define(
-    'group_chat_table', {
+    'group_chat', {
         id: {
             type: DataTypes.BIGINT,
-            primaryKey:true,
-            autoIncrement:true
+            primaryKey: true,
+            autoIncrement: true
         },
-        master:{
+        master: {
             type: DataTypes.BIGINT
+        },
+        avatar: {
+            type: DataTypes.STRING
         },
         name: {
             type: DataTypes.STRING
         }
     },
     {
-        tableName: 'group_chat_table'
+        tableName: 'group_chat'
     }
 )
-this.FacesTable.sync({force: false}).then(r => r)
+this.GroupChatTable.sync({force: false}).then(r => r)
 
 
 exports.GroupMember = con.sequelize.define(
     'group_member', {
-        userId:{
-            type:DataTypes.BIGINT
+        userId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            primaryKey: true
         },
-        groupId:{
-            type:DataTypes.BIGINT
+        groupId: {
+            type: DataTypes.BIGINT,
+            primaryKey: true
         },
-        createdAt:{
-            type:DataTypes.DATE
+        createdAt: {
+            type: DataTypes.DATE
         },
-        nickname:{
-            type:DataTypes.STRING
+        nickname: {
+            type: DataTypes.STRING
         }
     },
     {
         tableName: 'group_member'
     }
 )
-this.FacesTable.sync({force: false}).then(r => r)
+this.GroupMember.belongsTo(this.GroupChatTable, {
+    foreignKey: 'groupId',
+    targetKey: 'id',
+    as: 'group'
+})
+this.GroupMember.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+this.GroupMember.sync({force: false}).then(r => r)

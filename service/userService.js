@@ -9,6 +9,7 @@ const textUtils = require('../utils/textUtils')
 const tools = require('../utils/tools')
 const fs = require('fs')
 const path = require('path')
+const imageRepo = require("../repository/imageRepository");
 
 /**
  * 服务层：用户操作
@@ -184,22 +185,26 @@ exports.searchUser = async function (text) {
  */
 exports.uploadAvatar = async function (userId, files) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
-    let newPath = path.dirname(files.upload.path) + '/avatar_' + userId + path.extname(files.upload.name)
+    let fileName = userId + path.extname(files.upload.name)
+    let newPath = path.dirname(files.upload.path) + '/' + fileName
     // 将文件重命名为avatar_用户id的形式
     await fs.renameSync(files.upload.path, newPath)
-    //console.log("update_avatar", userId)
     // 通知用户数据库，变更该用户的头像文件名
     let value
+    let imageId
     try {
-        value = await repository.updateUserAvatar(userId, 'avatar_' + userId + path.extname(files.upload.name))
+        await imageRepo.deleteUserAvatar(userId)
+        value = await imageRepo.saveImage(null,null, null,fileName, '{}')
+        imageId = value.get().id
+        value = await repository.updateUserAvatar(userId, imageId)
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
     // 数据库更新成功
-    if (value[0]) {
+    if (value) {
         //更换头像成功，将头像文件名返回
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, {
-            file: 'avatar_' + userId + path.extname(files.upload.name)
+            avatar: imageId
         }))
     } else {
         // 说明该用户id查找不到任何用户
@@ -284,8 +289,9 @@ exports.queryAvatar = async function (userId) {
     let path = null
     try {
         path = await repository.getAvatarPathById(userId).then((value) => {
-            if (value === null) return null
-            return value.get().avatar
+            console.log("getA", value)
+            if (value === null || value.length < 1 || value[0].length < 1) return null
+            return value[0][0].fileName
         })
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
@@ -304,6 +310,9 @@ exports.queryAvatar = async function (userId) {
  * @param fileName
  */
 exports.getAvatar = async function (fileName) {
+    if (fileName == null) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
     try {
         let file = await new Promise((resolve, reject) => {
                 //直接生成头像路径

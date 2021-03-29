@@ -160,24 +160,11 @@ exports.getMine = function (userId) {
 
 /**
  * 清除录音文件
- * @param userId
- * @param friendId
- * @returns {Promise<void>}
  */
-async function deleteVoiceFiles(userId, friendId) {
+exports.deleteVoiceFiles = async function(conversationId) {
     let voices = await VoiceTable.findAll({
         where: {
-            [Op.or]: [
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                },
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                }]
+            conversationId: conversationId
         }
     })
     voices.forEach(function (item, _) {
@@ -187,41 +174,18 @@ async function deleteVoiceFiles(userId, friendId) {
     })
     await VoiceTable.destroy({
         where: {
-            [Op.or]: [
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                },
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                }]
+            conversationId: conversationId
         }
     })
 }
 
 /**
  * 清除图像文件
- * @param userId
- * @param friendId
- * @returns {Promise<void>}
  */
-async function deleteImageFiles(userId, friendId) {
+exports.deleteImageFiles = async function (conversationId) {
     let images = await ImageTable.findAll({
         where: {
-            [Op.or]: [
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                },
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                }]
+            conversationId: conversationId
         }
     })
     images.forEach(function (item, _) {
@@ -231,17 +195,7 @@ async function deleteImageFiles(userId, friendId) {
     })
     await ImageTable.destroy({
         where: {
-            [Op.or]: [
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                },
-                {
-                    [Op.and]: [
-                        {fromId: userId}, {toId: friendId}
-                    ]
-                }]
+            conversationId: conversationId
         }
     })
 }
@@ -250,43 +204,35 @@ async function deleteImageFiles(userId, friendId) {
 /**
  * 删除好友与会话
  * @param userId
- * @param friendId
+ * @param conversationId
  * @returns {Promise<void>}
  */
-exports.deleteFriend = async function (userId, friendId) {
+exports.deleteFriend = async function (userId, conversationId) {
     //let id = tools.getP2PIdOrdered(userId, friendId)
-    await deleteImageFiles(userId, friendId)
-    await deleteVoiceFiles(userId, friendId)
+    await this.deleteImageFiles(conversationId)
+    await this.deleteVoiceFiles(conversationId)
     await Message.destroy({
         where: {
-            [Op.or]:[{[Op.and]:[{fromId:userId},{toId:friendId}]},
-                {[Op.and]:[{fromId:friendId},{toId:userId}]}]
-        }
-    })
-    await UserConversation.destroy({
-        where: {
-            [Op.or]:[{[Op.and]:[{user1Id:userId},{user2Id:friendId}]},
-                {[Op.and]:[{user1Id:friendId},{user2Id:userId}]}]
+            conversationId: conversationId
         }
     })
     await UserRelation.destroy({
         where: {
-            [Op.or]: [
-                {
-                    key: tools.getP2PId(userId, friendId)
-                }, {
-                    key: tools.getP2PId(friendId, userId)
-                }
-            ]
+            conversationId: conversationId
         }
     })
+    await UserConversation.destroy({
+        where: {
+            id: conversationId
+        }
+    })
+
 }
 
 /**
  * 创建删除事件
  * @param userId
  * @param friendId
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>>}
  */
 exports.createDeleteEvent = function (userId, friendId) {
     return RelationEvent.create({

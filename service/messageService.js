@@ -17,31 +17,6 @@ const convRepo = require("../repository/conversationRepository");
 const {getFileToResponse} = require("../utils/fileUtils");
 
 /**
- * 更新会话信息
- * @param message
- */
-exports.saveMessage = async function (message) {
-    let value = null
-    try {
-        value = await repository.saveMessage(message)
-    } catch (e) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    }
-    if (value === null) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
-    }
-    let data = value.get()
-    try {
-        await fillExtraMessageData(message.toId, message.fromId, message)
-        console.log('data', data)
-    } catch (e) {
-        console.log('err', e)
-    }
-
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
-}
-
-/**
  * 获取某对话的历史消息
  * @param conversationId 对话id
  * @param fromId
@@ -96,24 +71,41 @@ exports.getMessagesAfter = async function (conversationId, afterId, includeBound
  * @returns {Promise<{code: *, data: null, message: *}|{code: *, message: *}>}
  */
 exports.countUnreadMessage = async function (userId) {
-    let value = null
+    let res = {}
     try {
-        value = await repository.getUnreadConversationsOfOneUser(userId)
+        let value = await repository.getUnreadConversationsOfOneUser(userId)
+        for (let i = 0; i < value[0].length; i++) {
+            res[value[0].conversationId] = value[0].num
+        }
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    if (value === null) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
-    }
-    let res = {}
-    value.forEach(function (item) {
-        //console.log('item',item.get())
-        if (!res.hasOwnProperty(item.get().conversationId)) {
-            res[item.get().conversationId] = 1
-        } else {
-            res[item.get().conversationId] += 1
+    try {
+        let value = await repository.getUnreadConversationsGroupOfOneUser(userId)
+        for (let i = 0; i < value[0].length; i++) {
+            res[value[0].conversationId] = value[0].num
         }
-    })
+    } catch (e) {
+        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    }
+    // let value = null
+    // try {
+    //     value = await repository.getUnreadConversationsOfOneUser(userId)
+    // } catch (e) {
+    //     return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+    // }
+    // if (value === null) {
+    //     return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
+    // }
+    // let res = {}
+    // value.forEach(function (item) {
+    //     //console.log('item',item.get())
+    //     if (!res.hasOwnProperty(item.get().conversationId)) {
+    //         res[item.get().conversationId] = 1
+    //     } else {
+    //         res[item.get().conversationId] += 1
+    //     }
+    // })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
@@ -145,32 +137,17 @@ exports.markAllRead = async function (toUserId, conversationId, topTime) {
     return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
-async function fillExtraMessageData(fromId, toId, data) {
-    let rel = await relationRepository.queryRemarkWithId(toId, fromId)
-    data.friendRemark = rel[0].get().remark
-    let userData = rel[0].get().user
-    if (textUtils.isEmpty(rel[0].get().remark)) {
-        data.friendRemark = userData.get().nickname
-    }
-    data.friendAvatar = userData.get().avatar
-    let perm = userData.get().typePermission
-    data.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
-    data.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
-}
-
 /**
  * 发送文字消息
  * @param fromId
- * @param toId
  * @param conversationId
  * @param content
  * @param uuid
  */
-exports.sendTextMessage = async function (fromId, toId, conversationId, content, uuid) {
+exports.sendTextMessage = async function (fromId, conversationId, content, uuid) {
     let obj = {
         fromId: fromId,
-        toId: toId,
-        conversationId:conversationId,
+        conversationId: conversationId,
         content: content,
         type: 'TXT'
     }
@@ -183,7 +160,9 @@ exports.sendTextMessage = async function (fromId, toId, conversationId, content,
     let sensitive = await shieldingService.checkSensitive(text)
     //如果不敏感，就加入到词云统计
     if (!sensitive) {
-        wordCloudService.addToWordCloud(obj.fromId, obj.conversationId, emotionResult.toWordCloud).then()
+        wordCloudService.addToWordCloud(obj.fromId, obj.conversationId, emotionResult.toWordCloud).then((value) => {
+        }).catch(() => {
+        })
     }
     obj.sensitive = sensitive
     obj.emotion = emotionScore
@@ -192,16 +171,16 @@ exports.sendTextMessage = async function (fromId, toId, conversationId, content,
     try {
         value = await repository.saveMessage(obj)
     } catch (e) {
+        console.log(e)
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
     // 数据库更新成功
     if (value) {
         //更新对话信息
-        convRepo.updateConversation(obj.fromId, obj.toId, sensitive ? '*敏感信息*' : obj.content).then()
+        convRepo.updateConversation(conversationId, sensitive ? '*敏感信息*' : obj.content).then()
         let data = value.get()
         data.uuid = uuid
-        await fillExtraMessageData(fromId, toId, data)
-        long_connection.broadcastMessageSent(data)
+        long_connection.broadcastMessageSent(fromId, conversationId, data).then()
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
     } else {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
@@ -211,14 +190,13 @@ exports.sendTextMessage = async function (fromId, toId, conversationId, content,
 /**
  * 发送图片消息
  * @param fromId
- * @param toId
  * @param conversationId
  * @param files 图片文件
  * @param uuid
  */
-exports.sendImageMessage = async function (fromId, toId, conversationId, files, uuid) {
+exports.sendImageMessage = async function (fromId, conversationId, files, uuid) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
-    let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
+    let fileName = conversationId + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
     await fs.renameSync(files.upload.path, newPath)
     let sensitiveDetail = null
@@ -239,9 +217,7 @@ exports.sendImageMessage = async function (fromId, toId, conversationId, files, 
     console.log("敏感图判断", sensitive)
     let message = {
         fromId: fromId,
-        toId: toId,
         conversationId: conversationId,
-        relationId: tools.getP2PId(fromId, toId),
         content: null,//fileName,
         type: 'IMG',
         extra: sensitiveDetail,
@@ -249,7 +225,12 @@ exports.sendImageMessage = async function (fromId, toId, conversationId, files, 
     }
     let value
     try {
-        let data = await imageRepo.saveImage(fromId, toId, fileName, JSON.stringify(sensitiveDetail))
+        let userIds = await convRepo.getConversationUserIds(fromId, conversationId)
+        let toId
+        if (userIds.length > 0) {
+            toId = userIds[0]
+        }
+        let data = await imageRepo.saveImage(fromId, toId, conversationId, fileName, JSON.stringify(sensitiveDetail), 'NORMAL')
         let imageData = data.get()
         message.fileId = imageData.id
         value = await repository.saveMessage(message)
@@ -266,10 +247,8 @@ exports.sendImageMessage = async function (fromId, toId, conversationId, files, 
     let messageData = value.get()
     //更换头像成功，通知长连接发送消息，同时将头像文件名返回
     messageData.uuid = uuid
-    console.log("保存图片文件", messageData)
-    await fillExtraMessageData(fromId, toId, messageData)
-    convRepo.updateConversation(message.fromId, message.toId, '[图片]').then()
-    long_connection.broadcastMessageSent(messageData)
+    convRepo.updateConversation(conversationId, '[图片]').then()
+    long_connection.broadcastMessageSent(fromId, conversationId, messageData).then()
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, messageData))
 
 }
@@ -278,21 +257,19 @@ exports.sendImageMessage = async function (fromId, toId, conversationId, files, 
 /**
  * 发送语音消息
  * @param fromId
- * @param toId
+ * @param conversationId
  * @param files 语音文件
  * @param uuid
  * @param length
  */
-exports.sendVoiceMessage = async function (fromId, toId, conversationId, files, uuid, length) {
+exports.sendVoiceMessage = async function (fromId, conversationId, files, uuid, length) {
     // 手动给文件加后缀, formidable默认保存的文件是无后缀的
-    let fileName = tools.getP2PId(fromId, toId) + "_" + UUID.v1() + path.extname(files.upload.name)
+    let fileName = conversationId + "_" + UUID.v1() + path.extname(files.upload.name)
     let newPath = path.dirname(files.upload.path) + '/' + fileName
     await fs.renameSync(files.upload.path, newPath)
     let message = {
         fromId: fromId,
-        toId: toId,
         conversationId: conversationId,
-        relationId: tools.getP2PId(fromId, toId),
         content: fileName,
         type: 'VOICE',
         sensitive: false,
@@ -300,7 +277,12 @@ exports.sendVoiceMessage = async function (fromId, toId, conversationId, files, 
     }
     let value
     try {
-        let data = await voiceRepo.saveVoice(fromId, toId, fileName, length)
+        let userIds = await convRepo.getConversationUserIds(fromId, conversationId)
+        let toId
+        if (userIds.length > 0) {
+            toId = userIds[0]
+        }
+        let data = await voiceRepo.saveVoice(fromId, toId, conversationId, fileName, length)
         let voiceData = data.get()
         message.fileId = voiceData.id
         value = await repository.saveMessage(message)
@@ -313,9 +295,8 @@ exports.sendVoiceMessage = async function (fromId, toId, conversationId, files, 
     if (value) {
         let data = value.get()
         data.uuid = uuid
-        convRepo.updateConversation(message.fromId, message.toId, '[语音]').then()
-        await fillExtraMessageData(fromId, toId, data)
-        long_connection.broadcastMessageSent(data)
+        convRepo.updateConversation(message.conversationId, '[语音]').then()
+        long_connection.broadcastMessageSent(fromId, conversationId, data).then()
         return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
     } else {
         // 说明该用户id查找不到任何用户
@@ -323,9 +304,6 @@ exports.sendVoiceMessage = async function (fromId, toId, conversationId, files, 
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
 }
-
-
-
 
 
 /**
