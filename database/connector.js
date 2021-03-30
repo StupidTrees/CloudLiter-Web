@@ -14,6 +14,7 @@ exports.sequelize = new Sequelize.Sequelize(config.name,config.username,config.p
     host: config.host,
     dialect: 'mysql',
     port: config.port,
+    logging:false,
     pool: {
         max: 5,
         min: 0,

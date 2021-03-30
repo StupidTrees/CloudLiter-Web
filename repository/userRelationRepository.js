@@ -3,6 +3,7 @@ const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const tools = require('../utils/tools')
 const Op = models.Op
+const sequelize = require('../database/connector').sequelize
 /**
  * 仓库层：用户关系数据读写
  */
@@ -77,9 +78,6 @@ exports.queryRelationWithId = function (myId, friendId) {
  * @param friendId 朋友的id
  */
 
-
-
-
 exports.queryRemarkWithId = function (myId, friendId) {
     let id = tools.getP2PId(myId, friendId)
     return UserRelation.findAll({
@@ -94,7 +92,6 @@ exports.queryRemarkWithId = function (myId, friendId) {
         }]
     })
 }
-
 
 /**
  *建立好友关系

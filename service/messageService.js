@@ -1,6 +1,7 @@
 const repository = require('../repository/messageRepository');
 const imageRepo = require('../repository/imageRepository');
-const voiceRepo = require('../repository/voiceRepository')
+const voiceRepo = require('../repository/voiceRepository');
+const userRepo = require('../repository/userRepository')
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const textUtils = require('../utils/textUtils')
@@ -18,11 +19,12 @@ const {getFileToResponse} = require("../utils/fileUtils");
 
 /**
  * 获取某对话的历史消息
+ * @param userId 查询者id
  * @param conversationId 对话id
  * @param fromId
  * @param pageSize 分页大小
  */
-exports.queryHistoryMessage = async function (conversationId, fromId, pageSize) {
+exports.queryHistoryMessage = async function (userId, conversationId, fromId, pageSize) {
     let value = null
     try {
         value = await repository.getMessagesOfOneConversation(conversationId, fromId, pageSize)
@@ -33,13 +35,42 @@ exports.queryHistoryMessage = async function (conversationId, fromId, pageSize) 
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
     let res = []
-    value.forEach(function (item) {
-        //console.log('item',item.get())
-        res.push(item)
-    })
+    let cache = {}
+    for (let i = 0; i < value.length; i++) {
+        let message = value[i].get()
+        if (!cache.hasOwnProperty(message.fromId)) {
+            cache[message.fromId] = await this.queryMessageSenderName(userId, message.fromId)
+        }
+        message.friendRemark = cache[message.fromId]
+        res.push(message)
+    }
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
+/**
+ * 获得发送者的名字（备注、名片等）
+ * @param userId
+ * @param senderId
+ * @returns {Promise<*>}
+ */
+exports.queryMessageSenderName = async function (userId, senderId) {
+    if (textUtils.equals(userId, senderId)) {
+        return ""
+    }
+    let res
+    let rel = await relationRepository.queryRemarkWithId(userId, senderId)
+    if (rel.length === 0) {
+        let user = await userRepo.getUserById(senderId)
+        res = user.get().nickname
+    } else {
+        res = rel[0].get().remark
+        let userData = rel[0].get().user
+        if (textUtils.isEmpty(rel[0].get().remark)) {
+            res = userData.get().nickname
+        }
+    }
+    return res
+}
 
 /**
  * 拉取某对话的最新消息
@@ -47,7 +78,7 @@ exports.queryHistoryMessage = async function (conversationId, fromId, pageSize) 
  * @param afterId
  * @param includeBound
  */
-exports.getMessagesAfter = async function (conversationId, afterId, includeBound) {
+exports.getMessagesAfter = async function (userId, conversationId, afterId, includeBound) {
     let value = null
     try {
         value = await repository.getMessagesAfter(conversationId, afterId, includeBound)
@@ -58,9 +89,15 @@ exports.getMessagesAfter = async function (conversationId, afterId, includeBound
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
     }
     let res = []
-    value.forEach(function (item) {
-        res.push(item.get())
-    })
+    let cache = {}
+    for (let i = 0; i < value.length; i++) {
+        let message = value[i].get()
+        if (!cache.hasOwnProperty(message.fromId)) {
+            cache[message.fromId] = await this.queryMessageSenderName(userId, message.fromId)
+        }
+        message.friendRemark = cache[message.fromId]
+        res.push(message)
+    }
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
@@ -75,7 +112,7 @@ exports.countUnreadMessage = async function (userId) {
     try {
         let value = await repository.getUnreadConversationsOfOneUser(userId)
         for (let i = 0; i < value[0].length; i++) {
-            res[value[0].conversationId] = value[0].num
+            res[value[0][i].conversationId] = value[0][i].num
         }
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
@@ -83,58 +120,43 @@ exports.countUnreadMessage = async function (userId) {
     try {
         let value = await repository.getUnreadConversationsGroupOfOneUser(userId)
         for (let i = 0; i < value[0].length; i++) {
-            res[value[0].conversationId] = value[0].num
+            res[value[0][i].conversationId] = value[0][i].num
         }
     } catch (e) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
-    // let value = null
-    // try {
-    //     value = await repository.getUnreadConversationsOfOneUser(userId)
-    // } catch (e) {
-    //     return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
-    // }
-    // if (value === null) {
-    //     return Promise.reject(jsonUtils.getResponseBody(codes.other_error))
-    // }
-    // let res = {}
-    // value.forEach(function (item) {
-    //     //console.log('item',item.get())
-    //     if (!res.hasOwnProperty(item.get().conversationId)) {
-    //         res[item.get().conversationId] = 1
-    //     } else {
-    //         res[item.get().conversationId] += 1
-    //     }
-    // })
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
 }
 
 /**
  * 将某消息标记为已读
+ * @param chatType
+ * @param userId
  * @param messageId
  */
-exports.markRead = async function (messageId) {
+exports.markRead = async function (chatType, userId, messageId) {
     try {
-        await repository.markRead(messageId)
+        return await repository.markRead(chatType, userId, messageId)
     } catch (e) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+        console.log(e)
+        return Promise.reject()
     }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
 /**
  * 某对话全部标记为已读
+ * @param chatType
  * @param toUserId
  * @param conversationId
  * @param topTime
  */
-exports.markAllRead = async function (toUserId, conversationId, topTime) {
+exports.markAllRead = async function (chatType, toUserId, conversationId, topTime) {
     try {
-        await repository.markAllRead(toUserId, conversationId, topTime)
+        return await repository.markAllRead(chatType, toUserId, conversationId, topTime)
     } catch (e) {
-        return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+        console.log(e)
+        return Promise.reject()
     }
-    return Promise.resolve(jsonUtils.getResponseBody(codes.success))
 }
 
 /**
@@ -312,4 +334,56 @@ exports.sendVoiceMessage = async function (fromId, conversationId, files, uuid, 
  */
 exports.getChatVoiceMessage = async function (fileName) {
     return getFileToResponse(path.join(__dirname, '../') + config.files.chatVoiceDir + '/' + fileName)
+}
+
+
+/**
+ * 获取已读用户
+ * @param userId
+ * @param messageId
+ * @param conversationId
+ * @param read
+ */
+exports.queryReadUser = async function (userId, messageId,conversationId,read) {
+    let value
+    if(read===true||read==='true'){
+        try {
+            value = await repository.getReadUsers(messageId)
+        } catch (e) {
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+        }
+        let res = []
+        if (value && value.length > 0) {
+            for (let i = 0; i < value.length; i++) {
+                let data = value[i].get()
+                let name = await this.queryMessageSenderName(userId, data.userId)
+                res.push({
+                    userId:data.userId,
+                    name:name
+                })
+            }
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
+    }else{
+        try {
+            value = await repository.getUnreadUsers(userId,messageId,conversationId)
+        } catch (e) {
+            return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
+        }
+        let res = []
+        if (value[0] && value[0].length > 0) {
+            for (let i = 0; i < value[0].length; i++) {
+                let data = value[0][i]
+                let name = await this.queryMessageSenderName(userId, data.userId)
+                res.push({
+                    userId:data.userId,
+                    name:name
+                })
+            }
+        }
+        console.log("res",res)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
+    }
+
+
 }

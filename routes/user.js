@@ -49,7 +49,6 @@ router.get('/profile/get', (req, res) => {
         queryId = req.query.id
     }
     service.fetchBaseProfile(queryId).then((value) => {
-        console.log(value)
         res.send(value)
     },error => {
         console.log(error)

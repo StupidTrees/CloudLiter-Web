@@ -116,13 +116,13 @@ exports.fetchBaseProfile = async function (userId) {
         return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
     }
     //如果读出的长度为0，说明用户不存在
-    if (value.length === 0) {
+    if (value === null) {
         return Promise.reject(
             jsonUtils.getResponseBody(codes.login_wrong_username)
         )
     } else {
         //用户存在，那么将其基本信息打包，返回
-        let user = value[0].get()
+        let user = value.get()
         let wordCloudPrivate = null
         try {
             let val = await wordCloudRepository.isPrivate(userId)
@@ -376,10 +376,10 @@ exports.searchUserByWordCloud = async function (Id, word) {
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
         }
         //如果读出的长度为0，说明用户不存在
-        if (user.length === 0) {
+        if (user === null) {
             continue
         }
-        let item = user[0].get()
+        let item = user.get()
         result.push({
             username: item.username,
             nickname: item.nickname,

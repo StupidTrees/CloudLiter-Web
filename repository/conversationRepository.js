@@ -78,9 +78,9 @@ exports.getConversationById = function (conversationId) {
  * @param conversationId
  * @returns {Promise<[undefined, number]>}
  */
-exports.getRelationConversation = function (userId, conversationId) {
+exports.getRelationConversationInfo = function (userId, conversationId) {
     return sequelize.query(
-        `select lastMessage,r.friendId,u.nickname as friendNickname,r.remark as friendRemark,u.avatar
+        `select r.friendId,u.nickname as friendNickname,r.remark as friendRemark,u.avatar
     from relation as r,user as u
     where r.conversationId = ${conversationId}
         and r.userId = ${userId} 
@@ -124,11 +124,6 @@ exports.updateConversation = function (conversationId, lastMessage) {
             id: conversationId
         }
     })
-    // return sequelize.query(`
-    // update conversation
-    // set lastMessage = '${lastMessage}'
-    // where id = ${conversationId}
-    // `)
 }
 
 /**

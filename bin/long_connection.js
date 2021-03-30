@@ -10,7 +10,6 @@ exports.initSocket = function (server) {
     io.on('connection', onConnect)
 }
 
-
 async function removeUserFromConversation(userId, convId) {
     await online.removeUserFromConversation(userId, convId)
     //从朋友的被期待列表中移除自己
@@ -46,6 +45,7 @@ async function markOnline(socket, userId) {
             //获取未读消息列表
             messageService.countUnreadMessage(userId).then((value) => {
                 socket.emit('unread_message', JSON.stringify(value))
+                console.log("unread_message", JSON.stringify(value))
             })
             online.getWaitingListOfUser(userId).then(waitingList => {
                 waitingList.forEach(item => {
@@ -85,7 +85,7 @@ function onConnect(socket) {
         //断开用户和原有对话的联系
         await online.getConversationOfUser(userId).then(oldId => {
             removeUserFromConversation(userId, oldId)
-        }).catch(e=>{
+        }).catch(e => {
             console.log(e)
         })
         //加入新对话
@@ -123,18 +123,19 @@ function onConnect(socket) {
     })
 
     //标记某对话下的消息全部已读
-    socket.on('mark_all_read', async function (userId, convId, topTime) {
-        //console.log('标记全部已读', userId + "," + convId + "," + topTime)
+    socket.on('mark_all_read', async function (chatType, userId, convId, topTime) {
+        //console.log('标记全部已读', chatType + "," + userId + "," + convId + "," + topTime)
         await markOnline(socket, userId)//保持在线
         if (userId == null || convId == null || topTime == null) {
             return;
         }
-        await messageService.markAllRead(userId, convId, topTime)
+        let res = await messageService.markAllRead(chatType, userId, convId, topTime)
         //通知处于对话框对方，他读了一堆消息
         conversationRepository.getConversationUserIds(userId, convId).then((ids) => {
-            if (ids.length === 1) {
-                online.getSocketForUser(ids[0]).then(socket => {
-                    io.to(socket).emit('friend_read_all', userId, convId, topTime)
+            for (let i = 0; i < ids.length; i++) {
+                online.getSocketForUser(ids[i]).then(socket => {
+                    //console.log('通知全部已读',socket + "," + JSON.stringify(res))
+                    io.to(socket).emit('friend_read_all', userId, convId, topTime, JSON.stringify(res))
                 })
             }
         })
@@ -142,18 +143,19 @@ function onConnect(socket) {
     })
 
     //标记某消息已读
-    socket.on('mark_read', async function (userId, convId, messageId) {
+    socket.on('mark_read', async function (chatType, userId, convId, messageId) {
         await markOnline(socket, userId)//保持在线
         //console.log('标记已读',userId + "," + convId + "," + messageId)
         if (userId == null || convId == null || messageId == null) {
             return;
         }
-        await messageService.markRead(messageId)
+        let res = await messageService.markRead(chatType, userId, messageId)
         //通知处于对话框的对方，他读了一条消息
         conversationRepository.getConversationUserIds(userId, convId).then((ids) => {
-            if (ids.length === 1) {
-                online.getSocketForUser(ids[0]).then(socket => {
-                    io.to(socket).emit('friend_read_one', userId, convId, messageId)
+            for (let i = 0; i < ids.length; i++) {
+                online.getSocketForUser(ids[i]).then(socket => {
+                   // console.log('通知已读',socket + "," + JSON.stringify(res))
+                    io.to(socket).emit('friend_read_one', userId, convId, messageId, JSON.stringify(res))
                 })
             }
         })
@@ -195,22 +197,10 @@ exports.broadcastMessageSent = async function (userId, conversationId, message) 
     for (let i = 0; i < listeners.length; i++) {
         let toId = listeners[i]
         online.getSocketForUser(toId.toString()).then(socket => {
-            return relationRepository.queryRemarkWithId(toId, userId).then(rel => {
-                if (rel.length === 0) {//不是好友关系
-                    message.friendRemark = conversationId//userData.get().nickname
-                } else {
-                    message.friendRemark = rel[0].get().remark
-                    let userData = rel[0].get().user
-                    if (textUtils.isEmpty(rel[0].get().remark)) {
-                        message.friendRemark = userData.get().nickname
-                    }
-                    let perm = userData.get().typePermission
-                    message.friendType = perm === 'PRIVATE' ? 0 : userData.get().type
-                    message.friendSubType = perm === 'PRIVATE?' ? 'normal' : userData.get().subType
-                }
+            messageService.queryMessageSenderName(toId, userId).then(name => {
+                message.friendRemark = name
                 io.to(socket).emit('message', message);
             })
-
         })
     }
 }

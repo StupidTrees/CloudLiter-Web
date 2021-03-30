@@ -403,7 +403,8 @@ exports.Message = con.sequelize.define(
             type: DataTypes.STRING
         },
         read: {
-            type: DataTypes.BOOLEAN
+            type: DataTypes.INTEGER,
+            default:0
         },
         sensitive: {
             type: DataTypes.BOOLEAN
@@ -665,3 +666,34 @@ this.GroupMember.belongsTo(this.User, {
     as: 'user'
 })
 this.GroupMember.sync({force: false}).then(r => r)
+
+
+exports.GroupMessageRead = con.sequelize.define(
+    'message_read', {
+        userId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            primaryKey: true
+        },
+        messageId: {
+            type: DataTypes.BIGINT,
+            primaryKey: true
+        },
+    },
+    {
+        tableName: 'message_read',
+        createdAt: false,
+        updatedAt: false
+    }
+)
+this.GroupMessageRead.belongsTo(this.Message, {
+    foreignKey: 'messageId',
+    targetKey: 'id',
+    as: 'message'
+})
+this.GroupMessageRead.belongsTo(this.User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user'
+})
+this.GroupMessageRead.sync({force: false}).then(r => r)

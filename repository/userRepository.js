@@ -13,13 +13,7 @@ const wordTop10 = models.wordTop10
  * @param id
  */
 exports.getUserById = function (id) {
-    return User.findAll({
-        where: {
-            id: {
-                [Op.eq]: id
-            }
-        }
-    })
+    return User.findByPk(id)
 }
 
 /**

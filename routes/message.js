@@ -13,8 +13,21 @@ router.get('/get', function (req, res) {
     let fromId = (req.query.fromId === undefined || req.query.fromId == null || equals(req.query.fromId, 'null'))
         ? null : req.query.fromId
     console.log("fromId", fromId)
-    service.queryHistoryMessage(req.query.conversationId, fromId, req.query.pageSize).then((value) => {
+    service.queryHistoryMessage(req.query.authId, req.query.conversationId, fromId, req.query.pageSize).then((value) => {
         //console.log("value",value)
+        res.send(value)
+    }, (err) => {
+        console.log('err', err)
+        res.send(err)
+    })
+})
+
+/**
+ * 查询某一消息的已读用户
+ */
+router.get('/read_user', function (req, res) {
+    service.queryReadUser(req.query.authId, req.query.messageId, req.query.conversationId, req.query.read).then((value) => {
+        //console.log("value", value)
         res.send(value)
     }, (err) => {
         console.log('err', err)
@@ -28,7 +41,7 @@ router.get('/get', function (req, res) {
 router.get('/get_message_after', function (req, res) {
     let afterId = (req.query.afterId === undefined || req.query.afterId == null || equals(req.query.afterId, 'null'))
         ? null : req.query.afterId
-    service.getMessagesAfter(req.query.conversationId, afterId, req.query.includeBound).then((value) => {
+    service.getMessagesAfter(req.query.authId, req.query.conversationId, afterId, req.query.includeBound).then((value) => {
         res.send(value)
     }, (err) => {
         console.log('err', err)
@@ -120,7 +133,6 @@ router.post('/send_voice', function (req, res) {
         }
     })
 })
-
 
 
 /**

@@ -20,7 +20,7 @@ exports.getConversations = async function (userId) {
             } else {
                 convName = data.friendRemark
             }
-            data['name'] = convName
+            data.name = convName
             res.push(data)
         }
         let value2 = await repository.getGroupConversationsOfOneUser(userId)
@@ -50,21 +50,22 @@ exports.getConversationById = async function (userId, conversationId) {
         return Promise.reject(jsonUtils.getResponseBody(codes.conversation_not_exist))
     }
     let data = value.get()
-    let convName
-    if(!textUtils.isEmpty(data.groupId)){
+    if (data.type === 'GROUP') {
         let groupEntity = await groupChatRepo.getGroupById(data.groupId)
-        if(groupEntity!=null){
-            convName = groupEntity.get().name
+        if (groupEntity != null) {
+            data.name = groupEntity.get().name
         }
-    }else{
-        let info = await repository.getRelationConversation(userId,conversationId)
-        let infoData = info[0]
+    } else {
+        let info = await repository.getRelationConversationInfo(userId, conversationId)
+        let infoData = info[0][0]
+        data.friendId = infoData.friendId
+        data.avatar = infoData.avatar
         if (textUtils.isEmpty(infoData.friendRemark)) {
-            convName = infoData.friendNickname
+            data.name = infoData.friendNickname
         } else {
-            convName = infoData.friendRemark
+            data.name = infoData.friendRemark
         }
     }
-    data['name'] = convName
+
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
 }

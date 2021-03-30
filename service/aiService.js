@@ -63,10 +63,10 @@ async function fillRecognitionInfo(imageId, userId, result) {
             //console.log('cuserId:'+cache.userId+'   '+typeof(cache.userId)+'   '+typeof(parseInt(cache.userId)))
             if (userId === parseInt(cache.userId)) {
                 let data = await userRepository.getUserById(userId)
-                if (textUtils.isEmpty(data[0].get().nickname)) {
-                    cache.userName = data[0].get().username
+                if (textUtils.isEmpty(data.get().nickname)) {
+                    cache.userName = data.get().username
                 } else {
-                    cache.userName = data[0].get().nickname
+                    cache.userName = data.get().nickname
                 }
             } else {
                 await imageRepo.saveFaceInImage(imageId, cache.userId, cache.confidence)
