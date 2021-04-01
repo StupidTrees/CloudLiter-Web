@@ -164,3 +164,31 @@ exports.getConversationUserIds = async function (userId, conversationId) {
     })
 
 }
+
+
+/**
+ * 获取双人对话对方的无障碍情况
+ */
+exports.getFriendAccessibilityInfo = function (userId,conversationId){
+    return sequelize.query(`select u.type,u.subType,u.typePermission
+    from conversation as c,user as u
+    where c.id = ${conversationId}
+    and (c.user1Id = ${userId} or c.user2Id = ${userId})
+    and (c.user1Id = u.id or c.user2Id = u.id)
+    and u.id <> ${userId}
+    `)
+}
+
+
+exports.getGroupAccessibilityInfo = function (userId,conversationId,type){
+    return sequelize.query(`
+    select count(distinct u.id) as count
+    from group_member as gm,user as u
+    where gm.userId = u.id
+    and (u.type & ${type})<>0
+    and u.type <> 'PRIVATE'
+    and gm.groupId in(
+        select groupId from conversation where id = ${conversationId}
+        )
+    `)
+}

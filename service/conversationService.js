@@ -1,6 +1,7 @@
 const repository = require('../repository/conversationRepository');
 const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
+const constants = require('../utils/consts')
 const textUtils = require('../utils/textUtils')
 const groupChatRepo = require('../repository/groupchatRepository')
 
@@ -68,4 +69,39 @@ exports.getConversationById = async function (userId, conversationId) {
     }
 
     return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+}
+
+
+/**
+ * 获取会话无障碍情况
+ * @param userId 查询者
+ * @param conversationId 对话id
+ * @param type
+ */
+exports.getConversationAccessibilityInfo = async function (userId, conversationId, type) {
+    if (type === 'FRIEND') {
+        let value = await repository.getFriendAccessibilityInfo(userId, conversationId)
+        if (value[0].length > 0) {
+            let rValue = value[0][0]
+            let data = {
+                conversationId: conversationId,
+                visual: ((rValue.type & constants.userTypes.VISUAL) !== 0 && rValue.typePermission !== 'PRIVATE') ? 1 : 0,
+                hearing: ((rValue.type & constants.userTypes.HEARING) !== 0 && rValue.typePermission !== 'PRIVATE') ? 1 : 0,
+                limb: ((rValue.type & constants.userTypes.LIMB) !== 0 && rValue.typePermission !== 'PRIVATE') ? 1 : 0
+            }
+            return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+        }
+    } else {
+        let value0 = await repository.getGroupAccessibilityInfo(userId, conversationId, constants.userTypes.VISUAL)
+        let value1 = await repository.getGroupAccessibilityInfo(userId, conversationId, constants.userTypes.HEARING)
+        let value2 = await repository.getGroupAccessibilityInfo(userId, conversationId, constants.userTypes.LIMB)
+        let data = {
+            conversationId: conversationId,
+            visual: value0[0][0].count,
+            hearing: value1[0][0].count,
+            limb: value2[0][0].count
+        }
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, data))
+    }
+    return Promise.resolve(jsonUtils.getResponseBody(codes.other_error, "errrr"))
 }

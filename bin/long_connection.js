@@ -20,7 +20,7 @@ async function removeUserFromConversation(userId, convId) {
             online.removeUserFromWaitingList(ids[0], userId)
         }
     } catch (e) {
-        console.log(e)
+        console.log("remove_user_from_conv"+e)
     }
 }
 
@@ -86,7 +86,7 @@ function onConnect(socket) {
         await online.getConversationOfUser(userId).then(oldId => {
             removeUserFromConversation(userId, oldId)
         }).catch(e => {
-            console.log(e)
+            console.log("get_conv_of_user"+e)
         })
         //加入新对话
         online.addUserToConversation(userId, conversationId)

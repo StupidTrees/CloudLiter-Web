@@ -40,13 +40,13 @@ class matrix:
 
         pic_scores_all = []
         #获取数据库中的入库时的图片名称  pic_names在数据库中存的是数组列索引4这个位置
-        pic_names = results[:, 3]
+        pic_names = results[:, 2]
         print(pic_names)
         #获取入库时图片对象的uid  pic_uid在数据库中存的是数组列索引2这个位置
         pic_uid = results[:, 1]
         print(pic_uid)
         for i in range(0, len(results), maxlen):
-            pic_vectors = results[i:i + maxlen, 2]
+            pic_vectors = results[i:i + maxlen, 3]
             # 效率待优化，现在是每行处理
             pic_vectors = [[float(j) for j in i.split(',')] for i in pic_vectors]
             print(pic_vectors)

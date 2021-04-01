@@ -7,7 +7,7 @@ const router = express.Router();
 
 const service = require('../service/conversationService')
 const wordCloudService = require("../service/wordCloudService");
-
+const imageService = require("../service/imageService")
 
 /**
  * 查询某一用户的所有对话
@@ -52,10 +52,12 @@ router.post('/delete_wordcloud', function (req, res) {
     })
 })
 
-router.post('/set_whiteid', function (req, res) {
-    servicsetWhiteId(req.body.authId, req.body.whiteId).then(value => {
+
+router.get('/accessibility_info', function (req, res) {
+    service.getConversationAccessibilityInfo(req.query.authId,req.query.conversationId,req.query.type).then(value => {
         res.send(value)
     }, error => {
+        console.log("accessibility_info",error)
         res.send(error)
     })
 })
