@@ -1,11 +1,4 @@
 const redis = require('redis')
-// //记录用户id和socketId转换表
-// const id2SocketId = {}
-// //记录用户和其正在进行对话
-// const user2Conversation = {}
-// //记录用户正在被期待的对话
-// const waitingList = {}
-
 const client = redis.createClient(6379, '127.0.0.1');
 client.on('connect', function () {
     console.log("redis", "connect")
@@ -127,3 +120,4 @@ exports.getWaitingListOfUser = async function (hostId) {
     })
 }
 
+exports.redisClient = client

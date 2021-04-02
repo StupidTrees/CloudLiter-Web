@@ -34,6 +34,8 @@
     "redis": "^3.0.2",
     "sequelize": "^6.3.5",
     "sequelize-redis-cache": "^2.0.1",
+    "sequelize-transparent-cache": "^2.3.0",
+    "sequelize-transparent-cache-ioredis": "^2.3.0",
     "socket.io": "^2.3.0",
     "tfjs": "^0.6.0",
     "utf-8-validate": "^5.0.2",
@@ -45,10 +47,12 @@
   },
   "devDependencies": {
     "baidu-aip-sdk": "^2.4.6",
+    "bluebird": "^3.4.1",
     "connect-multiparty": "^2.2.0",
     "nodejieba": "^2.4.1",
     "patch-package": "^6.2.2",
     "sentiment": "^5.0.2",
+    "sequelize-redis": "^1.0.12",
     "uuid": "^8.3.1"
   }
 }

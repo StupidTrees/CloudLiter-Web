@@ -1,9 +1,23 @@
 const models = require('../database/models')
 const {equals} = require("../utils/textUtils");
 const Op = models.Op
-const Message = models.Message
+const redisClient = require("../bin/onlineRepository").redisClient
 const MessageRead = models.GroupMessageRead
 const sequelize = require('../database/connector').sequelize
+const Message = require('../database/models').Message
+
+// const SequelizeRedis = require('sequelize-redis')
+// const sequelizeRedis = new SequelizeRedis(redisClient);
+// const Message = sequelizeRedis.getModel(MessageTable, { ttl: 60 * 60 * 24 });
+// const redisAdaptor = new RedisAdaptor({
+//     client: redisClient,
+//     namespace: 'model',
+//     lifetime: 60 * 60
+// })
+// const sequelizeCache = require('sequelize-transparent-cache')
+// const {withCache} = sequeliz
+// const Message = wit
+//
 
 /**
  * 将消息保存
@@ -306,7 +320,6 @@ exports.markRead = function (chatType, userId, messageId) {
 /**
  * 根据id获取消息
  * @param id
- * @returns {Promise<Model[]>}
  */
 exports.getMessageById = function (id) {
     return Message.findAll({
@@ -339,17 +352,17 @@ exports.deleteMessagesOfConversation = function (conversationId) {
     })
 }
 
-exports.getReadUsers = function (messageId){
+exports.getReadUsers = function (messageId) {
 
     return MessageRead.findAll({
-        where:{
-            messageId:messageId
+        where: {
+            messageId: messageId
         }
     })
 }
 
 
-exports.getUnreadUsers = function (userId,messageId,conversationId){
+exports.getUnreadUsers = function (userId, messageId, conversationId) {
     return sequelize.query(`
     select distinct gm.userId
     from conversation as c, group_member as gm, message as m

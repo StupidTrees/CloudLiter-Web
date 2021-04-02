@@ -1,8 +1,7 @@
 const messageService = require('../service/messageService')
 const conversationRepository = require('../repository/conversationRepository')
 const textUtils = require('../utils/textUtils')
-const relationRepository = require("../repository/userRelationRepository");
-const online = require('./online')
+const online = require('./onlineRepository')
 let io
 
 exports.initSocket = function (server) {
@@ -85,9 +84,7 @@ function onConnect(socket) {
         //断开用户和原有对话的联系
         await online.getConversationOfUser(userId).then(oldId => {
             removeUserFromConversation(userId, oldId)
-        }).catch(e => {
-            console.log("get_conv_of_user"+e)
-        })
+        }).catch(e => {})
         //加入新对话
         online.addUserToConversation(userId, conversationId)
         //将自己加入到朋友的被期待表中

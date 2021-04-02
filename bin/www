@@ -6,7 +6,7 @@ const config = require('../config')
 const app = require('../app');
 const debug = require('debug')('hichat:server');
 const http = require('http');
-const socket = require('./long_connection')
+const socket = require('./socketConnection')
 
 
 

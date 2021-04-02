@@ -6,7 +6,7 @@ const convRepository = require('../repository/conversationRepository')
 const relationRepository = require('../repository/userRelationRepository')
 const wordCloudRepository = require("../repository/wordCloudRepository");
 const tools = require("../utils/tools");
-const long_connection = require("../bin/long_connection");
+const long_connection = require("../bin/socketConnection");
 const equals = require('../utils/textUtils').equals
 /**
  * 服务层：关系操作
