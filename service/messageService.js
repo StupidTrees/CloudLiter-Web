@@ -182,9 +182,7 @@ exports.sendTextMessage = async function (fromId, conversationId, content, uuid)
     let sensitive = await shieldingService.checkSensitive(text)
     //如果不敏感，就加入到词云统计
     if (!sensitive) {
-        wordCloudService.addToWordCloud(obj.fromId, obj.conversationId, emotionResult.toWordCloud).then((value) => {
-        }).catch(() => {
-        })
+        wordCloudService.addToWordCloud(obj.fromId, obj.conversationId, emotionResult.toWordCloud).then((value) => {}).catch(() => {})
     }
     obj.sensitive = sensitive
     obj.emotion = emotionScore
@@ -344,9 +342,9 @@ exports.getChatVoiceMessage = async function (fileName) {
  * @param conversationId
  * @param read
  */
-exports.queryReadUser = async function (userId, messageId,conversationId,read) {
+exports.queryReadUser = async function (userId, messageId, conversationId, read) {
     let value
-    if(read===true||read==='true'){
+    if (read === true || read === 'true') {
         try {
             value = await repository.getReadUsers(messageId)
         } catch (e) {
@@ -358,15 +356,15 @@ exports.queryReadUser = async function (userId, messageId,conversationId,read) {
                 let data = value[i].get()
                 let name = await this.queryMessageSenderName(userId, data.userId)
                 res.push({
-                    userId:data.userId,
-                    name:name
+                    userId: data.userId,
+                    name: name
                 })
             }
         }
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
-    }else{
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
+    } else {
         try {
-            value = await repository.getUnreadUsers(userId,messageId,conversationId)
+            value = await repository.getUnreadUsers(userId, messageId, conversationId)
         } catch (e) {
             return Promise.reject(jsonUtils.getResponseBody(codes.other_error, e))
         }
@@ -376,13 +374,13 @@ exports.queryReadUser = async function (userId, messageId,conversationId,read) {
                 let data = value[0][i]
                 let name = await this.queryMessageSenderName(userId, data.userId)
                 res.push({
-                    userId:data.userId,
-                    name:name
+                    userId: data.userId,
+                    name: name
                 })
             }
         }
-        console.log("res",res)
-        return Promise.resolve(jsonUtils.getResponseBody(codes.success,res))
+        console.log("res", res)
+        return Promise.resolve(jsonUtils.getResponseBody(codes.success, res))
     }
 
 

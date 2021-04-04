@@ -73,10 +73,6 @@ exports.getConversationOfUser = async function (userId) {
 }
 
 exports.addUserToWaitingList = function (hostId, userId, conversationId) {
-    // if (!waitingList.hasOwnProperty(hostId)) {
-    //     waitingList[hostId] = {}
-    // }
-    // waitingList[hostId][userId] = conversationId
     client.hset('w_' + hostId, userId, conversationId,redis.print)
 }
 

@@ -2,6 +2,7 @@ const messageService = require('../service/messageService')
 const conversationRepository = require('../repository/conversationRepository')
 const textUtils = require('../utils/textUtils')
 const online = require('./onlineRepository')
+const onlineConversation = require('./onlineConversation')
 let io
 
 exports.initSocket = function (server) {
@@ -19,7 +20,7 @@ async function removeUserFromConversation(userId, convId) {
             online.removeUserFromWaitingList(ids[0], userId)
         }
     } catch (e) {
-        console.log("remove_user_from_conv"+e)
+        console.log("remove_user_from_conv" + e)
     }
 }
 
@@ -84,7 +85,8 @@ function onConnect(socket) {
         //断开用户和原有对话的联系
         await online.getConversationOfUser(userId).then(oldId => {
             removeUserFromConversation(userId, oldId)
-        }).catch(e => {})
+        }).catch(e => {
+        })
         //加入新对话
         online.addUserToConversation(userId, conversationId)
         //将自己加入到朋友的被期待表中
@@ -94,6 +96,10 @@ function onConnect(socket) {
             })
         })
         console.log("用户进入对话窗口")
+        //推送对话话题信息
+        onlineConversation.getHotTopicOfConversation(conversationId).then((value)=>{
+            socket.emit('conversation_topic', conversationId, value)
+        })
         //通知正在和他进行对话的好友，他进入了某对话
         online.getWaitingListOfUser(userId).then(waiting => {
             waiting.forEach(d => {
@@ -151,7 +157,7 @@ function onConnect(socket) {
         conversationRepository.getConversationUserIds(userId, convId).then((ids) => {
             for (let i = 0; i < ids.length; i++) {
                 online.getSocketForUser(ids[i]).then(socket => {
-                   // console.log('通知已读',socket + "," + JSON.stringify(res))
+                    // console.log('通知已读',socket + "," + JSON.stringify(res))
                     io.to(socket).emit('friend_read_one', userId, convId, messageId, JSON.stringify(res))
                 })
             }
@@ -208,4 +214,22 @@ exports.notifyRelationEvent = function (targetUserId) {
     online.getSocketForUser(targetUserId.toString()).then(socket => {
         io.to(socket).emit('relation_event')
     })
+}
+
+
+exports.broadcastConversationTopicInfo = async function (conversationId) {
+    try {
+        let topTopic = await onlineConversation.getHotTopicOfConversation(conversationId)
+        let listeners = await conversationRepository.getConversationUserIds("", conversationId)
+        console.log("broadcast_conversation", topTopic)
+        for (let i = 0; i < listeners.length; i++) {
+            let toId = listeners[i]
+            online.getSocketForUser(toId.toString()).then(socket => {
+                io.to(socket).emit('conversation_topic', conversationId, topTopic)
+            })
+        }
+    } catch (e) {
+        console.log(e)
+    }
+
 }

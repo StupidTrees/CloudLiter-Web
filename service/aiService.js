@@ -214,18 +214,14 @@ exports.voiceToWords = async function (id) {
                     }
                     fs.unlinkSync(catchPath)
                     emotionService.segmentAndAnalyzeEmotion(result.result[0]).then(emotion => {
-                        //console.log('value:'+value.score)
                         shieldingService.checkSensitive(result.result[0]).then(sensitive => {
-                            //console.log('vv:'+value.score)
                             let res = value[0].get()
-                            //console.log(res)
                             res.ttsResult = result.result[0]
                             res.sensitive = sensitive
                             res.emotion = emotion.score
                             repositoryMessage.setTTSResult(id, result.result[0], emotion.score, sensitive)
                             resolve(jsonUtils.getResponseBody(codes.success, res))
                         }).catch(err => {
-                            //console.table(err)
                             reject(jsonUtils.getResponseBody(codes.other_error, err))
                         })
                     }).catch(err => {

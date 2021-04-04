@@ -77,7 +77,7 @@ exports.updateTop10 = function (type, id, word, num) {
         }
     ).then(value => {
         data = value[0].get()
-        console.log(data)
+        //console.log(data)
         if (data.flag >= num) {
             return
         }
@@ -258,9 +258,7 @@ exports.reSort = function (cloudId, rank, addMessage, length) {
             }
         }
     ).then(value => {
-        console.log('rank:' + rank)
         let data = value[0].get()
-        console.log(data)
         let arr = []
         let obj
         let i
@@ -279,12 +277,9 @@ exports.reSort = function (cloudId, rank, addMessage, length) {
             arr.push(obj)
         }
         i = rank + 1
-        console.log(i)
         for (; i <= 10; i++) {
-            console.log('in')
             let j = ''
             j = 'Top' + i
-            console.log(j + '   ' + data[j])
             if (data[j] != null) {
                 obj = {
                     name: data[j].split(':')[0],
@@ -296,10 +291,8 @@ exports.reSort = function (cloudId, rank, addMessage, length) {
                     freq: -1
                 }
             }
-            console.log(i + '   ' + obj.name)
             arr.push(obj)
         }
-        console.log(length)
         if (length <= 9) {
             obj = {
                 name: null,
@@ -311,18 +304,8 @@ exports.reSort = function (cloudId, rank, addMessage, length) {
                 name: addMessage.word,
                 freq: addMessage.num
             }
-            console.log('add:  ' + addMessage.word)
             arr.push(obj)
         }
-        for (i = 0; i < 10; i++) {
-            let a = arr[i]
-            console.log(JSON.stringify(a))
-        }
-        // arr.sort((a, b) => {
-        //     return b.freq - a.freq
-        // })
-
-
         return wordTop10.update(
             {
                 Top1: arr[0].name + ':' + arr[0].freq,

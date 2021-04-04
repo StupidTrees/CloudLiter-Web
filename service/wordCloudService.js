@@ -2,6 +2,7 @@ const jsonUtils = require('../utils/jsonUtils')
 const codes = require('../utils/codes').codes
 const wordCloudRepository = require('../repository/wordCloudRepository')
 const tools = require('../utils/tools')
+const {addTokenToConversation} = require("../bin/onlineConversation");
 
 /**
  * 服务层
@@ -32,6 +33,7 @@ exports.addToWordCloud = async function (userId, conversationId, list) {
     let item
     for (item in store) {
         try {
+            addTokenToConversation(item,conversationId)
             let convUpdated = await wordCloudRepository.findOrCreateConWord(conversationId, item, store[item])
             let usrUpdated = await wordCloudRepository.findOrCreateUserWord(userId, item, store[item])
             await wordCloudRepository.updateTop10("USER", userId, item, usrUpdated)
@@ -84,7 +86,6 @@ exports.getWordCloud = async function (userId, type, id) {
  */
 exports.delWordCloud = async function (word, cloudId) {
     let rank
-    console.log('word:' + word)
     try {
         rank = await wordCloudRepository.getRank(cloudId, word)
     } catch (err) {
@@ -113,7 +114,6 @@ exports.delWordCloud = async function (word, cloudId) {
         let value
         if (data.length >= 10) {
             value = data[9].get()
-            console.log(value.word)
         }
         await wordCloudRepository.reSort(cloudId, rank, value, data.length)
     } catch (err) {

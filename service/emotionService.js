@@ -46,10 +46,11 @@ exports.segmentAndAnalyzeEmotion = async function (str) {
             let analysis = nodejieba.tag(str)
             let tokens = []
             let toWordCloud = []
+
             analysis.forEach((value) => {
                 tokens.push(value.word)
                 //如果为名词、动词、形容词，则加入词云
-                if (value.tag.startsWith('n') || value.tag === 'v' || value.tag === 'a') {
+                if (value.word.length >= 3 || value.word.length > 1 && (value.tag.startsWith('n') || value.tag === 'v' || value.tag === 'a' || value.tag === 'x')) {
                     toWordCloud.push(value.word)
                 }
             })

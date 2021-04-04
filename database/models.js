@@ -689,11 +689,13 @@ exports.GroupMessageRead = con.sequelize.define(
 this.GroupMessageRead.belongsTo(this.Message, {
     foreignKey: 'messageId',
     targetKey: 'id',
-    as: 'message'
+    as: 'message',
+    onDelete:'CASCADE'
 })
 this.GroupMessageRead.belongsTo(this.User, {
     foreignKey: 'userId',
     targetKey: 'id',
-    as: 'user'
+    as: 'user',
+    onDelete:'CASCADE'
 })
 this.GroupMessageRead.sync({force: false}).then(r => r)
