@@ -63,8 +63,6 @@ function onConnect(socket) {
     //console.log('新用户登录');
     //监听新用户加入
     socket.on('login', function (userId) {
-        //  let obj = JSON.parse(objStr)
-        //console.log("login", userId)
         socket.name = userId
         markOnline(socket, userId).then()
     })
